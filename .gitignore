@@ -1,0 +1,6 @@
+__pycache__/
+.venv/
+.DS_Store
+.pytest_cache/
+# the live database: rebuilt from seed/ on first start, never committed
+data/
