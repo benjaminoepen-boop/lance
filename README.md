@@ -37,6 +37,8 @@ A booking stores only the **start**. The end is always calculated: start + the a
 
 **Edits are replacements (FA R5).** `move_booking` checks the new slot against all bookings *except* the artist's own (`without`). So shifting a set by 30 minutes does not clash with its old slot, and the fee is not counted twice.
 
+**The look.** Colours, fonts and radii are set in `.streamlit/config.toml`; white cards, the timeline and the artist cards in `style.css`. `app.py` only decides what goes where: a card is a `st.container` whose key starts with `card`, and the timeline is plain HTML built from `logic.timetable` (`timeline_html`, where `position` turns a time into a percentage of the festival day).
+
 **Persistence.** Every accepted action is written to SQLite immediately (`db.execute` commits). The app holds no state of its own between clicks; every screen reads from the database. Stopping and restarting the app therefore shows exactly what was saved.
 
 ## Where each rule lives
@@ -75,6 +77,8 @@ A booking stores only the **start**. The end is always calculated: start + the a
 
 ```
 app.py            the three screens: Timetable, Book an artist, Change a booking
+style.css         cards, timeline, artist cards, sidebar list
+.streamlit/       config.toml: theme colours, font, radius
 logic.py          the rules: times, clashes, budget, add / move / remove, finalise / reopen
 db.py             the only file that talks to SQLite: schema, seed, fetch, execute
 seed.py           uv run python seed.py -> fresh database

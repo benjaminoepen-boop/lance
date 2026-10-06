@@ -29,7 +29,7 @@ def metric_values(app):
 def book_through_the_screen(app, artist_id, stage_id, start):
     """Fill in the booking form and press Book."""
     app.selectbox(key="book_artist").set_value(artist_id)
-    app.selectbox(key="book_stage").set_value(stage_id)
+    app.segmented_control(key="book_stage").set_value(stage_id)
     app.time_input(key="book_start").set_value(start)
     app.button(key="book").click().run()
 

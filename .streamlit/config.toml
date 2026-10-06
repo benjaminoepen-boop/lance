@@ -1,0 +1,30 @@
+# The look of the app. Colours and sizes follow one small design system:
+# light grey page, white cards, three text greys, blue as the only action colour.
+
+[client]
+toolbarMode = "minimal"    # no Deploy button in the corner
+
+[theme]
+base = "light"
+primaryColor = "#0E45FD"
+backgroundColor = "#F5F5F7"
+secondaryBackgroundColor = "#FFFFFF"
+textColor = "#1D1D1F"
+borderColor = "#D1D1D6"
+showWidgetBorder = true
+baseRadius = "8px"
+font = "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif"
+headingFont = "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif"
+headingFontWeights = 650
+headingFontSizes = ["1.75rem", "1.05rem", "1rem"]
+metricValueFontSize = "1.75rem"
+metricValueFontWeight = 650
+greenBackgroundColor = "#E8F8EE"
+greenTextColor = "#1B7A3D"
+redBackgroundColor = "#FFEBE9"
+redTextColor = "#D70015"
+blueBackgroundColor = "#ECF0FF"
+
+[theme.sidebar]
+backgroundColor = "#ECECEF"
+secondaryBackgroundColor = "#FFFFFF"
