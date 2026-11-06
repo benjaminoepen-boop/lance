@@ -29,6 +29,12 @@ const Lance = {
   },
 
   renderHead(state) {
+    /* the settings follow the saved plan, except the field someone is typing in */
+    const sync = (id, apply) => { const field = document.getElementById(id); if (field && field !== document.activeElement) apply(field); };
+    sync("set-programme", (field) => { field.value = state.plan.programme; });
+    sync("set-points", (field) => { field.value = state.plan.points; });
+    sync("set-bonus", (field) => { field.checked = Boolean(state.plan.has_bonus); });
+    document.querySelectorAll("[data-semester]").forEach((button) => button.classList.toggle("on", button.dataset.semester === state.plan.semester));
     const set = (id, value, label, tone) => {
       const kpi = document.getElementById(id);
       if (!kpi) return;

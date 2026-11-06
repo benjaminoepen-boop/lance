@@ -217,3 +217,31 @@ def test_coverage_counts_only_this_semester(client):
     before = logic.coverage()["covered"]
     share(client, EXPORT)
     assert logic.coverage()["covered"] == before + 1
+
+
+def test_the_bookmarklet_never_reads_a_personal_column():
+    import os
+    path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "static", "share-bookmarklet.js")
+    with open(path, encoding="utf-8") as file:
+        code = file.read()
+    assert "Ects Sum" not in code
+    assert '"Student"' not in code and "data-student" not in code
+    for wanted in ('"Final Bid"', '"Bid"', '"Alocated"'):
+        assert wanted in code
+
+
+# ---------- the example plan ----------
+
+def test_the_example_plan_reproduces_a_real_result(client):
+    answer = client.post("/api/example", json={}).get_json()
+    assert answer["error"] is None
+    state = answer["state"]
+    assert state["reserved"] == 165
+    assert state["forecast"]["expected"] == 132
+    assert state["forecast"]["left"] == 33
+
+
+def test_the_example_never_overwrites_a_plan(client):
+    client.post("/api/add", json={"section_id": "2477-S1-TXB"})
+    assert client.post("/api/example", json={}).get_json()["error"]
+    assert len(state_of(client)["items"]) == 1

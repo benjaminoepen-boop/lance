@@ -1,23 +1,24 @@
-# Festival Architect — notes for the coding agent
+# Lance
 
-Solo project for Introduction to Programming (Nova SBE 2026/27). The product brief is `docs/product-brief.md`; the rule ids (FA01, FA R2, A1 …) come from there. The person asking has to explain this code in an exam, so explain, don't just do.
+Course bidding planner, team project for Introduction to Programming at Nova SBE. Python, Flask, SQLite, pytest, run with uv.
 
-## Running things
+## Commands
 
-- Run the app: `uv run streamlit run app.py`. Never use `pip` or `python -m venv`.
-- Tests: `uv run pytest`. Every test must pass before a merge.
-- Reset the data: `uv run python seed.py` rebuilds `data/festival.db` from `seed/*.csv` (empty lineup, plan back to draft).
+- Run: `uv run flask --app app run --port 8770`
+- Test: `uv run pytest`
+- Rebuild the content after new PDFs: see `docs/data.md`
 
-## The project
+## Structure
 
-- `app.py` = the screens, `logic.py` = the rules, `db.py` = the only file that talks to SQLite.
-- `seed/` holds the fixed content (stages, artist catalogue). `data/festival.db` holds that content plus the organiser's progress (bookings, draft or final). It is created on first start and never committed.
-- Times are stored as text `HH:MM`; the end of a set is always calculated from the start and the artist's duration, never stored.
+Screens in `app.py`, rules in `logic.py`, storage in `db.py`. Rules never go into `db.py` or the JavaScript. JavaScript in `static/` only draws what the server answers. Requirements and rule ids (LN01, LN R1 ...) are in `docs/product-brief.md`; name the rule in the docstring of the function that implements it.
 
 ## Rules for changes
 
-- One branch per task, named after the spec in `specs/`.
-- Tests first: write or update the tests from the brief's expected outcomes, have them reviewed, then implement. Never weaken, skip or delete a test to make it pass; if a test is wrong, fix it against the brief and say so.
-- A rejected action must not write anything. Every rule check happens in `logic.py` before `db.py` is called.
-- Finish with `uv run pytest` output, the list of changed files, and how to check the change in the running app, including stopping and restarting it.
-- Every claim about the code comes with file and line.
+- Work on a branch, merge when the tests pass.
+- Write the test first and state the expected result from the brief. Never weaken a test to get green output.
+- Check changes to pages in a browser, on a phone-sized window too.
+- Keep the code readable for someone who did not write it: every team member is asked about it in the walkthrough.
+
+## Privacy, no exceptions
+
+Student numbers and other students' ECTS are never read, sent, stored or printed. `data/raw/` is never committed. Room distribution lists are never downloaded.

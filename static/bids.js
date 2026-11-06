@@ -99,7 +99,7 @@ function courseCard(rows, plan, listName, index, total) {
     el("div", { class: "bid-course-top" },
       el("span", { class: "tag num", text: String(index + 1) }),
       el("a", { class: "course-name grow", href: `/course/${first.offering_id}`, text: first.name }),
-      el("span", { class: "tag num", text: `${first.term} · ${first.ects}` }),
+      el("span", { class: "tag num", text: `${first.term} · ${first.ects} ECTS` }),
       moveButton("up", "Higher priority", "M8 13V3M3.5 7.5 8 3l4.5 4.5"),
       moveButton("down", "Lower priority", "M8 3v10M3.5 8.5 8 13l4.5-4.5"),
       el("button", { type: "button", class: "btn small", onclick: () => Lance.send("/api/move", { item_id: first.id, list: other }) }, `To ${other}`)),

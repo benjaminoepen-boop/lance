@@ -19,3 +19,9 @@ document.getElementById("send").addEventListener("click", async () => {
   document.getElementById("coverage-text").textContent = `${answer.coverage.covered} of ${answer.coverage.total}`;
   document.getElementById("coverage-bar").style.width = `${answer.coverage.percent}%`;
 });
+
+/* The button only works from the bookmarks bar, on the platform's page. */
+document.querySelector("[data-bookmarklet]").addEventListener("click", (event) => {
+  event.preventDefault();
+  Lance.toast("Drag this button to your bookmarks bar, then use it on the platform.");
+});

@@ -1,91 +1,48 @@
-# Festival Architect
+# Lance
 
-Solo project for Introduction to Programming (Nova SBE 2026/27), Block 2, Product 03.
+Plan your Nova SBE course bidding: see every clash before you bid, what a seat cost last round, and what your bid will really cost.
 
-A one-day planner for **Carcavelos Sound**: two stages (Beach Stage, Dune Stage), eight fictional artists, 14:00–23:00, €10,000 artist budget. The organiser books artists, sees the timetable and budget, moves or removes bookings, and finalises the plan. The brief is in `docs/product-brief.md`.
+*Lance* is Portuguese for a bid. Team project for Introduction to Programming, Nova SBE 2026/27. It grew out of the solo project Festival Architect (see the history of this repository): a stage became a student's week, an artist a course section, a fee a bid, the festival budget the points balance. Not an official Nova SBE system; bids are placed on Nova's platform only.
 
 ## Run it
 
 ```
-uv run streamlit run app.py
+uv sync
+uv run flask --app app run --port 8770
 ```
 
-The first start creates `data/festival.db` from `seed/`. After that the app keeps whatever was saved.
+Open http://127.0.0.1:8770 and press *Load an example*, or pick sections on the left.
+
+## Test it
 
 ```
-uv run python seed.py     # start over: empty lineup, plan back to draft
-uv run pytest             # 27 tests, all green
+uv run pytest
 ```
 
-## How it works
+The tests run on a throwaway database built from the real data. `tests/test_real_accounts.py` checks the money against two real bidding accounts from Fall 2026.
 
-**State.** Two kinds of data live in `data/festival.db`:
+## How it is built
 
-| | Tables | Changes? |
-|---|---|---|
-| Fixed content | `stages`, `artists` (from `seed/*.csv`) | never by the app |
-| Organiser's progress | `bookings` (artist, stage, start), `plan` (draft or final) | on every accepted action |
-
-A booking stores only the **start**. The end is always calculated: start + the artist's duration (`logic.end_time`). Nothing can get out of sync. `bookings.artist_id` is the primary key, so the database itself also refuses a second booking for the same artist.
-
-**One click, three files.** Pressing *Book* runs:
-
-1. `app.py` `show_booking` reads artist, stage and start and calls `logic.add_booking`.
-2. `logic.py` `add_booking` refuses straight away if the plan is final. Otherwise `booking_problems` checks every rule and returns the reasons it is refused.
-3. Only when that list is empty does `db.py` `insert_booking` write the row. A refused booking writes nothing.
-4. Back in `app.py`, `finish_click` remembers the outcome and redraws the page, so the timetable and budget show the saved data, with the message under the button.
-
-**Edits are replacements (FA R5).** `move_booking` checks the new slot against all bookings *except* the artist's own (`without`). So shifting a set by 30 minutes does not clash with its old slot, and the fee is not counted twice.
-
-**The look.** Colours, fonts and radii are set in `.streamlit/config.toml`; white cards, the timeline and the artist cards in `style.css`. `app.py` only decides what goes where: a card is a `st.container` whose key starts with `card`, and the timeline is plain HTML built from `logic.timetable` (`timeline_html`, where `position` turns a time into a percentage of the festival day).
-
-**Persistence.** Every accepted action is written to SQLite immediately (`db.execute` commits). The app holds no state of its own between clicks; every screen reads from the database. Stopping and restarting the app therefore shows exactly what was saved.
-
-## Where each rule lives
-
-| Rule | Code |
+| File | What lives there |
 |---|---|
-| FA R1 one booking per artist, fee once | `booking_problems` (first loop), `total_fees` |
-| FA R2 14:00–23:00 | `inside_festival_hours` |
-| FA R2 no overlap on a stage, touching allowed | `overlaps` (`<`, not `<=`) |
-| FA R3 same time on different stages | `booking_problems` skips other stages |
-| FA R4 budget, exactly €10,000 allowed | `within_budget` (`<=`) |
-| FA R5 edits as replacements, final is read-only | `move_booking` + `without`, `is_final` checks in every action |
-| FA05 finalise needs 4 artists and a valid lineup | `finalise`, `lineup_problems` |
+| `app.py` | The screens: every address the browser can ask for |
+| `logic.py` | The rules: clashes, prices, points, ratings, shared price data |
+| `db.py` | Storage: one SQLite file, no rules |
+| `templates/`, `static/` | What the pages look like; JavaScript only draws what `logic.py` answers |
+| `seed/` | The content: courses, sections, sessions, exams and past prices |
+| `scripts/` | How the content is made from Nova's PDFs (`docs/data.md`) |
+| `tests/` | One test file per group of rules |
+| `docs/product-brief.md` | Requirements, rules and acceptance scenarios |
 
-## Acceptance scenarios and their tests
+Content and progress are separate: `seed/` is rebuilt into the database whenever it changes; plans, ratings and shared prices are never touched by that.
 
-| Brief | Test in `tests/test_acceptance.py` |
-|---|---|
-| A1 same stage conflict | `test_a1_overlap_on_the_same_stage_is_refused`, `test_a1_starting_when_the_previous_set_ends_is_accepted` |
-| A2 different stages | `test_a2_same_time_on_different_stages_is_accepted` |
-| A3 festival boundaries | `test_a3_sixty_minute_set_at_the_edges_of_the_day` |
-| A4 budget and duplicates | `test_a4_spending_exactly_the_budget_is_accepted`, `test_a4_one_euro_over_the_budget_is_refused`, `test_a4_an_artist_already_booked_is_refused_on_any_stage` |
-| A5 edit and remove | `test_a5_*` (conflicting edit, valid edit, replacement, fee not charged twice, removal) |
-| A6 save and finalise | `test_a6_*` here, plus restart tests in `tests/test_app.py` |
+## Deploy it
 
-`tests/test_rules.py` checks the calculations alone (times, overlaps, budget boundary). `tests/test_app.py` clicks through the screens with Streamlit's AppTest; a new AppTest is a fresh start of the app. Every test gets its own throwaway database (`tests/conftest.py`), so `data/` is never touched.
-
-## Try it by hand (A1 and restart)
-
-1. *Book an artist*: The Tidewaters, Beach Stage, 16:00 → booked 16:00–17:00, budget left €6,500.
-2. Os Gaivotas, Beach Stage, 16:30 → refused: clashes with The Tidewaters.
-3. Os Gaivotas, Beach Stage, 17:00 → booked.
-4. Stop the app (Ctrl+C in the terminal) and start it again → both bookings and €5,000 left are still there.
-
-## Folder map
+Any host that runs a container and keeps one folder across restarts:
 
 ```
-app.py            the three screens: Timetable, Book an artist, Change a booking
-style.css         cards, timeline, artist cards, sidebar list
-.streamlit/       config.toml: theme colours, font, radius
-logic.py          the rules: times, clashes, budget, add / move / remove, finalise / reopen
-db.py             the only file that talks to SQLite: schema, seed, fetch, execute
-seed.py           uv run python seed.py -> fresh database
-seed/             fixed content: stages.csv, artists.csv
-data/festival.db  the live database (not in git)
-docs/             product brief (copy of the BRD)
-specs/            first-feature.md, the spec the build started from
-tests/            rules, acceptance scenarios A1–A6, screens
-AGENTS.md         how a coding agent should work in this repo
+docker build -t lance .
+docker run -p 8000:8000 -v lance-data:/data lance
 ```
+
+`LANCE_DB` sets where the database file lives.

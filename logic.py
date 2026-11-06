@@ -565,6 +565,28 @@ def warnings_for(plan, items):
     return found
 
 
+# A real plan from Fall 2026, with real bids: section, list, bid.
+EXAMPLE_PLAN = [
+    ("2459-S1-TXC", "mandatory", None), ("2581-S1-TXC", "mandatory", None),
+    ("2966-T1-TXC", "mandatory", None), ("2463-T2-TXE", "mandatory", None),
+    ("2477-S1-TXB", "primary", 164), ("2477-S1-TXA", "primary", 164), ("2477-S1-TXC", "primary", 164),
+    ("2277-T2-TXB", "primary", 1), ("2277-T2-TXA", "primary", 1),
+    ("2652-S1-TXA", "alternate", 33), ("2416-T1-TXA", "alternate", 1),
+]
+
+
+def load_example(plan):
+    """Fill an empty plan with an example, so that a first visit shows what the tool does."""
+    if plan_items(plan):
+        return "Your plan already has courses."
+    db.update_plan(plan["id"], "Management", "Fall", 165, False)
+    positions = defaultdict(int)
+    for section_id, list_name, bid in EXAMPLE_PLAN:
+        positions[list_name] += 1
+        db.insert_item(plan["id"], all_sections()[section_id]["offering_id"], section_id, list_name, positions[list_name], bid)
+    return None
+
+
 def state_of(plan):
     """Everything the planner and the bids page show, as one dict."""
     items = plan_items(plan)

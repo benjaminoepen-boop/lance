@@ -67,7 +67,7 @@ function courseCard(course, state) {
   return el("article", { class: `course${planned ? " in-plan" : ""}` },
     el("div", { class: "course-top" },
       el("a", { class: "course-name", href: `/course/${course.id}`, text: course.name }),
-      el("span", { class: "tag num", text: `${course.term} · ${course.ects}` })),
+      el("span", { class: "tag num", text: `${course.term} · ${course.ects} ECTS` })),
     meta,
     warning ? el("div", { class: "small", style: "color:var(--red)", text: `Exam clash with ${warning.join(", ")}` }) : null,
     row);
@@ -115,7 +115,7 @@ function renderTermFilter() {
   box.replaceChildren(...["all", ...terms].map((term) => el("button", {
     type: "button",
     class: `chip${view.term === term ? " on" : ""}`,
-    onclick: () => { view.term = term; renderTermFilter(); renderCourses(Lance.state); },
+    onclick: () => { view.term = term; renderTermFilter(); if (Lance.state) renderCourses(Lance.state); },
   }, term === "all" ? "All terms" : term)));
 }
 
@@ -303,6 +303,19 @@ function renderExams(state) {
   }));
 }
 
+function renderStart(state) {
+  const card = document.getElementById("week-card");
+  let start = card.querySelector(".start-note");
+  const empty = !state.items.length && state.plan.semester === "Fall";
+  if (empty && !start) {
+    start = el("div", { class: "start-note", style: "display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:12px" },
+      el("span", { class: "muted", text: "Pick a section on the left, or start from a real plan." }),
+      el("button", { type: "button", class: "btn small", onclick: async () => { await Lance.send("/api/example", {}); document.dispatchEvent(new Event("lance:catalogue")); } }, "Load an example"));
+    card.insertBefore(start, card.querySelector(".week"));
+  }
+  if (!empty && start) start.remove();
+}
+
 function renderSpringNote(state) {
   const card = document.getElementById("week-card");
   const spring = state.plan.semester === "Spring";
@@ -327,26 +340,29 @@ async function loadCatalogue() {
 function render(state) {
   renderWeekTabs(state);
   renderCourses(state);
+  renderStart(state);
   renderSpringNote(state);
   renderWeek(state);
   renderClashes(state);
   renderExams(state);
 }
 
+/* Filters can be touched while the page is still loading: the list then simply draws them on arrival. */
+const redrawCourses = () => { if (Lance.state) renderCourses(Lance.state); };
 document.getElementById("search").addEventListener("input", (event) => {
   view.query = event.target.value.trim();
-  renderCourses(Lance.state);
+  redrawCourses();
 });
 document.getElementById("fits").addEventListener("change", (event) => {
   view.fits = event.target.checked;
-  renderCourses(Lance.state);
+  redrawCourses();
 });
 document.getElementById("filter-kind").addEventListener("click", (event) => {
   const button = event.target.closest("[data-kind]");
   if (!button) return;
   view.kind = button.dataset.kind;
   document.querySelectorAll("#filter-kind .chip").forEach((chip) => chip.classList.toggle("on", chip === button));
-  renderCourses(Lance.state);
+  redrawCourses();
 });
 document.querySelectorAll("[data-view]").forEach((button) => {
   button.addEventListener("click", () => {

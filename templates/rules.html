@@ -7,7 +7,7 @@
   <h2>Dates</h2>
   <div class="date-grid">
     {% for row in calendar %}
-    <div class="date {{ 'window' if row.is_window }}"><b>{{ row.label }}</b><span class="small muted num">{{ row.first_label }} – {{ row.last_label }}</span></div>
+    <div class="date {{ 'window' if row.is_window }} {{ 'past' if row.last_day < today }}"><b>{{ row.label }}</b><span class="small muted num">{{ row.first_label }} – {{ row.last_label }}</span></div>
     {% endfor %}
   </div>
   <p class="small faint" style="margin-top:8px">Nova's academic calendar 2026/27, last update 29/04/2026. Nova notes it "may be subject to last minute changes".</p>

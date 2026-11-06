@@ -4,6 +4,7 @@ Run:  uv run flask --app app run --port 8770
 """
 import json
 import os
+from datetime import date
 from urllib.parse import quote
 
 from flask import Flask, Response, abort, jsonify, make_response, redirect, render_template, request, url_for
@@ -93,7 +94,7 @@ def rate(offering_id):
 @app.route("/rules")
 def rules():
     plan, is_new = current_plan()
-    return page("rules.html", plan, is_new, active="rules", calendar=calendar_rows())
+    return page("rules.html", plan, is_new, active="rules", calendar=calendar_rows(), today=date.today().isoformat())
 
 
 @app.route("/share")
@@ -197,6 +198,13 @@ def api_settings():
     data = payload()
     error = logic.update_settings(plan, data.get("programme", plan["programme"]), data.get("semester", plan["semester"]),
                                   data.get("points", plan["points"]), bool(data.get("has_bonus", plan["has_bonus"])))
+    return answer(db.load_plan(plan["id"]), error)
+
+
+@app.route("/api/example", methods=["POST"])
+def api_example():
+    plan, _ = current_plan()
+    error = logic.load_example(plan)
     return answer(db.load_plan(plan["id"]), error)
 
 
