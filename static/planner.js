@@ -98,7 +98,7 @@ function renderCourses(state) {
     return;
   }
   let group = null;
-  const titles = { mandatory: "Mandatory for your programme", elective: "Electives", outside: "Outside your programme" };
+  const titles = { mandatory: "Mandatory: pick the ones Nova assigned you", elective: "Electives", outside: "Outside your programme" };
   shown.forEach((course) => {
     if (course.kind !== group) {
       group = course.kind;

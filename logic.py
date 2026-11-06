@@ -173,7 +173,7 @@ def class_clashes(items):
 def exam_clashes(items):
     """LN R2: exams that overlap (the platform blocks these) and midterms that overlap (it does not check them)."""
     offerings = []
-    for offering_id in {item["offering_id"] for item in items}:
+    for offering_id in sorted({item["offering_id"] for item in items}):
         offerings.append(all_offerings()[offering_id])
     clashes = []
     for i, first in enumerate(offerings):
@@ -199,7 +199,7 @@ def midterm_class_clashes(items):
     """LN R2: a midterm of one course during a class of another. The platform does not check these either."""
     clashes = []
     entries = chosen_sections(items)
-    for offering_id in {item["offering_id"] for item in items}:
+    for offering_id in sorted({item["offering_id"] for item in items}):
         offering = all_offerings()[offering_id]
         for exam in regular_exams(offering):
             if exam["kind"] != "midterm":

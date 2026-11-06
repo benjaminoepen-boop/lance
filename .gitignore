@@ -8,3 +8,4 @@ data/
 # Nova documents stay local: raw PDFs are never committed
 data/raw/
 .gstack/
+preview/out/

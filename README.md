@@ -36,6 +36,10 @@ The tests run on a throwaway database built from the real data. `tests/test_real
 
 Content and progress are separate: `seed/` is rebuilt into the database whenever it changes; plans, ratings and shared prices are never touched by that.
 
+## Show it without a server
+
+`preview/build_preview.py` renders the real pages into a static folder that works from a plain link. Its rules run in the browser (`preview/lance-local.js`), and `preview/check_parity.py` compares them with `logic.py` on whole plans. This folder is a sharing aid, not part of the app.
+
 ## Deploy it
 
 Any host that runs a container and keeps one folder across restarts:
