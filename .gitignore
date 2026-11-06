@@ -4,3 +4,7 @@ __pycache__/
 .pytest_cache/
 # the live database: rebuilt from seed/ on first start, never committed
 data/
+
+# Nova documents stay local: raw PDFs are never committed
+data/raw/
+.gstack/

@@ -1,0 +1,795 @@
+period,programme,code,name,section,day,start,end,room,lecturer,colour
+T1,14 Economics,2772,Research Methods for Finance,TXA,Mon,08:00,09:30,B.0.04,Zeshu Xu,yellow
+T1,14 Economics,2772,Research Methods for Finance,TXB,Mon,09:30,11:00,B.0.04,Zeshu Xu,yellow
+T1,14 Economics,2174,Macroeconomic Analysis,TXA,Mon,11:00,12:30,B.0.10,Miguel Lebre de Freitas,blue
+T1,14 Economics,2188,Microeconomic Analysis,TXA,Mon,12:30,14:00,B.0.10,Mateus Souza,blue
+T1,14 Economics,2233,Macroeconomics of Financial Markets,TXA,Mon,15:30,17:00,D.-1.07,André de Castro Silva,yellow
+T1,14 Economics,2243,Real Estate Finance,TXA,Mon,08:00,11:00,D.-1.05,João Pedra Soares,yellow
+T1,14 Economics,2174,Macroeconomic Analysis,TXA,Tue,09:30,11:00,B.0.10,Miguel Lebre de Freitas,blue
+T1,14 Economics,2175,Econometrics,TXA,Tue,11:00,12:30,B.0.10,Paulo M. M. Rodrigues,blue
+T1,14 Economics,2257,Futures and Options,TXA,Tue,12:30,14:00,D.-1.05,João Amaro de Matos,yellow
+T1,14 Economics,2477,Introduction to Programming,TXC,Tue,15:30,17:00,D.-1.10,Ricardo Pereira,yellow
+T1,14 Economics,2477,Introduction to Programming,TXB,Tue,12:30,14:00,B.0.04,Ricardo Pereira,yellow
+T1,14 Economics,2238,Financial Reporting,TXA,Tue,15:30,18:30,B.0.09,Camillo Riva,yellow
+T1,14 Economics,2772,Research Methods for Finance,TXA,Wed,08:00,09:30,D.-1.04,Zeshu Xu,yellow
+T1,14 Economics,2772,Research Methods for Finance,TXB,Wed,09:30,11:00,D.-1.04,Zeshu Xu,yellow
+T1,14 Economics,2175,Econometrics,TXA,Wed,11:00,12:30,B.0.10,Paulo M. M. Rodrigues,blue
+T1,14 Economics,2188,Microeconomic Analysis,TXA,Wed,12:30,14:00,B.0.10,Mateus Souza,blue
+T1,14 Economics,2229,Investments,TXD,Wed,15:30,17:00,B.0.02,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,14 Economics,2229,Investments,TXB,Wed,17:00,18:30,B.0.02,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,14 Economics,2240,Financial Intermediation,TXA,Wed,18:30,21:30,D.-1.05,Carla Rebelo,yellow
+T1,14 Economics,2206,Banking,TXA,Wed,08:00,09:30,D.-1.06,Ana Lacerda,yellow
+T1,14 Economics,2257,Futures and Options,TXA,Wed,09:30,11:00,D.-1.06,João Amaro de Matos,yellow
+T1,14 Economics,2193,Behavioral Economics and Finance,TXA,Wed,15:30,18:30,D.-1.12,Pedro Pires,yellow
+T1,14 Economics,2652,Fundamentals on Environment and Sustainability,TXA,Wed,15:30,18:30,D.0.04,Francisco Ferreira,yellow
+T1,14 Economics,2229,Investments,TXC,Thu,08:00,09:30,D.-1.11,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,14 Economics,2229,Investments,TXD,Thu,15:30,17:00,B.0.08,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,14 Economics,2128,Competition Policy,TXA,Thu,08:00,11:00,D.-1.05,Rúben Bento,yellow
+T1,14 Economics,2233,Macroeconomics of Financial Markets,TXA,Thu,15:30,17:00,B.0.09,André de Castro Silva,yellow
+T1,14 Economics,2229,Investments,TXC,Fri,08:00,09:30,D.-1.13,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,14 Economics,2229,Investments,TXB,Fri,09:30,11:00,D.-1.13,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,14 Economics,2278,Sustainable Finance,TXB,Fri,11:00,14:00,D.-1.10,Rodrigo Tavares,yellow
+T1,14 Economics,2176,Development Economics,TXA,Fri,15:30,18:30,D.-1.10,Pedro Vicente,yellow
+T1,14 Economics,2206,Banking,TXA,Fri,08:00,09:30,D.-1.06,Ana Lacerda,yellow
+T1,14 Economics,2278,Sustainable Finance,TXA,Fri,08:00,11:00,D.-1.10,Rodrigo Tavares,yellow
+T1,15 Management,2389,Customer Relationship Management,TXA,Mon,08:00,11:00,D.- 1.04,Elizabete Cardoso,yellow
+T1,15 Management,2431,Marketing Management,TXD,Mon,11:00,12:30,B.0.04,"Daniela Schmitt, Fan Zhang, Miguel Pinto Fernandes","0.74,0.99,0.79"
+T1,15 Management,2431,Marketing Management,TXE,Mon,12:30,14:00,B.0.04,"Daniela Schmitt, Fan Zhang, Miguel Pinto Fernandes","0.74,0.99,0.79"
+T1,15 Management,2431,Marketing Management,TXH,Mon,15:30,17:00,D.- 1.06,"Daniela Schmitt, Fan Zhang, Miguel Pinto Fernandes","0.74,0.99,0.79"
+T1,15 Management,2431,Marketing Management,TXF,Mon,17:00,18:30,D.- 1.06,"Daniela Schmitt, Fan Zhang, Miguel Pinto Fernandes","0.74,0.99,0.79"
+T1,15 Management,2689,Hospitality Trends,TXA,Mon,08:00,11:00,D.- 1.10,Sérgio Guerreiro,yellow
+T1,15 Management,2229,Investments,TXG,Mon,11:00,12:30,D.- 1.04,Martijn Boons,orange
+T1,15 Management,2229,Investments,TXH,Mon,12:30,14:00,D.- 1.04,Martijn Boons,orange
+T1,15 Management,2485,Innovation and Value Creation Wheel,TXA,Mon,15:30,18:30,D.0.05,Luís Lages,yellow
+T1,15 Management,2446,Small Business Management,TXA,Mon,08:00,11:00,D.-1.07,Nuno Vasconcellos e Sá,yellow
+T1,15 Management,2484,Corporate Strategy and Transformation,TXA,Mon,11:00,14:00,D.-1.05,Roberto Ragozzino,yellow
+T1,15 Management,2327,Brand Management,TXA,Mon,15:30,18:30,D.-1.12,Sofia Kousi,yellow
+T1,15 Management,2460,Strategy Consulting,TXA,Mon,08:00,11:00,D.0.04,Constança Casquinho,yellow
+T1,15 Management,2338,International Business,TXA,Mon,11:00,14:00,D.-1.10,Emanuel Gomes,yellow
+T1,15 Management,2338,International Business,TXB,Mon,15:30,18:30,D.- 1.10,Emanuel Gomes,yellow
+T1,15 Management,2375,Corporate Social Responsibility,TXA,Mon,09:30,11:00,D.-1.11,João Loureiro Rodrigues,yellow
+T1,15 Management,2971,Investor Relations & Global Disclosure,TXA,Mon,15:30,18:30,B.0.04,Mark Oberle,yellow
+T1,15 Management,2473,Negotiation,TXA,Mon,15:30,18:30,D.- 1.05,Luís Almeida Costa,yellow
+T1,15 Management,2229,Investments,TXF,Tue,08:00,09:30,D.- 1.06,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,15 Management,2584,Strategy,TXC,Tue,09:30,11:00,D.- 1.04,Afonso Almeida Costa,"0.74,0.99,0.79"
+T1,15 Management,2477,Introduction to Programming,TXA,Tue,11:00,12:30,B.0.04,Ricardo Pereira,yellow
+T1,15 Management,2257,Futures and Options,TXA,Tue,12:30,14:00,D.- 1.05,João Amaro de Matos,yellow
+T1,15 Management,2477,Introduction to Programming,TXC,Tue,15:30,17:00,D.- 1.10,Ricardo Pereira,yellow
+T1,15 Management,2459,Advanced Strategy,TXI,Tue,17:00,18:30,D.- 1.05,José Campino,"0.74,0.99,0.79"
+T1,15 Management,2582,Competitive Strategy: an analytical approach,TXA,Tue,18:30,20:00,D.- 1.06,Vasco Santos,yellow
+T1,15 Management,2792,AI in Organizations,TXA,Tue,08:00,11:00,D.- 1.07,Milton de Sousa,yellow
+T1,15 Management,2584,Strategy,TXA,Tue,11:00,12:30,D.- 1.04,Afonso Almeida Costa,"0.74,0.99,0.79"
+T1,15 Management,2477,Introduction to Programming,TXB,Tue,12:30,14:00,B.0.04,Ricardo Pereira,yellow
+T1,15 Management,2459,Advanced Strategy,TXH,Tue,15:30,17:00,D.- 1.05,José Campino,"0.74,0.99,0.79"
+T1,15 Management,2698,Management Consulting,TXA,Tue,17:00,18:30,D.0.05,Marco Berti,yellow
+T1,15 Management,2352,Quality Management,TXA,Tue,18:30,20:00,D.- 1.04,Ana Sofia Costa,yellow
+T1,15 Management,2229,Investments,TXA,Tue,09:30,11:00,D.- 1.06,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,15 Management,2459,Advanced Strategy,TXB,Tue,11:00,12:30,D.- 1.07,Marco Galo,"0.74,0.99,0.79"
+T1,15 Management,2459,Advanced Strategy,TXD,Tue,12:30,14:00,D.- 1.07,Marco Galo,"0.74,0.99,0.79"
+T1,15 Management,2232,Applied Corporate Finance,TXB,Tue,15:30,18:30,B.0.02,Paulo Pinho,yellow
+T1,15 Management,2364,Venture Simulation,TXA,Tue,09:30,12:30,D.-1.05,António Marinho Torres,yellow
+T1,15 Management,2584,Strategy,TXB,Tue,12:30,14:00,D.-1.04,Afonso Almeida Costa,"0.74,0.99,0.79"
+T1,15 Management,2337,Integrated Marketing Communications,TXA,Tue,15:30,18:30,D.-1.12,Jorge Velosa,yellow
+T1,15 Management,2639,Entrepreneurial Strategy,TXA,Tue,11:00,14:00,B.0.03,Roberto Ragozzino,yellow
+T1,15 Management,2329,Consumer and Managerial Decision Making,TXA,Tue,15:30,18:30,D.-1.06,Luis Martinez,yellow
+T1,15 Management,2232,Applied Corporate Finance,TXA,Tue,11:00,14:00,D.-1.14,Paulo Pinho,yellow
+T1,15 Management,2643,Social Media Marketing,TXA,Tue,17:00,20:00,D.0.04,António Marinho Torres,yellow
+T1,15 Management,2329,Consumer and Managerial Decision Making,TXB,Tue,11:00,14:00,D.- 1.06,Luis Martinez,yellow
+T1,15 Management,2459,Advanced Strategy,TXE,Tue,12:30,14:00,D.- 1.11,José Campino,"0.74,0.99,0.79"
+T1,15 Management,2206,Banking,TXA,Wed,08:00,09:30,D.- 1.06,Ana Lacerda,yellow
+T1,15 Management,2257,Futures and Options,TXA,Wed,09:30,11:00,D.- 1.06,João Amaro de Matos,yellow
+T1,15 Management,2336,Human Resources Management,TXB,Wed,11:00,12:30,D.- 1.13,Filipa Rodrigues,"0.74,0.99,0.79"
+T1,15 Management,2613,Asian Brands,TXA,Wed,12:30,14:00,D.- 1.07,Andrew Harrison,yellow
+T1,15 Management,2229,Investments,TXD,Wed,15:30,17:00,B.0.02,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,15 Management,2229,Investments,TXB,Wed,17:00,18:30,B.0.02,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,15 Management,2698,Management Consulting,TXA,Wed,18:30,20:00,D.0.05,Marco Berti,yellow
+T1,15 Management,2414,Financial Management,TXD,Wed,08:00,09:30,B.0.02,Luís Barbosa,"0.74,0.99,0.79"
+T1,15 Management,2414,Financial Management,TXC,Wed,09:30,11:00,B.0.02,Luís Barbosa,"0.74,0.99,0.79"
+T1,15 Management,2584,Strategy,TXA,Wed,11:00,12:30,D.- 1.10,Afonso Almeida Costa,"0.74,0.99,0.79"
+T1,15 Management,2584,Strategy,TXC,Wed,12:30,14:00,D.- 1.10,Afonso Almeida Costa,"0.74,0.99,0.79"
+T1,15 Management,2454,Doing Business in China,TXA,Wed,15:30,17:00,D.- 1.07,Andrew Harrison,yellow
+T1,15 Management,2581,Advanced Financial Management,TXA,Wed,08:00,09:30,B.0.08,António Freitas Miguel,"0.74,0.99,0.79"
+T1,15 Management,2581,Advanced Financial Management,TXC,Wed,09:30,11:00,B.0.08,António Freitas Miguel,"0.74,0.99,0.79"
+T1,15 Management,2459,Advanced Strategy,TXC,Wed,11:00,12:30,D.- 1.12,Marco Galo,"0.74,0.99,0.79"
+T1,15 Management,2459,Advanced Strategy,TXJ,Wed,12:30,14:00,D.- 1.12,Marco Galo,"0.74,0.99,0.79"
+T1,15 Management,2376,Project Management,TXA,Wed,15:30,17:00,B.0.11,Paulo Faroleiro,yellow
+T1,15 Management,2416,Family Business,TXA,Wed,08:00,09:30,D.-1.10,Alexandre Dias da Cunha,yellow
+T1,15 Management,2584,Strategy,TXB,Wed,09:30,11:00,D.-1.10,Afonso Almeida Costa,"0.74,0.99,0.79"
+T1,15 Management,2229,Investments,TXE,Wed,11:00,12:30,D.-1.14,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,15 Management,2336,Human Resources Management,TXA,Wed,12:30,14:00,D.-1.13,Filipa Rodrigues,"0.74,0.99,0.79"
+T1,15 Management,2332,Entrepreneurship,TXA,Wed,15:30,18:30,D.-1.11,Nadim Habib,yellow
+T1,15 Management,2459,Advanced Strategy,TXA,Wed,09:30,11:00,D.-1.12,Marco Galo,"0.74,0.99,0.79"
+T1,15 Management,2229,Investments,TXG,Wed,11:00,12:30,D.- 1.06,Martijn Boons,orange
+T1,15 Management,2229,Investments,TXF,Wed,12:30,14:00,D.- 1.14,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,15 Management,2481,Product Design and Development,TXA,Wed,15:30,18:30,D.- 1.04,João Castro,yellow
+T1,15 Management,2581,Advanced Financial Management,TXB,Wed,11:00,12:30,B.0.08,António Freitas Miguel,"0.74,0.99,0.79"
+T1,15 Management,2229,Investments,TXH,Wed,12:30,14:00,D.- 1.06,Martijn Boons,orange
+T1,15 Management,2652,Fundamentals on Environment and Sustainability,TXA,Wed,15:30,18:30,D.0.04,Francisco Ferreira,yellow
+T1,15 Management,2481,Product Design and Development,TXB,Wed,11:00,14:00,D.-1.04,João Castro,yellow
+T1,15 Management,2327,Brand Management,TXB,Wed,15:30,18:30,D.- 1.05,Sofia Kousi,yellow
+T1,15 Management,2490,Geoeconomics and International Relations,TXA,Wed,15:30,18:30,B.0.10,Paulo Portas,yellow
+T1,15 Management,2967,Women in Leadership,TXA,Wed,15:30,18:30,B.0.03,Jenny Hoobler,yellow
+T1,15 Management,2229,Investments,TXC,Thu,08:00,09:30,D.- 1.11,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,15 Management,2613,Asian Brands,TXA,Thu,09:30,11:00,D.- 1.13,Andrew Harrison,yellow
+T1,15 Management,2229,Investments,TXD,Thu,15:30,17:00,B.0.08,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,15 Management,2459,Advanced Strategy,TXG,Thu,17:00,18:30,D.- 1.11,José Campino,"0.74,0.99,0.79"
+T1,15 Management,2352,Quality Management,TXA,Thu,18:30,20:00,D.-1.04,Ana Sofia Costa,yellow
+T1,15 Management,2966,Statistical Analysis,TXB,Thu,08:00,09:30,D.- 1.07,Ana Amaro,"0.74,0.99,0.79"
+T1,15 Management,2966,Statistical Analysis,TXC,Thu,09:30,11:00,D.- 1.07,Ana Amaro,"0.74,0.99,0.79"
+T1,15 Management,2459,Advanced Strategy,TXF,Thu,15:30,17:00,D.- 1.11,José Campino,"0.74,0.99,0.79"
+T1,15 Management,2431,Marketing Management,TXA,Thu,17:00,18:30,D.- 1.04,"Daniela Schmitt, Fan Zhang, Miguel Pinto Fernandes","0.74,0.99,0.79"
+T1,15 Management,2581,Advanced Financial Management,TXD,Thu,08:00,09:30,B.0.04,António Freitas Miguel,"0.74,0.99,0.79"
+T1,15 Management,2581,Advanced Financial Management,TXE,Thu,09:30,11:00,B.0.04,António Freitas Miguel,"0.74,0.99,0.79"
+T1,15 Management,2454,Doing Business in China,TXA,Thu,15:30,17:00,D.- 1.13,Andrew Harrison,yellow
+T1,15 Management,2414,Financial Management,TXA,Thu,08:00,09:30,D.- 1.06,Gonçalo Rocha,"0.74,0.99,0.79"
+T1,15 Management,2229,Investments,TXE,Thu,09:30,11:00,D.- 1.11,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,15 Management,2376,Project Management,TXA,Thu,15:30,17:00,D.- 1.07,Paulo Faroleiro,yellow
+T1,15 Management,2496,Strategic Foresight and Scenario Planning,TXB,Thu,08:00,11:00,B.1.27,António Alvarenga,yellow
+T1,15 Management,2431,Marketing Management,TXG,Thu,15:30,17:00,D.- 1.04,"Daniela Schmitt, Fan Zhang, Miguel Pinto Fernandes","0.74,0.99,0.79"
+T1,15 Management,2128,Competition Policy,TXA,Thu,08:00,11:00,D.- 1.05,Rúben Bento,yellow
+T1,15 Management,2496,Strategic Foresight and Scenario Planning,TXA,Thu,15:30,18:30,B.1.27,António Alvarenga,yellow
+T1,15 Management,2431,Marketing Management,TXJ,Thu,09:30,11:00,D.-1.06,"Daniela Schmitt, Fan Zhang, Miguel Pinto Fernandes","0.74,0.99,0.79"
+T1,15 Management,2448,Business Model Innovation,TXA,Thu,15:30,18:30,D.- 1.05,João Castro,yellow
+T1,15 Management,2648,Diversity & Inclusion,TXA,Thu,15:30,18:30,B.0.03,Jenny Hoobler,yellow
+T1,15 Management,2229,Investments,TXC,Fri,08:00,09:30,D.- 1.13,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,15 Management,2229,Investments,TXB,Fri,09:30,11:00,D.- 1.13,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,15 Management,2431,Marketing Management,TXI,Fri,11:00,12:30,B.0.03,"Daniela Schmitt, Fan Zhang, Miguel Pinto Fernandes","0.74,0.99,0.79"
+T1,15 Management,2336,Human Resources Management,TXD,Fri,12:30,14:00,D.- 1.06,Filipa Rodrigues,"0.74,0.99,0.79"
+T1,15 Management,2582,Competitive Strategy: an analytical approach,TXA,Fri,15:30,17:00,D.- 1.06,Vasco Santos,yellow
+T1,15 Management,2206,Banking,TXA,Fri,08:00,09:30,D.- 1.06,Ana Lacerda,yellow
+T1,15 Management,2336,Human Resources Management,TXE,Fri,09:30,11:00,D.- 1.06,Filipa Rodrigues,"0.74,0.99,0.79"
+T1,15 Management,2336,Human Resources Management,TXC,Fri,11:00,12:30,D.- 1.06,Filipa Rodrigues,"0.74,0.99,0.79"
+T1,15 Management,2416,Family Business,TXA,Fri,12:30,14:00,D.- 1.05,Alexandre Dias da Cunha,yellow
+T1,15 Management,2229,Investments,TXA,Fri,15:30,17:00,D.- 1.07,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,15 Management,2966,Statistical Analysis,TXA,Fri,08:00,09:30,B.0.10,Ana Amaro,"0.74,0.99,0.79"
+T1,15 Management,2966,Statistical Analysis,TXD,Fri,09:30,11:00,B.0.10,Ana Amaro,"0.74,0.99,0.79"
+T1,15 Management,2480,Digital Strategy and Transformation,TXA,Fri,11:00,14:00,D.0.05,Adam Tatarynowicz,yellow
+T1,15 Management,2618,Risk and Crisis Management,TXA,Fri,15:30,18:30,D.-1.05,Sérgio da Silva Pinto,yellow
+T1,15 Management,2421,Applied Entrepreneurship,TXA,Fri,08:00,11:00,B.0.04,Miguel Muñoz Duarte,yellow
+T1,15 Management,2639,Entrepreneurial Strategy,TXB,Fri,11:00,14:00,D.-1.07,Roberto Ragozzino,yellow
+T1,15 Management,2468,Technology Strategy,TXA,Fri,15:30,18:30,D.0.05,Adam Tatarynowicz,yellow
+T1,15 Management,2431,Marketing Management,TXC,Fri,09:30,11:00,B.0.03,"Daniela Schmitt, Fan Zhang, Miguel Pinto Fernandes","0.74,0.99,0.79"
+T1,15 Management,2431,Marketing Management,TXB,Fri,12:30,14:00,B.0.03,"Daniela Schmitt, Fan Zhang, Miguel Pinto Fernandes","0.74,0.99,0.79"
+T1,16 Finance,2772,Research Methods for Finance,TXA,Mon,08:00,09:30,B.0.04,Zeshu Xu,yellow
+T1,16 Finance,2772,Research Methods for Finance,TXB,Mon,09:30,11:00,B.0.04,Zeshu Xu,yellow
+T1,16 Finance,2229,Investments,TXG,Mon,11:00,12:30,D.-1.04,Martijn Boons,orange
+T1,16 Finance,2229,Investments,TXH,Mon,12:30,14:00,D.-1.04,Martijn Boons,orange
+T1,16 Finance,2233,Macroeconomics of Financial Markets,TXA,Mon,15:30,17:00,D.-1.07,André de Castro Silva,yellow
+T1,16 Finance,2260,Nova Students Portfolio,TXA,Mon,18:30,21:30,D.-1.05,"Gonçalo Ribeiro, Miguel Marecos Duarte",yellow
+T1,16 Finance,2243,Real Estate Finance,TXA,Mon,08:00,11:00,D.-1.05,João Pedra Soares,yellow
+T1,16 Finance,2338,International Business,TXA,Mon,11:00,14:00,D.-1.10,Emanuel Gomes,yellow
+T1,16 Finance,2338,International Business,TXB,Mon,15:30,18:30,D.-1.10,Emanuel Gomes,yellow
+T1,16 Finance,2460,Strategy Consulting,TXA,Mon,08:00,11:00,D.0.04,Constança Casquinho,yellow
+T1,16 Finance,2971,Investor Relations & Global Disclosure,TXA,Mon,15:30,18:30,B.0.04,Mark Oberle,yellow
+T1,16 Finance,2375,Corporate Social Responsibility,TXA,Mon,09:30,11:00,D.-1.11,João Loureiro Rodrigues,yellow
+T1,16 Finance,2229,Investments,TXF,Tue,08:00,09:30,D.-1.06,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,16 Finance,2229,Investments,TXA,Tue,09:30,11:00,D.-1.06,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,16 Finance,2477,Introduction to Programming,TXA,Tue,11:00,12:30,B.0.04,Ricardo Pereira,yellow
+T1,16 Finance,2257,Futures and Options,TXA,Tue,12:30,14:00,D.-1.05,João Amaro de Matos,yellow
+T1,16 Finance,2477,Introduction to Programming,TXC,Tue,15:30,17:00,D.-1.10,Ricardo Pereira,yellow
+T1,16 Finance,2253,Corporate Finance,TXE,Tue,17:00,18:30,D.-1.11,"Ekaterina Gavrilova, Rui Albuquerque",orange
+T1,16 Finance,2253,Corporate Finance,TXH,Tue,08:00,09:30,B.0.05,Rui Albuquerque,orange
+T1,16 Finance,2253,Corporate Finance,TXG,Tue,09:30,11:00,B.0.05,Rui Albuquerque,orange
+T1,16 Finance,2232,Applied Corporate Finance,TXA,Tue,11:00,14:00,D.-1.14,Paulo Pinho,yellow
+T1,16 Finance,2253,Corporate Finance,TXF,Tue,15:30,17:00,D.-1.11,"Ekaterina Gavrilova, Rui Albuquerque",orange
+T1,16 Finance,2768,Personal Finance,TXA,Tue,17:00,20:00,D.-1.10,Vinay Pranjivan,yellow
+T1,16 Finance,2253,Corporate Finance,TXD,Tue,09:30,12:30,D.-1.10,"Stefano Sacchetto, Tim Eisert",orange
+T1,16 Finance,2477,Introduction to Programming,TXB,Tue,12:30,14:00,B.0.04,Ricardo Pereira,yellow
+T1,16 Finance,2238,Financial Reporting,TXA,Tue,15:30,18:30,B.0.09,Camillo Riva,yellow
+T1,16 Finance,2238,Financial Reporting,TXB,Tue,11:00,14:00,B.0.09,Camillo Riva,yellow
+T1,16 Finance,2232,Applied Corporate Finance,TXB,Tue,15:30,18:30,B.0.02,Paulo Pinho,yellow
+T1,16 Finance,2253,Corporate Finance,TXB,Tue,15:30,18:30,B.0.04,"Stefano Sacchetto, Tim Eisert",orange
+T1,16 Finance,2772,Research Methods for Finance,TXA,Wed,08:00,09:30,D.-1.04,Zeshu Xu,yellow
+T1,16 Finance,2772,Research Methods for Finance,TXB,Wed,09:30,11:00,D.-1.04,Zeshu Xu,yellow
+T1,16 Finance,2229,Investments,TXE,Wed,11:00,12:30,D.-1.14,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,16 Finance,2229,Investments,TXF,Wed,12:30,14:00,D.-1.14,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,16 Finance,2229,Investments,TXD,Wed,15:30,17:00,B.0.02,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,16 Finance,2229,Investments,TXB,Wed,17:00,18:30,B.0.02,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,16 Finance,2240,Financial Intermediation,TXA,Wed,18:30,21:30,D.-1.05,Carla Rebelo,yellow
+T1,16 Finance,2206,Banking,TXA,Wed,08:00,09:30,D.-1.06,Ana Lacerda,yellow
+T1,16 Finance,2257,Futures and Options,TXA,Wed,09:30,11:00,D.-1.06,João Amaro de Matos,yellow
+T1,16 Finance,2229,Investments,TXG,Wed,11:00,12:30,D.-1.06,Martijn Boons,orange
+T1,16 Finance,2229,Investments,TXH,Wed,12:30,14:00,D.-1.06,Martijn Boons,orange
+T1,16 Finance,2454,Doing Business in China,TXA,Wed,15:30,17:00,D.-1.07,Andrew Harrison,yellow
+T1,16 Finance,2416,Family Business,TXA,Wed,08:00,09:30,D.-1.10,Alexandre Dias da Cunha,yellow
+T1,16 Finance,2253,Corporate Finance,TXC,Wed,11:00,14:00,B.0.09,"Stefano Sacchetto, Tim Eisert",orange
+T1,16 Finance,2193,Behavioral Economics and Finance,TXA,Wed,15:30,18:30,D.-1.12,Pedro Pires,yellow
+T1,16 Finance,2253,Corporate Finance,TXA,Wed,15:30,18:30,D.-1.06,"Stefano Sacchetto, Tim Eisert",orange
+T1,16 Finance,2229,Investments,TXC,Thu,08:00,09:30,D.-1.11,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,16 Finance,2229,Investments,TXE,Thu,09:30,11:00,D.-1.11,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,16 Finance,2229,Investments,TXD,Thu,15:30,17:00,B.0.08,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,16 Finance,2253,Corporate Finance,TXF,Thu,17:00,18:30,D.-1.06,"Ekaterina Gavrilova, Rui Albuquerque",orange
+T1,16 Finance,2253,Corporate Finance,TXG,Thu,08:00,09:30,B.0.03,Rui Albuquerque,orange
+T1,16 Finance,2253,Corporate Finance,TXH,Thu,09:30,11:00,B.0.03,Rui Albuquerque,orange
+T1,16 Finance,2233,Macroeconomics of Financial Markets,TXA,Thu,15:30,17:00,B.0.09,André de Castro Silva,yellow
+T1,16 Finance,2454,Doing Business in China,TXA,Thu,15:30,17:00,D.-1.13,Andrew Harrison,yellow
+T1,16 Finance,2253,Corporate Finance,TXE,Thu,15:30,17:00,D.-1.06,"Ekaterina Gavrilova, Rui Albuquerque",orange
+T1,16 Finance,2229,Investments,TXC,Fri,08:00,09:30,D.-1.13,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,16 Finance,2229,Investments,TXB,Fri,09:30,11:00,D.-1.13,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,16 Finance,2278,Sustainable Finance,TXB,Fri,11:00,14:00,D.-1.10,Rodrigo Tavares,yellow
+T1,16 Finance,2229,Investments,TXA,Fri,15:30,17:00,D.-1.07,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,16 Finance,2206,Banking,TXA,Fri,08:00,09:30,D.- 1.06,Ana Lacerda,yellow
+T1,16 Finance,2416,Family Business,TXA,Fri,12:30,14:00,D.-1.05,Alexandre Dias da Cunha,yellow
+T1,16 Finance,2278,Sustainable Finance,TXA,Fri,08:00,11:00,D.-1.10,Rodrigo Tavares,yellow
+T1,37 Business Analytics,2389,Customer Relationship Management,TXA,Mon,08:00,11:00,D.-1.04,Elizabete Cardoso,yellow
+T1,37 Business Analytics,2484,Corporate Strategy and Transformation,TXA,Mon,11:00,14:00,D.-1.05,Roberto Ragozzino,yellow
+T1,37 Business Analytics,2766,Introduction to Python for Data Analysis,TXB,Mon,15:30,18:30,D.-1.11,Yufei Shen,"0.56,0.74,0.55"
+T1,37 Business Analytics,2766,Introduction to Python for Data Analysis,TXA,Mon,09:30,12:30,D.-1.06,Yufei Shen,"0.56,0.74,0.55"
+T1,37 Business Analytics,2762,Digital Strategy and Markets,TXC,Mon,09:30,12:30,B.0.05,Rodrigo Belo,"0.56,0.74,0.55"
+T1,37 Business Analytics,2639,Entrepreneurial Strategy,TXA,Tue,11:00,14:00,B.0.03,Roberto Ragozzino,yellow
+T1,37 Business Analytics,2766,Introduction to Python for Data Analysis,TXC,Tue,15:30,18:30,D.-1.14,Yufei Shen,"0.56,0.74,0.55"
+T1,37 Business Analytics,2582,Competitive Strategy: an analytical approach,TXA,Tue,18:30,20:00,D.-1.06,Vasco Santos,yellow
+T1,37 Business Analytics,2771,Research Methods for Business Analytics,TXA,Tue,11:00,14:00,B.0.02,Patrícia Ramos,"0.56,0.74,0.55"
+T1,37 Business Analytics,2352,Quality Management,TXA,Tue,18:30,20:00,D.-1.04,Ana Sofia Costa,yellow
+T1,37 Business Analytics,2762,Digital Strategy and Markets,TXB,Tue,11:00,14:00,B.0.08,Rodrigo Belo,"0.56,0.74,0.55"
+T1,37 Business Analytics,2481,Product Design and Development,TXB,Wed,11:00,14:00,D.-1.04,João Castro,yellow
+T1,37 Business Analytics,2481,Product Design and Development,TXA,Wed,15:30,18:30,D.-1.04,João Castro,yellow
+T1,37 Business Analytics,2762,Digital Strategy and Markets,TXA,Wed,11:00,14:00,B.0.02,Rodrigo Belo,"0.56,0.74,0.55"
+T1,37 Business Analytics,2771,Research Methods for Business Analytics,TXC,Wed,15:30,18:30,D.-1.10,Patrícia Ramos,"0.56,0.74,0.55"
+T1,37 Business Analytics,2771,Research Methods for Business Analytics,TXB,Wed,11:00,14:00,B.0.03,Patrícia Ramos,"0.56,0.74,0.55"
+T1,37 Business Analytics,2496,Strategic Foresight and Scenario Planning,TXB,Thu,08:00,11:00,B.1.27,António Alvarenga,yellow
+T1,37 Business Analytics,2496,Strategic Foresight and Scenario Planning,TXA,Thu,15:30,18:30,B.1.27,António Alvarenga,yellow
+T1,37 Business Analytics,2352,Quality Management,TXA,Thu,18:30,20:00,D.-1.04,Ana Sofia Costa,yellow
+T1,37 Business Analytics,2128,Competition Policy,TXA,Thu,08:00,11:00,D.-1.05,Rúben Bento,yellow
+T1,37 Business Analytics,2448,Business Model Innovation,TXA,Thu,15:30,18:30,D.-1.05,João Castro,yellow
+T1,37 Business Analytics,2421,Applied Entrepreneurship,TXA,Fri,08:00,11:00,B.0.04,Miguel Muñoz Duarte,yellow
+T1,37 Business Analytics,2639,Entrepreneurial Strategy,TXB,Fri,11:00,14:00,D.-1.07,Roberto Ragozzino,yellow
+T1,37 Business Analytics,2582,Competitive Strategy: an analytical approach,TXA,Fri,15:30,17:00,D.-1.06,Vasco Santos,yellow
+T1,37 Business Analytics,2599,Project scoping,TXA,Fri,09:30,12:30,B.0.05,Lénia Mestrinho,yellow
+T1,37 Business Analytics,2468,Technology Strategy,TXA,Fri,15:30,18:30,D.0.05,Adam Tatarynowicz,yellow
+T1,38 Impact Entrepreneurship,2772,Research Methods for Finance,TXA,Mon,08:00,09:30,B.0.04,Zeshu Xu,yellow
+T1,38 Impact Entrepreneurship,2772,Research Methods for Finance,TXB,Mon,09:30,11:00,B.0.04,Zeshu Xu,yellow
+T1,38 Impact Entrepreneurship,2229,Investments,TXG,Mon,11:00,12:30,D.-1.04,Martijn Boons,orange
+T1,38 Impact Entrepreneurship,2229,Investments,TXH,Mon,12:30,14:00,D.-1.04,Martijn Boons,orange
+T1,38 Impact Entrepreneurship,2233,Macroeconomics of Financial Markets,TXA,Mon,15:30,17:00,D.-1.07,André de Castro Silva,yellow
+T1,38 Impact Entrepreneurship,2243,Real Estate Finance,TXA,Mon,08:00,11:00,D.-1.05,João Pedra Soares,yellow
+T1,38 Impact Entrepreneurship,2789,Firms and Markets,TXA,Mon,11:00,12:30,D.-1.11,Roberto Rocha,blue
+T1,38 Impact Entrepreneurship,2789,Firms and Markets,TXB,Mon,12:30,14:00,D.-1.11,Roberto Rocha,blue
+T1,38 Impact Entrepreneurship,2485,Innovation and Value Creation Wheel,TXA,Mon,15:30,18:30,D.0.05,Luís Lages,yellow
+T1,38 Impact Entrepreneurship,2389,Customer Relationship Management,TXA,Mon,08:00,11:00,D.-1.04,Elizabete Cardoso,yellow
+T1,38 Impact Entrepreneurship,2484,Corporate Strategy and Transformation,TXA,Mon,11:00,14:00,D.-1.05,Roberto Ragozzino,yellow
+T1,38 Impact Entrepreneurship,2338,International Business,TXB,Mon,15:30,18:30,D.-1.10,Emanuel Gomes,yellow
+T1,38 Impact Entrepreneurship,2689,Hospitality Trends,TXA,Mon,08:00,11:00,D.- 1.10,Sérgio Guerreiro,yellow
+T1,38 Impact Entrepreneurship,2338,International Business,TXA,Mon,11:00,14:00,D.-1.10,Emanuel Gomes,yellow
+T1,38 Impact Entrepreneurship,2473,Negotiation,TXA,Mon,15:30,18:30,D.-1.05,Luís Almeida Costa,yellow
+T1,38 Impact Entrepreneurship,2460,Strategy Consulting,TXA,Mon,08:00,11:00,D.0.04,Constança Casquinho,yellow
+T1,38 Impact Entrepreneurship,2375,Corporate Social Responsibility,TXA,Mon,09:30,11:00,D.-1.11,João Loureiro Rodrigues,yellow
+T1,38 Impact Entrepreneurship,2229,Investments,TXF,Tue,08:00,09:30,D.-1.06,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,38 Impact Entrepreneurship,2229,Investments,TXA,Tue,09:30,11:00,D.-1.06,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,38 Impact Entrepreneurship,2477,Introduction to Programming,TXA,Tue,11:00,12:30,B.0.04,Ricardo Pereira,yellow
+T1,38 Impact Entrepreneurship,2257,Futures and Options,TXA,Tue,12:30,14:00,D.-1.05,João Amaro de Matos,yellow
+T1,38 Impact Entrepreneurship,2477,Introduction to Programming,TXC,Tue,15:30,17:00,D.-1.10,Ricardo Pereira,yellow
+T1,38 Impact Entrepreneurship,2698,Management Consulting,TXA,Tue,17:00,18:30,D.0.05,Marco Berti,yellow
+T1,38 Impact Entrepreneurship,2582,Competitive Strategy: an analytical approach,TXA,Tue,18:30,20:00,D.-1.06,Vasco Santos,yellow
+T1,38 Impact Entrepreneurship,2364,Venture Simulation,TXA,Tue,09:30,12:30,D.-1.05,António Marinho Torres,yellow
+T1,38 Impact Entrepreneurship,2477,Introduction to Programming,TXB,Tue,12:30,14:00,B.0.04,Ricardo Pereira,yellow
+T1,38 Impact Entrepreneurship,2232,Applied Corporate Finance,TXB,Tue,15:30,18:30,B.0.02,Paulo Pinho,yellow
+T1,38 Impact Entrepreneurship,2352,Quality Management,TXA,Tue,18:30,20:00,D.-1.04,Ana Sofia Costa,yellow
+T1,38 Impact Entrepreneurship,2628,Entrepreneurship with Impact,TXA,Tue,09:30,12:30,B.0.11,John Herniman,blue
+T1,38 Impact Entrepreneurship,2789,Firms and Markets,TXA,Tue,12:30,14:00,B.0.05,Roberto Rocha,blue
+T1,38 Impact Entrepreneurship,2337,Integrated Marketing Communications,TXA,Tue,15:30,18:30,D.-1.12,Jorge Velosa,yellow
+T1,38 Impact Entrepreneurship,2789,Firms and Markets,TXB,Tue,11:00,12:30,B.0.05,Roberto Rocha,blue
+T1,38 Impact Entrepreneurship,2329,Consumer and Managerial Decision Making,TXA,Tue,15:30,18:30,D.-1.06,Luis Martinez,yellow
+T1,38 Impact Entrepreneurship,2639,Entrepreneurial Strategy,TXA,Tue,11:00,14:00,B.0.03,Roberto Ragozzino,yellow
+T1,38 Impact Entrepreneurship,2628,Entrepreneurship with Impact,TXB,Tue,15:30,18:30,D.-1.07,John Herniman,blue
+T1,38 Impact Entrepreneurship,2232,Applied Corporate Finance,TXA,Tue,11:00,14:00,D.- 1.14,Paulo Pinho,yellow
+T1,38 Impact Entrepreneurship,2643,Social Media Marketing,TXA,Tue,17:00,20:00,D.0.04,António Marinho Torres,yellow
+T1,38 Impact Entrepreneurship,2329,Consumer and Managerial Decision Making,TXB,Tue,11:00,14:00,D.-1.06,Luis Martinez,yellow
+T1,38 Impact Entrepreneurship,2768,Personal Finance,TXA,Tue,17:00,20:00,D.-1.10,Vinay Pranjivan,yellow
+T1,38 Impact Entrepreneurship,2772,Research Methods for Finance,TXA,Wed,08:00,09:30,D.-1.04,Zeshu Xu,yellow
+T1,38 Impact Entrepreneurship,2772,Research Methods for Finance,TXB,Wed,09:30,11:00,D.-1.04,Zeshu Xu,yellow
+T1,38 Impact Entrepreneurship,2229,Investments,TXE,Wed,11:00,12:30,D.-1.14,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,38 Impact Entrepreneurship,2613,Asian Brands,TXA,Wed,12:30,14:00,D.-1.07,Andrew Harrison,yellow
+T1,38 Impact Entrepreneurship,2229,Investments,TXD,Wed,15:30,17:00,B.0.02,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,38 Impact Entrepreneurship,2229,Investments,TXB,Wed,17:00,18:30,B.0.02,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,38 Impact Entrepreneurship,2698,Management Consulting,TXA,Wed,18:30,20:00,D.0.05,Marco Berti,yellow
+T1,38 Impact Entrepreneurship,2206,Banking,TXA,Wed,08:00,09:30,D.-1.06,Ana Lacerda,yellow
+T1,38 Impact Entrepreneurship,2257,Futures and Options,TXA,Wed,09:30,11:00,D.-1.06,João Amaro de Matos,yellow
+T1,38 Impact Entrepreneurship,2229,Investments,TXG,Wed,11:00,12:30,D.-1.06,Martijn Boons,orange
+T1,38 Impact Entrepreneurship,2229,Investments,TXH,Wed,12:30,14:00,D.-1.06,Martijn Boons,orange
+T1,38 Impact Entrepreneurship,2481,Product Design and Development,TXA,Wed,15:30,18:30,D.-1.04,João Castro,yellow
+T1,38 Impact Entrepreneurship,2240,Financial Intermediation,TXA,Wed,18:30,21:30,D.-1.05,Carla Rebelo,yellow
+T1,38 Impact Entrepreneurship,2416,Family Business,TXA,Wed,08:00,09:30,D.-1.10,Alexandre Dias da Cunha,yellow
+T1,38 Impact Entrepreneurship,2790,Financial Management for Entrepreneurs,TXB,Wed,09:30,11:00,D.-1.07,Fábio Santos,blue
+T1,38 Impact Entrepreneurship,2790,Financial Management for Entrepreneurs,TXA,Wed,11:00,12:30,D.-1.07,Fábio Santos,blue
+T1,38 Impact Entrepreneurship,2229,Investments,TXF,Wed,12:30,14:00,D.-1.14,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,38 Impact Entrepreneurship,2193,Behavioral Economics and Finance,TXA,Wed,15:30,18:30,D.-1.12,Pedro Pires,yellow
+T1,38 Impact Entrepreneurship,2481,Product Design and Development,TXB,Wed,11:00,14:00,D.-1.04,João Castro,yellow
+T1,38 Impact Entrepreneurship,2652,Fundamentals on Environment and Sustainability,TXA,Wed,15:30,18:30,D.0.04,Francisco Ferreira,yellow
+T1,38 Impact Entrepreneurship,2632,Opportunity Identification,TXB,Wed,11:00,14:00,B.0.05,Nadim Habib,blue
+T1,38 Impact Entrepreneurship,2490,Geoeconomics and International Relations,TXA,Wed,15:30,18:30,B.0.10,Paulo Portas,yellow
+T1,38 Impact Entrepreneurship,2229,Investments,TXC,Thu,08:00,09:30,D.-1.11,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,38 Impact Entrepreneurship,2613,Asian Brands,TXA,Thu,09:30,11:00,D.-1.13,Andrew Harrison,yellow
+T1,38 Impact Entrepreneurship,2229,Investments,TXD,Thu,15:30,17:00,B.0.08,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,38 Impact Entrepreneurship,2352,Quality Management,TXA,Thu,18:30,20:00,D.-1.04,Ana Sofia Costa,yellow
+T1,38 Impact Entrepreneurship,2496,Strategic Foresight and Scenario Planning,TXB,Thu,08:00,11:00,B.1.27,António Alvarenga,yellow
+T1,38 Impact Entrepreneurship,2233,Macroeconomics of Financial Markets,TXA,Thu,15:30,17:00,B.0.09,André de Castro Silva,yellow
+T1,38 Impact Entrepreneurship,2128,Competition Policy,TXA,Thu,08:00,11:00,D.-1.05,Rúben Bento,yellow
+T1,38 Impact Entrepreneurship,2496,Strategic Foresight and Scenario Planning,TXA,Thu,15:30,18:30,B.1.27,António Alvarenga,yellow
+T1,38 Impact Entrepreneurship,2229,Investments,TXE,Thu,09:30,11:00,D.-1.11,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,38 Impact Entrepreneurship,2448,Business Model Innovation,TXA,Thu,15:30,18:30,D.- 1.05,João Castro,yellow
+T1,38 Impact Entrepreneurship,2648,Diversity & Inclusion,TXA,Thu,15:30,18:30,B.0.03,Jenny Hoobler,yellow
+T1,38 Impact Entrepreneurship,2229,Investments,TXC,Fri,08:00,09:30,D.-1.13,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,38 Impact Entrepreneurship,2229,Investments,TXB,Fri,09:30,11:00,D.-1.13,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,38 Impact Entrepreneurship,2790,Financial Management for Entrepreneurs,TXA,Fri,11:00,12:30,D.-1.12,Fábio Santos,blue
+T1,38 Impact Entrepreneurship,2416,Family Business,TXA,Fri,12:30,14:00,D.-1.05,Alexandre Dias da Cunha,yellow
+T1,38 Impact Entrepreneurship,2582,Competitive Strategy: an analytical approach,TXA,Fri,15:30,17:00,D.-1.06,Vasco Santos,yellow
+T1,38 Impact Entrepreneurship,2206,Banking,TXA,Fri,08:00,09:30,D.-1.06,Ana Lacerda,yellow
+T1,38 Impact Entrepreneurship,2790,Financial Management for Entrepreneurs,TXB,Fri,09:30,11:00,D.-1.12,Fábio Santos,blue
+T1,38 Impact Entrepreneurship,2480,Digital Strategy and Transformation,TXA,Fri,11:00,14:00,D.0.05,Adam Tatarynowicz,yellow
+T1,38 Impact Entrepreneurship,2229,Investments,TXA,Fri,15:30,17:00,D.-1.07,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T1,38 Impact Entrepreneurship,2421,Applied Entrepreneurship,TXA,Fri,08:00,11:00,B.0.04,Miguel Muñoz Duarte,yellow
+T1,38 Impact Entrepreneurship,2278,Sustainable Finance,TXB,Fri,11:00,14:00,D.-1.10,Rodrigo Tavares,yellow
+T1,38 Impact Entrepreneurship,2618,Risk and Crisis Management,TXA,Fri,15:30,18:30,D.-1.05,Sérgio da Silva Pinto,yellow
+T1,38 Impact Entrepreneurship,2278,Sustainable Finance,TXA,Fri,08:00,11:00,D.- 1.10,Rodrigo Tavares,yellow
+T1,38 Impact Entrepreneurship,2639,Entrepreneurial Strategy,TXB,Fri,11:00,14:00,D.-1.07,Roberto Ragozzino,yellow
+T1,38 Impact Entrepreneurship,2176,Development Economics,TXA,Fri,15:30,18:30,D.- 1.10,Pedro Vicente,yellow
+T1,38 Impact Entrepreneurship,2632,Opportunity Identification,TXA,Fri,08:00,11:00,B.0.11,Nadim Habib,blue
+T1,38 Impact Entrepreneurship,2468,Technology Strategy,TXA,Fri,15:30,18:30,D.0.05,Adam Tatarynowicz,yellow
+T1,39 Public Policy,2741,Markets Incentives and Behavior,TXA,Mon,11:00,12:30,D.-1.07,Pedro Pires,"0.73,0.47,0.47"
+T1,39 Public Policy,2741,Markets Incentives and Behavior,TXB,Mon,12:30,14:00,D.-1.07,Pedro Pires,"0.73,0.47,0.47"
+T1,39 Public Policy,2473,Negotiation,TXA,Mon,15:30,18:30,D.-1.05,Luís Almeida Costa,yellow
+T1,39 Public Policy,2740,International Relations and Organizations,TXB,Mon,15:30,18:30,D.-1.04,"Ana Grifo, Madalena Resende","0.73,0.47,0.47"
+T1,39 Public Policy,2750,Management,TXB,Tue,09:30,11:00,D.-1.11,António Nogueira Leite,"0.73,0.47,0.47"
+T1,39 Public Policy,2750,Management,TXA,Tue,11:00,12:30,D.-1.11,António Nogueira Leite,"0.73,0.47,0.47"
+T1,39 Public Policy,2740,International Relations and Organizations,TXA,Tue,15:30,18:30,D.-1.04,"Ana Grifo, Madalena Resende","0.73,0.47,0.47"
+T1,39 Public Policy,2768,Personal Finance,TXA,Tue,17:00,20:00,D.-1.10,Vinay Pranjivan,yellow
+T1,39 Public Policy,2748,Statistics for Policy Action,TXA,Wed,09:30,11:00,D.-1.05,"Márcia Pereira, Maria João Braga","0.73,0.47,0.47"
+T1,39 Public Policy,2741,Markets Incentives and Behavior,TXA,Wed,11:00,12:30,B.0.11,Pedro Pires,"0.73,0.47,0.47"
+T1,39 Public Policy,2741,Markets Incentives and Behavior,TXB,Wed,12:30,14:00,B.0.11,Pedro Pires,"0.73,0.47,0.47"
+T1,39 Public Policy,2376,Project Management,TXA,Wed,15:30,17:00,B.0.11,Paulo Faroleiro,yellow
+T1,39 Public Policy,2748,Statistics for Policy Action,TXB,Wed,11:00,12:30,D.-1.05,"Márcia Pereira, Maria João Braga","0.73,0.47,0.47"
+T1,39 Public Policy,2193,Behavioral Economics and Finance,TXA,Wed,15:30,18:30,D.-1.12,Pedro Pires,yellow
+T1,39 Public Policy,2652,Fundamentals on Environment and Sustainability,TXA,Wed,15:30,18:30,D.0.04,Francisco Ferreira,yellow
+T1,39 Public Policy,2490,Geoeconomics and International Relations,TXA,Wed,15:30,18:30,B.0.10,Paulo Portas,yellow
+T1,39 Public Policy,2128,Competition Policy,TXA,Thu,08:00,11:00,D.-1.05,Rúben Bento,yellow
+T1,39 Public Policy,2376,Project Management,TXA,Thu,15:30,17:00,D.-1.07,Paulo Faroleiro,yellow
+T1,39 Public Policy,2750,Management,TXA,Fri,09:30,11:00,D.-1.04,António Nogueira Leite,"0.73,0.47,0.47"
+T1,39 Public Policy,2748,Statistics for Policy Action,TXA,Fri,11:00,12:30,D.-1.05,"Márcia Pereira, Maria João Braga","0.73,0.47,0.47"
+T1,39 Public Policy,2748,Statistics for Policy Action,TXB,Fri,09:30,11:00,D.-1.05,"Márcia Pereira, Maria João Braga","0.73,0.47,0.47"
+T1,39 Public Policy,2750,Management,TXB,Fri,11:00,12:30,D.-1.04,António Nogueira Leite,"0.73,0.47,0.47"
+T2,14 Economics,2194,History of Economic Analysis,TXA,Mon,09:30,11:00,D.-1.06,Francesco Franco,yellow
+T2,14 Economics,2174,Macroeconomic Analysis,TXA,Mon,11:00,12:30,B.0.10,Miguel Lebre de Freitas,blue
+T2,14 Economics,2188,Microeconomic Analysis,TXA,Mon,12:30,14:00,B.0.10,Mateus Souza,blue
+T2,14 Economics,2491,Data Visualization,TXB,Mon,15:30,17:00,D.-1.05,Qinlu Hu,yellow
+T2,14 Economics,2222,Financial Statement Analysis,TXA,Mon,17:00,18:30,D.-1.04,Marta Cota,yellow
+T2,14 Economics,2222,Financial Statement Analysis,TXB,Mon,18:30,20:00,D.-1.04,Marta Cota,yellow
+T2,14 Economics,2616,Cracking the Sales Code,TXA,Mon,09:30,11:00,B.0.02,Filipe Simões de Almeida,yellow
+T2,14 Economics,2222,Financial Statement Analysis,TXC,Mon,15:30,17:00,D.-1.04,Marta Cota,yellow
+T2,14 Economics,2491,Data Visualization,TXA,Mon,17:00,18:30,D.-1.05,Qinlu Hu,yellow
+T2,14 Economics,2745,Politics for Policy,TXB,Mon,15:30,18:30,D.-1.11,José Tavares,"0.73,0.47,0.47"
+T2,14 Economics,2174,Macroeconomic Analysis,TXA,Tue,09:30,11:00,B.0.10,Miguel Lebre de Freitas,blue
+T2,14 Economics,2175,Econometrics,TXA,Tue,11:00,12:30,B.0.10,Paulo M. M. Rodrigues,blue
+T2,14 Economics,2222,Financial Statement Analysis,TXA,Tue,12:30,14:00,D.-1.10,Marta Cota,yellow
+T2,14 Economics,2222,Financial Statement Analysis,TXB,Tue,15:30,17:00,B.0.11,Marta Cota,yellow
+T2,14 Economics,2222,Financial Statement Analysis,TXD,Tue,18:30,20:00,D.-1.04,Marta Cota,yellow
+T2,14 Economics,2616,Cracking the Sales Code,TXA,Tue,09:30,11:00,B.0.03,Filipe Simões de Almeida,yellow
+T2,14 Economics,2218,Derivatives,TXA,Tue,12:30,14:00,D.-1.05,João Amaro de Matos,yellow
+T2,14 Economics,2477,Introduction to Programming,TXC,Tue,15:30,17:00,D.-1.10,Ricardo Pereira,yellow
+T2,14 Economics,2477,Introduction to Programming,TXB,Tue,12:30,14:00,B.0.04,Ricardo Pereira,yellow
+T2,14 Economics,2796,Economics of the European Union,TXA,Tue,15:30,18:30,B.0.09,José Tavares,yellow
+T2,14 Economics,2206,Banking,TXA,Wed,08:00,09:30,D.-1.06,Ana Lacerda,yellow
+T2,14 Economics,2218,Derivatives,TXA,Wed,09:30,11:00,D.-1.06,João Amaro de Matos,yellow
+T2,14 Economics,2175,Econometrics,TXA,Wed,11:00,12:30,B.0.10,Paulo M. M. Rodrigues,blue
+T2,14 Economics,2188,Microeconomic Analysis,TXA,Wed,12:30,14:00,B.0.10,Mateus Souza,blue
+T2,14 Economics,2229,Investments,TXD,Wed,15:30,17:00,B.0.02,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,14 Economics,2222,Financial Statement Analysis,TXC,Wed,17:00,18:30,D.-1.11,Marta Cota,yellow
+T2,14 Economics,2240,Financial Intermediation,TXA,Wed,18:30,20:00,D.-1.05,Carla Rebelo,yellow
+T2,14 Economics,2277,Impact Investments,TXA,Wed,15:30,18:30,D.-1.13,Yasmine van der Straten,yellow
+T2,14 Economics,2222,Financial Statement Analysis,TXD,Wed,18:30,20:00,D.-1.11,Marta Cota,yellow
+T2,14 Economics,2493,Marketing Analytics,TXA,Wed,15:30,18:30,D.-1.12,Arash Laghaie,yellow
+T2,14 Economics,2622,Blockchain fundamentals,TXA,Wed,18:30,21:30,D.-1.04,Shayan Eskandari,yellow
+T2,14 Economics,2745,Politics for Policy,TXA,Wed,15:30,18:30,D.-1.04,José Tavares,"0.73,0.47,0.47"
+T2,14 Economics,2652,Fundamentals on Environment and Sustainability,TXA,Wed,15:30,18:30,D.0.04,Francisco Ferreira,yellow
+T2,14 Economics,2229,Investments,TXB,Wed,17:00,18:30,B.0.02,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,14 Economics,2229,Investments,TXC,Thu,08:00,09:30,D.-1.11,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,14 Economics,2215,Auditing,TXA,Thu,09:30,11:00,D.-1.10,"Gonçalo Silva, Mário Freire",yellow
+T2,14 Economics,2229,Investments,TXD,Thu,15:30,17:00,B.0.08,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,14 Economics,2240,Financial Intermediation,TXA,Thu,18:30,20:00,D.-1.06,Carla Rebelo,yellow
+T2,14 Economics,2621,Algorithmic governance,TXA,Thu,15:30,18:30,D.-1.05,Leid Zejnilovic,yellow
+T2,14 Economics,2277,Impact Investments,TXB,Thu,15:30,18:30,D.-1.13,Yasmine van der Straten,yellow
+T2,14 Economics,2229,Investments,TXC,Fri,08:00,09:30,D.-1.13,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,14 Economics,2229,Investments,TXB,Fri,09:30,11:00,D.-1.13,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,14 Economics,2194,History of Economic Analysis,TXA,Fri,11:00,12:30,B.0.04,Francesco Franco,yellow
+T2,14 Economics,2176,Development Economics,TXA,Fri,15:30,18:30,D.-1.10,Pedro Vicente,yellow
+T2,14 Economics,2206,Banking,TXA,Fri,08:00,09:30,D.-1.06,Ana Lacerda,yellow
+T2,14 Economics,2215,Auditing,TXA,Fri,09:30,11:00,D.-1.10,"Gonçalo Silva, Mário Freire",yellow
+T2,14 Economics,2236,Private Equity,TXA,Fri,11:00,14:00,B.0.11,Luís Mota Duarte,yellow
+T2,14 Economics,2649,Energy and Climate change,TXA,Fri,15:30,18:30,D.-1.04,Júlia Seixas,yellow
+T2,14 Economics,2691,Climate Finance,TXA,Fri,11:00,14:00,D.-1.10,Alexandre C. Köberle,yellow
+T2,15 Management,2446,Small Business Management,TXA,Mon,08:00,11:00,D.-1.05,Nuno Vasconcellos e Sá,yellow
+T2,15 Management,2588,Science-Based Entrepreneurship and Innovation,TXB,Mon,11:00,12:30,B.0.09,Nuno Arantes e Oliveira,yellow
+T2,15 Management,2431,Marketing Management,TXE,Mon,12:30,14:00,B.0.04,"Daniela Schmitt, Fan Zhang, Miguel Pinto Fernandes","0.74,0.99,0.79"
+T2,15 Management,2491,Data Visualization,TXB,Mon,15:30,17:00,D.-1.05,Qinlu Hu,yellow
+T2,15 Management,2222,Financial Statement Analysis,TXA,Mon,17:00,18:30,D.-1.04,Marta Cota,yellow
+T2,15 Management,2222,Financial Statement Analysis,TXB,Mon,18:30,20:00,D.-1.04,Marta Cota,yellow
+T2,15 Management,2460,Strategy Consulting,TXA,Mon,08:00,11:00,D.0.04,Constança Casquinho,yellow
+T2,15 Management,2431,Marketing Management,TXD,Mon,11:00,12:30,B.0.04,"Daniela Schmitt, Fan Zhang, Miguel Pinto Fernandes","0.74,0.99,0.79"
+T2,15 Management,2222,Financial Statement Analysis,TXE,Mon,12:30,14:00,D.- 1.11,Marta Cota,yellow
+T2,15 Management,2222,Financial Statement Analysis,TXC,Mon,15:30,17:00,D.- 1.04,Marta Cota,yellow
+T2,15 Management,2491,Data Visualization,TXA,Mon,17:00,18:30,D.- 1.05,Qinlu Hu,yellow
+T2,15 Management,2588,Science-Based Entrepreneurship and Innovation,TXA,Mon,09:30,11:00,B.0.09,Nuno Arantes e Oliveira,yellow
+T2,15 Management,2229,Investments,TXG,Mon,11:00,12:30,D.-1.04,Martijn Boons,orange
+T2,15 Management,2229,Investments,TXH,Mon,12:30,14:00,D.-1.04,Martijn Boons,orange
+T2,15 Management,2431,Marketing Management,TXH,Mon,15:30,17:00,D.-1.06,"Daniela Schmitt, Fan Zhang, Miguel Pinto Fernandes","0.74,0.99,0.79"
+T2,15 Management,2431,Marketing Management,TXF,Mon,17:00,18:30,D.-1.06,"Daniela Schmitt, Fan Zhang, Miguel Pinto Fernandes","0.74,0.99,0.79"
+T2,15 Management,2616,Cracking the Sales Code,TXA,Mon,09:30,11:00,B.0.02,Filipe Simões de Almeida,yellow
+T2,15 Management,2786,Research Methods in Management,TXA,Mon,11:00,14:00,B.0.02,"Filipa Rodrigues, Irene Consiglio","0.74,0.99,0.79"
+T2,15 Management,2448,Business Model Innovation,TXA,Mon,15:30,18:30,D.- 1.10,João Castro,yellow
+T2,15 Management,2690,Shopper Marketing Management,TXA,Mon,09:30,11:00,D.- 1.10,Miguel Pinto Fernandes,yellow
+T2,15 Management,2440,Big Data Analysis,TXA,Mon,11:00,14:00,D.- 1.10,Arash Laghaie,yellow
+T2,15 Management,2346,Modeling Business Decisions,TXB,Mon,15:30,18:30,D.0.03,Sreyaa Guha,yellow
+T2,15 Management,2217,Corporate Governance,TXA,Mon,09:30,11:00,B.0.10,António Nogueira Leite,yellow
+T2,15 Management,2484,Corporate Strategy and Transformation,TXA,Mon,11:00,14:00,D.-1.05,Roberto Ragozzino,yellow
+T2,15 Management,2485,Innovation and Value Creation Wheel,TXA,Mon,15:30,18:30,D.0.05,Luís Lages,yellow
+T2,15 Management,2496,Strategic Foresight and Scenario Planning,TXA,Mon,09:30,12:30,B.1.30,António Alvarenga,yellow
+T2,15 Management,2330,Consumer Behavior,TXA,Mon,15:30,18:30,D.- 1.07,Arnaud Monnier,yellow
+T2,15 Management,2791,Advanced Product Design,TXA,Mon,09:30,12:30,D.-1.11,João Castro,yellow
+T2,15 Management,2327,Brand Management,TXA,Mon,15:30,18:30,D.- 1.12,Sofia Kousi,yellow
+T2,15 Management,2440,Big Data Analysis,TXB,Mon,17:00,20:00,D.-1.13,Arash Laghaie,yellow
+T2,15 Management,2229,Investments,TXF,Tue,08:00,09:30,D.-1.06,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,15 Management,2588,Science-Based Entrepreneurship and Innovation,TXA,Tue,09:30,11:00,B.0.09,Nuno Arantes e Oliveira,yellow
+T2,15 Management,2588,Science-Based Entrepreneurship and Innovation,TXB,Tue,11:00,12:30,B.0.09,Nuno Arantes e Oliveira,yellow
+T2,15 Management,2222,Financial Statement Analysis,TXA,Tue,12:30,14:00,D.-1.10,Marta Cota,yellow
+T2,15 Management,2222,Financial Statement Analysis,TXB,Tue,15:30,17:00,B.0.11,Marta Cota,yellow
+T2,15 Management,2459,Advanced Strategy,TXI,Tue,17:00,18:30,D.-1.05,José Campino,"0.74,0.99,0.79"
+T2,15 Management,2222,Financial Statement Analysis,TXD,Tue,18:30,20:00,D.-1.04,Marta Cota,yellow
+T2,15 Management,2785,Product Management in Technology,TXA,Tue,08:00,11:00,D.- 1.07,Sam Reha,yellow
+T2,15 Management,2477,Introduction to Programming,TXA,Tue,11:00,12:30,B.0.04,Ricardo Pereira,yellow
+T2,15 Management,2218,Derivatives,TXA,Tue,12:30,14:00,D.- 1.05,João Amaro de Matos,yellow
+T2,15 Management,2477,Introduction to Programming,TXC,Tue,15:30,17:00,D.- 1.10,Ricardo Pereira,yellow
+T2,15 Management,2698,Management Consulting,TXA,Tue,17:00,18:30,D.0.05,Marco Berti,yellow
+T2,15 Management,2582,Competitive Strategy: an analytical approach,TXA,Tue,18:30,20:00,D.- 1.06,Vasco Santos,yellow
+T2,15 Management,2616,Cracking the Sales Code,TXA,Tue,09:30,11:00,B.0.03,Filipe Simões de Almeida,yellow
+T2,15 Management,2584,Strategy,TXA,Tue,11:00,12:30,D.- 1.04,Afonso Almeida Costa,"0.74,0.99,0.79"
+T2,15 Management,2477,Introduction to Programming,TXB,Tue,12:30,14:00,B.0.04,Ricardo Pereira,yellow
+T2,15 Management,2459,Advanced Strategy,TXH,Tue,15:30,17:00,D.- 1.05,José Campino,"0.74,0.99,0.79"
+T2,15 Management,2441,Digital Marketing,TXA,Tue,17:00,20:00,D.- 1.13,António Marinho Torres,yellow
+T2,15 Management,2584,Strategy,TXC,Tue,09:30,11:00,D.-1.04,Afonso Almeida Costa,"0.74,0.99,0.79"
+T2,15 Management,2459,Advanced Strategy,TXB,Tue,11:00,12:30,D.-1.07,Marco Galo,"0.74,0.99,0.79"
+T2,15 Management,2459,Advanced Strategy,TXD,Tue,12:30,14:00,D.-1.07,Marco Galo,"0.74,0.99,0.79"
+T2,15 Management,2232,Applied Corporate Finance,TXB,Tue,15:30,18:30,B.0.02,Paulo Pinho,yellow
+T2,15 Management,2694,Leading Transformation,TXA,Tue,18:30,20:00,D.-1.07,Marco Berti,yellow
+T2,15 Management,2229,Investments,TXA,Tue,09:30,11:00,D.- 1.06,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,15 Management,2388,Leadership and Change Management,TXA,Tue,11:00,14:00,B.0.03,Filipa Castanheira,yellow
+T2,15 Management,2337,Integrated Marketing Communications,TXA,Tue,15:30,18:30,D.-1.12,Jorge Velosa,yellow
+T2,15 Management,2346,Modeling Business Decisions,TXA,Tue,09:30,12:30,D.0.03,Sreyaa Guha,yellow
+T2,15 Management,2584,Strategy,TXB,Tue,12:30,14:00,D.- 1.04,Afonso Almeida Costa,"0.74,0.99,0.79"
+T2,15 Management,2339,International Marketing Strategy,TXA,Tue,09:30,12:30,D.- 1.05,António Marinho Torres,yellow
+T2,15 Management,2459,Advanced Strategy,TXE,Tue,12:30,14:00,D.- 1.11,José Campino,"0.74,0.99,0.79"
+T2,15 Management,2232,Applied Corporate Finance,TXA,Tue,11:00,14:00,D.-1.14,Paulo Pinho,yellow
+T2,15 Management,2206,Banking,TXA,Wed,08:00,09:30,D.- 1.06,Ana Lacerda,yellow
+T2,15 Management,2218,Derivatives,TXA,Wed,09:30,11:00,D.- 1.06,João Amaro de Matos,yellow
+T2,15 Management,2463,Advanced Topics in Human Resources Management,TXB,Wed,11:00,12:30,B.0.02,Jan Corstjens,"0.74,0.99,0.79"
+T2,15 Management,2463,Advanced Topics in Human Resources Management,TXA,Wed,12:30,14:00,B.0.02,Jan Corstjens,"0.74,0.99,0.79"
+T2,15 Management,2229,Investments,TXD,Wed,15:30,17:00,B.0.02,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,15 Management,2222,Financial Statement Analysis,TXC,Wed,17:00,18:30,D.- 1.11,Marta Cota,yellow
+T2,15 Management,2222,Financial Statement Analysis,TXD,Wed,18:30,20:00,D.- 1.11,Marta Cota,yellow
+T2,15 Management,2414,Financial Management,TXD,Wed,08:00,09:30,B.0.02,Luís Barbosa,"0.74,0.99,0.79"
+T2,15 Management,2414,Financial Management,TXC,Wed,09:30,11:00,B.0.02,Luís Barbosa,"0.74,0.99,0.79"
+T2,15 Management,2584,Strategy,TXA,Wed,11:00,12:30,D.- 1.10,Afonso Almeida Costa,"0.74,0.99,0.79"
+T2,15 Management,2584,Strategy,TXC,Wed,12:30,14:00,D.- 1.10,Afonso Almeida Costa,"0.74,0.99,0.79"
+T2,15 Management,2222,Financial Statement Analysis,TXE,Wed,15:30,17:00,D.- 1.11,Marta Cota,yellow
+T2,15 Management,2229,Investments,TXB,Wed,17:00,18:30,B.0.02,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,15 Management,2698,Management Consulting,TXA,Wed,18:30,20:00,D.0.05,Marco Berti,yellow
+T2,15 Management,2581,Advanced Financial Management,TXA,Wed,08:00,09:30,B.0.08,António Freitas Miguel,"0.74,0.99,0.79"
+T2,15 Management,2581,Advanced Financial Management,TXC,Wed,09:30,11:00,B.0.08,António Freitas Miguel,"0.74,0.99,0.79"
+T2,15 Management,2459,Advanced Strategy,TXC,Wed,11:00,12:30,D.- 1.12,Marco Galo,"0.74,0.99,0.79"
+T2,15 Management,2459,Advanced Strategy,TXJ,Wed,12:30,14:00,D.- 1.12,Marco Galo,"0.74,0.99,0.79"
+T2,15 Management,2329,Consumer and Managerial Decision Making,TXB,Wed,15:30,18:30,D.- 1.14,Vera Colaço,yellow
+T2,15 Management,2622,Blockchain fundamentals,TXA,Wed,18:30,21:30,D.-1.04,Shayan Eskandari,yellow
+T2,15 Management,2778,Cybersecurity in Organizations,TXA,Wed,08:00,11:00,D.- 1.04,Mário Monteiro Marques,yellow
+T2,15 Management,2229,Investments,TXE,Wed,11:00,12:30,D.- 1.14,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,15 Management,2229,Investments,TXF,Wed,12:30,14:00,D.- 1.14,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,15 Management,2329,Consumer and Managerial Decision Making,TXA,Wed,15:30,18:30,B.0.05,Luis Martinez,yellow
+T2,15 Management,2584,Strategy,TXB,Wed,09:30,11:00,D.- 1.10,Afonso Almeida Costa,"0.74,0.99,0.79"
+T2,15 Management,2229,Investments,TXG,Wed,11:00,12:30,D.- 1.06,Martijn Boons,orange
+T2,15 Management,2229,Investments,TXH,Wed,12:30,14:00,D.- 1.06,Martijn Boons,orange
+T2,15 Management,2277,Impact Investments,TXA,Wed,15:30,18:30,D.- 1.13,Yasmine van der Straten,yellow
+T2,15 Management,2459,Advanced Strategy,TXA,Wed,09:30,11:00,D.- 1.12,Marco Galo,"0.74,0.99,0.79"
+T2,15 Management,2581,Advanced Financial Management,TXB,Wed,11:00,12:30,B.0.08,António Freitas Miguel,"0.74,0.99,0.79"
+T2,15 Management,2493,Marketing Analytics,TXA,Wed,15:30,18:30,D.- 1.12,Arash Laghaie,yellow
+T2,15 Management,2498,Luxury Seminar,TXA,Wed,09:30,12:30,B.0.04,"Inês Risques, Michael Pinkhasov",yellow
+T2,15 Management,2652,Fundamentals on Environment and Sustainability,TXA,Wed,15:30,18:30,D.0.04,Francisco Ferreira,yellow
+T2,15 Management,2480,Digital Strategy and Transformation,TXA,Wed,11:00,14:00,D.0.05,Adam Tatarynowicz,yellow
+T2,15 Management,2327,Brand Management,TXB,Wed,15:30,18:30,D.- 1.05,Sofia Kousi,yellow
+T2,15 Management,2751,Sustainable Marketing,TXA,Wed,15:30,18:30,D.1.34,Arnaud Monnier,yellow
+T2,15 Management,2967,Women in Leadership,TXA,Wed,15:30,18:30,B.0.03,Jenny Hoobler,yellow
+T2,15 Management,2694,Leading Transformation,TXA,Wed,17:00,18:30,B.0.09,Marco Berti,yellow
+T2,15 Management,2229,Investments,TXC,Thu,08:00,09:30,D.- 1.11,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,15 Management,2215,Auditing,TXA,Thu,09:30,11:00,D.- 1.10,"Gonçalo Silva, Mário Freire",yellow
+T2,15 Management,2229,Investments,TXD,Thu,15:30,17:00,B.0.08,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,15 Management,2459,Advanced Strategy,TXG,Thu,17:00,18:30,D.- 1.11,José Campino,"0.74,0.99,0.79"
+T2,15 Management,2966,Statistical Analysis,TXC,Thu,08:00,09:30,D.- 1.05,Ana Amaro,"0.74,0.99,0.79"
+T2,15 Management,2966,Statistical Analysis,TXD,Thu,09:30,11:00,D.- 1.05,Ana Amaro,"0.74,0.99,0.79"
+T2,15 Management,2459,Advanced Strategy,TXF,Thu,15:30,17:00,D.- 1.11,José Campino,"0.74,0.99,0.79"
+T2,15 Management,2431,Marketing Management,TXA,Thu,17:00,18:30,D.- 1.04,"Daniela Schmitt, Fan Zhang, Miguel Pinto Fernandes","0.74,0.99,0.79"
+T2,15 Management,2581,Advanced Financial Management,TXD,Thu,08:00,09:30,B.0.04,António Freitas Miguel,"0.74,0.99,0.79"
+T2,15 Management,2581,Advanced Financial Management,TXE,Thu,09:30,11:00,B.0.04,António Freitas Miguel,"0.74,0.99,0.79"
+T2,15 Management,2431,Marketing Management,TXG,Thu,15:30,17:00,D.- 1.04,"Daniela Schmitt, Fan Zhang, Miguel Pinto Fernandes","0.74,0.99,0.79"
+T2,15 Management,2414,Financial Management,TXA,Thu,08:00,09:30,D.- 1.06,Gonçalo Rocha,"0.74,0.99,0.79"
+T2,15 Management,2229,Investments,TXE,Thu,09:30,11:00,D.- 1.11,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,15 Management,2621,Algorithmic governance,TXA,Thu,15:30,18:30,D.- 1.05,Leid Zejnilovic,yellow
+T2,15 Management,2204,"Mergers, Acquisitions, Restructuring",TXA,Thu,08:00,11:00,D.- 1.07,Pedro Carvalho,yellow
+T2,15 Management,2277,Impact Investments,TXB,Thu,15:30,18:30,D.- 1.13,Yasmine van der Straten,yellow
+T2,15 Management,2359,Operations Management,TXA,Thu,08:00,11:00,D.- 1.13,Jiwen Ge,yellow
+T2,15 Management,2648,Diversity & Inclusion,TXA,Thu,15:30,18:30,B.0.03,Jenny Hoobler,yellow
+T2,15 Management,2431,Marketing Management,TXJ,Thu,09:30,11:00,D.- 1.06,"Daniela Schmitt, Fan Zhang, Miguel Pinto Fernandes","0.74,0.99,0.79"
+T2,15 Management,2793,Supply Chain Management,TXB,Thu,15:30,18:30,D.- 1.14,Jiwen Ge,yellow
+T2,15 Management,2229,Investments,TXC,Fri,08:00,09:30,D.- 1.13,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,15 Management,2229,Investments,TXB,Fri,09:30,11:00,D.- 1.13,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,15 Management,2431,Marketing Management,TXI,Fri,11:00,12:30,B.0.03,"Daniela Schmitt, Fan Zhang, Miguel Pinto Fernandes","0.74,0.99,0.79"
+T2,15 Management,2336,Human Resources Management,TXB,Fri,12:30,14:00,D.- 1.06,Filipa Rodrigues,"0.74,0.99,0.79"
+T2,15 Management,2582,Competitive Strategy: an analytical approach,TXA,Fri,15:30,17:00,D.- 1.06,Vasco Santos,yellow
+T2,15 Management,2206,Banking,TXA,Fri,08:00,09:30,D.- 1.06,Ana Lacerda,yellow
+T2,15 Management,2215,Auditing,TXA,Fri,09:30,11:00,D.- 1.10,"Gonçalo Silva, Mário Freire",yellow
+T2,15 Management,2336,Human Resources Management,TXA,Fri,11:00,12:30,D.- 1.06,Filipa Rodrigues,"0.74,0.99,0.79"
+T2,15 Management,2463,Advanced Topics in Human Resources Management,TXC,Fri,12:30,14:00,D.- 1.07,Jan Corstjens,"0.74,0.99,0.79"
+T2,15 Management,2463,Advanced Topics in Human Resources Management,TXE,Fri,15:30,17:00,B.0.02,Jan Corstjens,"0.74,0.99,0.79"
+T2,15 Management,2966,Statistical Analysis,TXA,Fri,08:00,09:30,D.- 1.07,Ana Amaro,"0.74,0.99,0.79"
+T2,15 Management,2966,Statistical Analysis,TXB,Fri,09:30,11:00,D.- 1.07,Ana Amaro,"0.74,0.99,0.79"
+T2,15 Management,2463,Advanced Topics in Human Resources Management,TXD,Fri,11:00,12:30,D.- 1.07,Jan Corstjens,"0.74,0.99,0.79"
+T2,15 Management,2431,Marketing Management,TXB,Fri,12:30,14:00,B.0.03,"Daniela Schmitt, Fan Zhang, Miguel Pinto Fernandes","0.74,0.99,0.79"
+T2,15 Management,2690,Shopper Marketing Management,TXA,Fri,15:30,17:00,B.0.03,Miguel Pinto Fernandes,yellow
+T2,15 Management,2421,Applied Entrepreneurship,TXA,Fri,08:00,11:00,B.0.04,Miguel Muñoz Duarte,yellow
+T2,15 Management,2217,Corporate Governance,TXA,Fri,11:00,12:30,B.0.08,António Nogueira Leite,yellow
+T2,15 Management,2229,Investments,TXA,Fri,15:30,17:00,D.-1.07,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,15 Management,2336,Human Resources Management,TXC,Fri,09:30,11:00,D.- 1.06,Filipa Rodrigues,"0.74,0.99,0.79"
+T2,15 Management,2236,Private Equity,TXA,Fri,11:00,14:00,B.0.11,Luís Mota Duarte,yellow
+T2,15 Management,2468,Technology Strategy,TXB,Fri,15:30,18:30,D.0.05,Adam Tatarynowicz,yellow
+T2,15 Management,2431,Marketing Management,TXC,Fri,09:30,11:00,B.0.03,"Daniela Schmitt, Fan Zhang, Miguel Pinto Fernandes","0.74,0.99,0.79"
+T2,15 Management,2468,Technology Strategy,TXA,Fri,11:00,14:00,D.0.05,Adam Tatarynowicz,yellow
+T2,15 Management,2649,Energy and Climate change,TXA,Fri,15:30,18:30,D.-1.04,Júlia Seixas,yellow
+T2,15 Management,2651,Digital Transformation in Hospitality,TXA,Fri,15:30,18:30,B.1.27,Bruno Horta Soares,yellow
+T2,15 Management,2359,Operations Management,TXB,Fri,15:30,18:30,D.- 1.12,Jiwen Ge,yellow
+T2,16 Finance,2460,Strategy Consulting,TXA,Mon,08:00,11:00,D.0.04,Constança Casquinho,yellow
+T2,16 Finance,2229,Investments,TXG,Mon,11:00,12:30,D.-1.04,Martijn Boons,orange
+T2,16 Finance,2222,Financial Statement Analysis,TXE,Mon,12:30,14:00,D.-1.11,Marta Cota,yellow
+T2,16 Finance,2491,Data Visualization,TXB,Mon,15:30,17:00,D.-1.05,Qinlu Hu,yellow
+T2,16 Finance,2222,Financial Statement Analysis,TXA,Mon,17:00,18:30,D.-1.04,Marta Cota,yellow
+T2,16 Finance,2222,Financial Statement Analysis,TXB,Mon,18:30,20:00,D.-1.04,Marta Cota,yellow
+T2,16 Finance,2616,Cracking the Sales Code,TXA,Mon,09:30,11:00,B.0.02,Filipe Simões de Almeida,yellow
+T2,16 Finance,2229,Investments,TXH,Mon,12:30,14:00,D.-1.04,Martijn Boons,orange
+T2,16 Finance,2222,Financial Statement Analysis,TXC,Mon,15:30,17:00,D.-1.04,Marta Cota,yellow
+T2,16 Finance,2491,Data Visualization,TXA,Mon,17:00,18:30,D.-1.05,Qinlu Hu,yellow
+T2,16 Finance,2260,Nova Students Portfolio,TXA,Mon,18:30,21:30,D.-1.05,"Gonçalo Ribeiro, Miguel Marecos Duarte",yellow
+T2,16 Finance,2217,Corporate Governance,TXA,Mon,09:30,11:00,B.0.10,António Nogueira Leite,yellow
+T2,16 Finance,2229,Investments,TXF,Tue,08:00,09:30,D.-1.06,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,16 Finance,2616,Cracking the Sales Code,TXA,Tue,09:30,11:00,B.0.03,Filipe Simões de Almeida,yellow
+T2,16 Finance,2477,Introduction to Programming,TXA,Tue,11:00,12:30,B.0.04,Ricardo Pereira,yellow
+T2,16 Finance,2222,Financial Statement Analysis,TXA,Tue,12:30,14:00,D.-1.10,Marta Cota,yellow
+T2,16 Finance,2222,Financial Statement Analysis,TXB,Tue,15:30,17:00,B.0.11,Marta Cota,yellow
+T2,16 Finance,2253,Corporate Finance,TXE,Tue,17:00,18:30,D.-1.11,"Ekaterina Gavrilova, Rui Albuquerque",orange
+T2,16 Finance,2222,Financial Statement Analysis,TXD,Tue,18:30,20:00,D.-1.04,Marta Cota,yellow
+T2,16 Finance,2253,Corporate Finance,TXH,Tue,08:00,09:30,B.0.05,Rui Albuquerque,orange
+T2,16 Finance,2229,Investments,TXA,Tue,09:30,11:00,D.-1.06,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,16 Finance,2232,Applied Corporate Finance,TXA,Tue,11:00,14:00,D.-1.14,Paulo Pinho,yellow
+T2,16 Finance,2477,Introduction to Programming,TXC,Tue,15:30,17:00,D.-1.10,Ricardo Pereira,yellow
+T2,16 Finance,2270,Financial Modeling,TXH,Tue,17:00,20:00,D.-1.10,Bernardo Forbes Costa,orange
+T2,16 Finance,2253,Corporate Finance,TXG,Tue,09:30,11:00,B.0.05,Rui Albuquerque,orange
+T2,16 Finance,2218,Derivatives,TXA,Tue,12:30,14:00,D.-1.05,João Amaro de Matos,yellow
+T2,16 Finance,2253,Corporate Finance,TXF,Tue,15:30,17:00,D.-1.11,"Ekaterina Gavrilova, Rui Albuquerque",orange
+T2,16 Finance,2270,Financial Modeling,TXC,Tue,09:30,12:30,D.-1.11,Tatyana Marchuk,orange
+T2,16 Finance,2477,Introduction to Programming,TXB,Tue,12:30,14:00,B.0.04,Ricardo Pereira,yellow
+T2,16 Finance,2232,Applied Corporate Finance,TXB,Tue,15:30,18:30,B.0.02,Paulo Pinho,yellow
+T2,16 Finance,2253,Corporate Finance,TXD,Tue,09:30,12:30,D.-1.10,"Stefano Sacchetto, Tim Eisert",orange
+T2,16 Finance,2270,Financial Modeling,TXA,Tue,15:30,18:30,D.-1.04,Tatyana Marchuk,orange
+T2,16 Finance,2253,Corporate Finance,TXB,Tue,15:30,18:30,B.0.04,"Stefano Sacchetto, Tim Eisert",orange
+T2,16 Finance,2206,Banking,TXA,Wed,08:00,09:30,D.-1.06,Ana Lacerda,yellow
+T2,16 Finance,2218,Derivatives,TXA,Wed,09:30,11:00,D.-1.06,João Amaro de Matos,yellow
+T2,16 Finance,2229,Investments,TXG,Wed,11:00,12:30,D.-1.06,Martijn Boons,orange
+T2,16 Finance,2229,Investments,TXH,Wed,12:30,14:00,D.-1.06,Martijn Boons,orange
+T2,16 Finance,2229,Investments,TXD,Wed,15:30,17:00,B.0.02,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,16 Finance,2222,Financial Statement Analysis,TXC,Wed,17:00,18:30,D.-1.11,Marta Cota,yellow
+T2,16 Finance,2240,Financial Intermediation,TXA,Wed,18:30,20:00,D.-1.05,Carla Rebelo,yellow
+T2,16 Finance,2229,Investments,TXE,Wed,11:00,12:30,D.-1.14,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,16 Finance,2229,Investments,TXF,Wed,12:30,14:00,D.-1.14,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,16 Finance,2222,Financial Statement Analysis,TXE,Wed,15:30,17:00,D.-1.11,Marta Cota,yellow
+T2,16 Finance,2229,Investments,TXB,Wed,17:00,18:30,B.0.02,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,16 Finance,2222,Financial Statement Analysis,TXD,Wed,18:30,20:00,D.-1.11,Marta Cota,yellow
+T2,16 Finance,2270,Financial Modeling,TXB,Wed,11:00,14:00,B.0.03,Tatyana Marchuk,orange
+T2,16 Finance,2277,Impact Investments,TXA,Wed,15:30,18:30,D.-1.13,Yasmine van der Straten,yellow
+T2,16 Finance,2622,Blockchain fundamentals,TXA,Wed,18:30,21:30,D.-1.04,Shayan Eskandari,yellow
+T2,16 Finance,2253,Corporate Finance,TXC,Wed,11:00,14:00,B.0.09,"Stefano Sacchetto, Tim Eisert",orange
+T2,16 Finance,2493,Marketing Analytics,TXA,Wed,15:30,18:30,D.-1.12,Arash Laghaie,yellow
+T2,16 Finance,2253,Corporate Finance,TXA,Wed,15:30,18:30,D.-1.06,"Stefano Sacchetto, Tim Eisert",orange
+T2,16 Finance,2270,Financial Modeling,TXF,Wed,15:30,18:30,D.-1.10,Tatyana Marchuk,orange
+T2,16 Finance,2229,Investments,TXC,Thu,08:00,09:30,D.-1.11,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,16 Finance,2215,Auditing,TXA,Thu,09:30,11:00,D.-1.10,"Gonçalo Silva, Mário Freire",yellow
+T2,16 Finance,2229,Investments,TXD,Thu,15:30,17:00,B.0.08,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,16 Finance,2253,Corporate Finance,TXF,Thu,17:00,18:30,D.-1.06,"Ekaterina Gavrilova, Rui Albuquerque",orange
+T2,16 Finance,2240,Financial Intermediation,TXA,Thu,18:30,20:00,D.-1.06,Carla Rebelo,yellow
+T2,16 Finance,2253,Corporate Finance,TXG,Thu,08:00,09:30,B.0.03,Rui Albuquerque,orange
+T2,16 Finance,2229,Investments,TXE,Thu,09:30,11:00,D.-1.11,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,16 Finance,2253,Corporate Finance,TXE,Thu,15:30,17:00,D.-1.06,"Ekaterina Gavrilova, Rui Albuquerque",orange
+T2,16 Finance,2270,Financial Modeling,TXG,Thu,17:00,20:00,D.-1.10,Bernardo Forbes Costa,orange
+T2,16 Finance,2204,"Mergers, Acquisitions, Restructuring",TXA,Thu,08:00,11:00,D.-1.07,Pedro Carvalho,yellow
+T2,16 Finance,2621,Algorithmic governance,TXA,Thu,15:30,18:30,D.-1.05,Leid Zejnilovic,yellow
+T2,16 Finance,2253,Corporate Finance,TXH,Thu,09:30,11:00,B.0.03,Rui Albuquerque,orange
+T2,16 Finance,2277,Impact Investments,TXB,Thu,15:30,18:30,D.-1.13,Yasmine van der Straten,yellow
+T2,16 Finance,2229,Investments,TXC,Fri,08:00,09:30,D.-1.13,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,16 Finance,2229,Investments,TXB,Fri,09:30,11:00,D.-1.13,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,16 Finance,2217,Corporate Governance,TXA,Fri,11:00,12:30,B.0.08,António Nogueira Leite,yellow
+T2,16 Finance,2229,Investments,TXA,Fri,15:30,17:00,D.-1.07,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,16 Finance,2206,Banking,TXA,Fri,08:00,09:30,D.-1.06,Ana Lacerda,yellow
+T2,16 Finance,2215,Auditing,TXA,Fri,09:30,11:00,D.-1.10,"Gonçalo Silva, Mário Freire",yellow
+T2,16 Finance,2236,Private Equity,TXA,Fri,11:00,14:00,B.0.11,Luís Mota Duarte,yellow
+T2,16 Finance,2649,Energy and Climate change,TXA,Fri,15:30,18:30,D.-1.04,Júlia Seixas,yellow
+T2,16 Finance,2270,Financial Modeling,TXD,Fri,08:00,11:00,D.-1.05,Tatyana Marchuk,orange
+T2,16 Finance,2691,Climate Finance,TXA,Fri,11:00,14:00,D.-1.10,Alexandre C. Köberle,yellow
+T2,16 Finance,2270,Financial Modeling,TXE,Fri,15:30,18:30,D.-1.13,Tatyana Marchuk,orange
+T2,37 Business Analytics,2588,Science-Based Entrepreneurship and Innovation,TXA,Mon,09:30,11:00,B.0.09,Nuno Arantes e Oliveira,yellow
+T2,37 Business Analytics,2588,Science-Based Entrepreneurship and Innovation,TXB,Mon,11:00,12:30,B.0.09,Nuno Arantes e Oliveira,yellow
+T2,37 Business Analytics,2448,Business Model Innovation,TXA,Mon,15:30,18:30,D.-1.10,João Castro,yellow
+T2,37 Business Analytics,2616,Cracking the Sales Code,TXA,Mon,09:30,11:00,B.0.02,Filipe Simões de Almeida,yellow
+T2,37 Business Analytics,2440,Big Data Analysis,TXA,Mon,11:00,14:00,D.-1.10,Arash Laghaie,yellow
+T2,37 Business Analytics,2440,Big Data Analysis,TXB,Mon,17:00,20:00,D.-1.13,Arash Laghaie,yellow
+T2,37 Business Analytics,2496,Strategic Foresight and Scenario Planning,TXA,Mon,09:30,12:30,B.1.30,António Alvarenga,yellow
+T2,37 Business Analytics,2791,Advanced Product Design,TXA,Mon,09:30,12:30,D.-1.11,João Castro,yellow
+T2,37 Business Analytics,2484,Corporate Strategy and Transformation,TXA,Mon,11:00,14:00,D.-1.05,Roberto Ragozzino,yellow
+T2,37 Business Analytics,2609,Data Visualization for Business Analytics,TXA,Mon,11:00,14:00,B.0.05,Filipa Baptista,"0.56,0.74,0.55"
+T2,37 Business Analytics,2773,Optimization,TXB,Mon,11:00,14:00,D.- 1.06,Sreyaa Guha,"0.56,0.74,0.55"
+T2,37 Business Analytics,2785,Product Management in Technology,TXA,Tue,08:00,11:00,D.-1.07,Sam Reha,yellow
+T2,37 Business Analytics,2588,Science-Based Entrepreneurship and Innovation,TXB,Tue,11:00,12:30,B.0.09,Nuno Arantes e Oliveira,yellow
+T2,37 Business Analytics,2218,Derivatives,TXA,Tue,12:30,14:00,D.-1.05,João Amaro de Matos,yellow
+T2,37 Business Analytics,2773,Optimization,TXC,Tue,15:30,18:30,D.-1.06,Sreyaa Guha,"0.56,0.74,0.55"
+T2,37 Business Analytics,2582,Competitive Strategy: an analytical approach,TXA,Tue,18:30,20:00,D.-1.06,Vasco Santos,yellow
+T2,37 Business Analytics,2588,Science-Based Entrepreneurship and Innovation,TXA,Tue,09:30,11:00,B.0.09,Nuno Arantes e Oliveira,yellow
+T2,37 Business Analytics,2441,Digital Marketing,TXA,Tue,17:00,20:00,D.-1.13,António Marinho Torres,yellow
+T2,37 Business Analytics,2616,Cracking the Sales Code,TXA,Tue,09:30,11:00,B.0.03,Filipe Simões de Almeida,yellow
+T2,37 Business Analytics,2778,Cybersecurity in Organizations,TXA,Wed,08:00,11:00,D.-1.04,Mário Monteiro Marques,yellow
+T2,37 Business Analytics,2609,Data Visualization for Business Analytics,TXB,Wed,11:00,14:00,B.0.05,Filipa Baptista,"0.56,0.74,0.55"
+T2,37 Business Analytics,2493,Marketing Analytics,TXA,Wed,15:30,18:30,D.-1.12,Arash Laghaie,yellow
+T2,37 Business Analytics,2622,Blockchain fundamentals,TXA,Wed,18:30,21:30,D.-1.04,Shayan Eskandari,yellow
+T2,37 Business Analytics,2218,Derivatives,TXA,Wed,09:30,11:00,D.-1.06,João Amaro de Matos,yellow
+T2,37 Business Analytics,2773,Optimization,TXA,Wed,15:30,18:30,B.0.04,Sreyaa Guha,"0.56,0.74,0.55"
+T2,37 Business Analytics,2659,Data Curation for Business Analytics,TXC,Wed,15:30,18:30,B.0.10,Qinlu Hu,"0.56,0.74,0.55"
+T2,37 Business Analytics,2359,Operations Management,TXA,Thu,08:00,11:00,D.-1.13,Jiwen Ge,yellow
+T2,37 Business Analytics,2621,Algorithmic governance,TXA,Thu,15:30,18:30,D.-1.05,Leid Zejnilovic,yellow
+T2,37 Business Analytics,2793,Supply Chain Management,TXB,Thu,15:30,18:30,D.-1.14,Jiwen Ge,yellow
+T2,37 Business Analytics,2421,Applied Entrepreneurship,TXA,Fri,08:00,11:00,B.0.04,Miguel Muñoz Duarte,yellow
+T2,37 Business Analytics,2468,Technology Strategy,TXA,Fri,11:00,14:00,D.0.05,Adam Tatarynowicz,yellow
+T2,37 Business Analytics,2582,Competitive Strategy: an analytical approach,TXA,Fri,15:30,17:00,D.-1.06,Vasco Santos,yellow
+T2,37 Business Analytics,2659,Data Curation for Business Analytics,TXB,Fri,11:00,14:00,D.-1.05,Qinlu Hu,"0.56,0.74,0.55"
+T2,37 Business Analytics,2468,Technology Strategy,TXB,Fri,15:30,18:30,D.0.05,Adam Tatarynowicz,yellow
+T2,37 Business Analytics,2609,Data Visualization for Business Analytics,TXC,Fri,11:00,14:00,D.-1.04,Filipa Baptista,"0.56,0.74,0.55"
+T2,37 Business Analytics,2649,Energy and Climate change,TXA,Fri,15:30,18:30,D.-1.04,Júlia Seixas,yellow
+T2,37 Business Analytics,2359,Operations Management,TXB,Fri,15:30,18:30,D.-1.12,Jiwen Ge,yellow
+T2,37 Business Analytics,2659,Data Curation for Business Analytics,TXA,Fri,15:30,18:30,D.-1.05,Qinlu Hu,"0.56,0.74,0.55"
+T2,38 Impact Entrepreneurship,2460,Strategy Consulting,TXA,Mon,08:00,11:00,D.0.04,Constança Casquinho,yellow
+T2,38 Impact Entrepreneurship,2588,Science-Based Entrepreneurship and Innovation,TXB,Mon,11:00,12:30,B.0.09,Nuno Arantes e Oliveira,yellow
+T2,38 Impact Entrepreneurship,2222,Financial Statement Analysis,TXE,Mon,12:30,14:00,D.-1.11,Marta Cota,yellow
+T2,38 Impact Entrepreneurship,2491,Data Visualization,TXB,Mon,15:30,17:00,D.-1.05,Qinlu Hu,yellow
+T2,38 Impact Entrepreneurship,2222,Financial Statement Analysis,TXA,Mon,17:00,18:30,D.-1.04,Marta Cota,yellow
+T2,38 Impact Entrepreneurship,2222,Financial Statement Analysis,TXB,Mon,18:30,20:00,D.-1.04,Marta Cota,yellow
+T2,38 Impact Entrepreneurship,2588,Science-Based Entrepreneurship and Innovation,TXA,Mon,09:30,11:00,B.0.09,Nuno Arantes e Oliveira,yellow
+T2,38 Impact Entrepreneurship,2229,Investments,TXG,Mon,11:00,12:30,D.-1.04,Martijn Boons,orange
+T2,38 Impact Entrepreneurship,2229,Investments,TXH,Mon,12:30,14:00,D.-1.04,Martijn Boons,orange
+T2,38 Impact Entrepreneurship,2222,Financial Statement Analysis,TXC,Mon,15:30,17:00,D.-1.04,Marta Cota,yellow
+T2,38 Impact Entrepreneurship,2491,Data Visualization,TXA,Mon,17:00,18:30,D.-1.05,Qinlu Hu,yellow
+T2,38 Impact Entrepreneurship,2194,History of Economic Analysis,TXA,Mon,09:30,11:00,D.- 1.06,Francesco Franco,yellow
+T2,38 Impact Entrepreneurship,2440,Big Data Analysis,TXA,Mon,11:00,14:00,D.- 1.10,Arash Laghaie,yellow
+T2,38 Impact Entrepreneurship,2448,Business Model Innovation,TXA,Mon,15:30,18:30,D.- 1.10,João Castro,yellow
+T2,38 Impact Entrepreneurship,2616,Cracking the Sales Code,TXA,Mon,09:30,11:00,B.0.02,Filipe Simões de Almeida,yellow
+T2,38 Impact Entrepreneurship,2484,Corporate Strategy and Transformation,TXA,Mon,11:00,14:00,D.-1.05,Roberto Ragozzino,yellow
+T2,38 Impact Entrepreneurship,2346,Modeling Business Decisions,TXB,Mon,15:30,18:30,D.0.03,Sreyaa Guha,yellow
+T2,38 Impact Entrepreneurship,2690,Shopper Marketing Management,TXA,Mon,09:30,11:00,D.-1.10,Miguel Pinto Fernandes,yellow
+T2,38 Impact Entrepreneurship,2485,Innovation and Value Creation Wheel,TXA,Mon,15:30,18:30,D.0.05,Luís Lages,yellow
+T2,38 Impact Entrepreneurship,2217,Corporate Governance,TXA,Mon,09:30,11:00,B.0.10,António Nogueira Leite,yellow
+T2,38 Impact Entrepreneurship,2440,Big Data Analysis,TXB,Mon,17:00,20:00,D.-1.13,Arash Laghaie,yellow
+T2,38 Impact Entrepreneurship,2496,Strategic Foresight and Scenario Planning,TXA,Mon,09:30,12:30,B.1.30,António Alvarenga,yellow
+T2,38 Impact Entrepreneurship,2791,Advanced Product Design,TXA,Mon,09:30,12:30,D.- 1.11,João Castro,yellow
+T2,38 Impact Entrepreneurship,2229,Investments,TXF,Tue,08:00,09:30,D.-1.06,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,38 Impact Entrepreneurship,2588,Science-Based Entrepreneurship and Innovation,TXA,Tue,09:30,11:00,B.0.09,Nuno Arantes e Oliveira,yellow
+T2,38 Impact Entrepreneurship,2588,Science-Based Entrepreneurship and Innovation,TXB,Tue,11:00,12:30,B.0.09,Nuno Arantes e Oliveira,yellow
+T2,38 Impact Entrepreneurship,2222,Financial Statement Analysis,TXA,Tue,12:30,14:00,D.-1.10,Marta Cota,yellow
+T2,38 Impact Entrepreneurship,2222,Financial Statement Analysis,TXB,Tue,15:30,17:00,B.0.11,Marta Cota,yellow
+T2,38 Impact Entrepreneurship,2698,Management Consulting,TXA,Tue,17:00,18:30,D.0.05,Marco Berti,yellow
+T2,38 Impact Entrepreneurship,2222,Financial Statement Analysis,TXD,Tue,18:30,20:00,D.-1.04,Marta Cota,yellow
+T2,38 Impact Entrepreneurship,2616,Cracking the Sales Code,TXA,Tue,09:30,11:00,B.0.03,Filipe Simões de Almeida,yellow
+T2,38 Impact Entrepreneurship,2477,Introduction to Programming,TXA,Tue,11:00,12:30,B.0.04,Ricardo Pereira,yellow
+T2,38 Impact Entrepreneurship,2218,Derivatives,TXA,Tue,12:30,14:00,D.- 1.05,João Amaro de Matos,yellow
+T2,38 Impact Entrepreneurship,2477,Introduction to Programming,TXC,Tue,15:30,17:00,D.- 1.10,Ricardo Pereira,yellow
+T2,38 Impact Entrepreneurship,2441,Digital Marketing,TXA,Tue,17:00,20:00,D.- 1.13,António Marinho Torres,yellow
+T2,38 Impact Entrepreneurship,2229,Investments,TXA,Tue,09:30,11:00,D.-1.06,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,38 Impact Entrepreneurship,2388,Leadership and Change Management,TXA,Tue,11:00,14:00,B.0.03,Filipa Castanheira,yellow
+T2,38 Impact Entrepreneurship,2796,Economics of the European Union,TXA,Tue,15:30,18:30,B.0.09,José Tavares,yellow
+T2,38 Impact Entrepreneurship,2582,Competitive Strategy: an analytical approach,TXA,Tue,18:30,20:00,D.-1.06,Vasco Santos,yellow
+T2,38 Impact Entrepreneurship,2346,Modeling Business Decisions,TXA,Tue,09:30,12:30,D.0.03,Sreyaa Guha,yellow
+T2,38 Impact Entrepreneurship,2477,Introduction to Programming,TXB,Tue,12:30,14:00,B.0.04,Ricardo Pereira,yellow
+T2,38 Impact Entrepreneurship,2232,Applied Corporate Finance,TXB,Tue,15:30,18:30,B.0.02,Paulo Pinho,yellow
+T2,38 Impact Entrepreneurship,2694,Leading Transformation,TXA,Tue,18:30,20:00,D.-1.07,Marco Berti,yellow
+T2,38 Impact Entrepreneurship,2339,International Marketing Strategy,TXA,Tue,09:30,12:30,D.-1.05,António Marinho Torres,yellow
+T2,38 Impact Entrepreneurship,2337,Integrated Marketing Communications,TXA,Tue,15:30,18:30,D.-1.12,Jorge Velosa,yellow
+T2,38 Impact Entrepreneurship,2628,Entrepreneurship with Impact,TXA,Tue,09:30,12:30,B.0.11,John Herniman,blue
+T2,38 Impact Entrepreneurship,2628,Entrepreneurship with Impact,TXB,Tue,15:30,18:30,D.-1.07,John Herniman,blue
+T2,38 Impact Entrepreneurship,2232,Applied Corporate Finance,TXA,Tue,11:00,14:00,D.- 1.14,Paulo Pinho,yellow
+T2,38 Impact Entrepreneurship,2206,Banking,TXA,Wed,08:00,09:30,D.-1.06,Ana Lacerda,yellow
+T2,38 Impact Entrepreneurship,2218,Derivatives,TXA,Wed,09:30,11:00,D.-1.06,João Amaro de Matos,yellow
+T2,38 Impact Entrepreneurship,2229,Investments,TXG,Wed,11:00,12:30,D.-1.06,Martijn Boons,orange
+T2,38 Impact Entrepreneurship,2229,Investments,TXF,Wed,12:30,14:00,D.-1.14,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,38 Impact Entrepreneurship,2229,Investments,TXD,Wed,15:30,17:00,B.0.02,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,38 Impact Entrepreneurship,2222,Financial Statement Analysis,TXC,Wed,17:00,18:30,D.-1.11,Marta Cota,yellow
+T2,38 Impact Entrepreneurship,2240,Financial Intermediation,TXA,Wed,18:30,20:00,D.-1.05,Carla Rebelo,yellow
+T2,38 Impact Entrepreneurship,2778,Cybersecurity in Organizations,TXA,Wed,08:00,11:00,D.-1.04,Mário Monteiro Marques,yellow
+T2,38 Impact Entrepreneurship,2229,Investments,TXE,Wed,11:00,12:30,D.-1.14,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,38 Impact Entrepreneurship,2229,Investments,TXH,Wed,12:30,14:00,D.-1.06,Martijn Boons,orange
+T2,38 Impact Entrepreneurship,2222,Financial Statement Analysis,TXE,Wed,15:30,17:00,D.-1.11,Marta Cota,yellow
+T2,38 Impact Entrepreneurship,2229,Investments,TXB,Wed,17:00,18:30,B.0.02,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,38 Impact Entrepreneurship,2222,Financial Statement Analysis,TXD,Wed,18:30,20:00,D.-1.11,Marta Cota,yellow
+T2,38 Impact Entrepreneurship,2763,Entrepreneurial Mindset,TXA,Wed,09:30,11:00,B.0.11,Miguel Alves Martins,blue
+T2,38 Impact Entrepreneurship,2763,Entrepreneurial Mindset,TXB,Wed,11:00,12:30,B.0.11,Miguel Alves Martins,blue
+T2,38 Impact Entrepreneurship,2329,Consumer and Managerial Decision Making,TXB,Wed,15:30,18:30,D.-1.14,Vera Colaço,yellow
+T2,38 Impact Entrepreneurship,2698,Management Consulting,TXA,Wed,18:30,20:00,D.0.05,Marco Berti,yellow
+T2,38 Impact Entrepreneurship,2480,Digital Strategy and Transformation,TXA,Wed,11:00,14:00,D.0.05,Adam Tatarynowicz,yellow
+T2,38 Impact Entrepreneurship,2329,Consumer and Managerial Decision Making,TXA,Wed,15:30,18:30,B.0.05,Luis Martinez,yellow
+T2,38 Impact Entrepreneurship,2622,Blockchain fundamentals,TXA,Wed,18:30,21:30,D.-1.04,Shayan Eskandari,yellow
+T2,38 Impact Entrepreneurship,2693,Innovation for Impact,TXA,Wed,11:00,14:00,D.-1.07,"João Castro, Pedro Oliveira",blue
+T2,38 Impact Entrepreneurship,2277,Impact Investments,TXA,Wed,15:30,18:30,D.- 1.13,Yasmine van der Straten,yellow
+T2,38 Impact Entrepreneurship,2493,Marketing Analytics,TXA,Wed,15:30,18:30,D.- 1.12,Arash Laghaie,yellow
+T2,38 Impact Entrepreneurship,2652,Fundamentals on Environment and Sustainability,TXA,Wed,15:30,18:30,D.0.04,Francisco Ferreira,yellow
+T2,38 Impact Entrepreneurship,2751,Sustainable Marketing,TXA,Wed,15:30,18:30,D.1.34,Arnaud Monnier,yellow
+T2,38 Impact Entrepreneurship,2693,Innovation for Impact,TXB,Wed,15:30,18:30,D.- 1.07,"João Castro, Pedro Oliveira",blue
+T2,38 Impact Entrepreneurship,2694,Leading Transformation,TXA,Wed,17:00,18:30,B.0.09,Marco Berti,yellow
+T2,38 Impact Entrepreneurship,2229,Investments,TXC,Thu,08:00,09:30,D.-1.11,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,38 Impact Entrepreneurship,2215,Auditing,TXA,Thu,09:30,11:00,D.-1.10,"Gonçalo Silva, Mário Freire",yellow
+T2,38 Impact Entrepreneurship,2229,Investments,TXD,Thu,15:30,17:00,B.0.08,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,38 Impact Entrepreneurship,2240,Financial Intermediation,TXA,Thu,18:30,20:00,D.-1.06,Carla Rebelo,yellow
+T2,38 Impact Entrepreneurship,2359,Operations Management,TXA,Thu,08:00,11:00,D.- 1.13,Jiwen Ge,yellow
+T2,38 Impact Entrepreneurship,2621,Algorithmic governance,TXA,Thu,15:30,18:30,D.- 1.05,Leid Zejnilovic,yellow
+T2,38 Impact Entrepreneurship,2229,Investments,TXE,Thu,09:30,11:00,D.-1.11,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,38 Impact Entrepreneurship,2277,Impact Investments,TXB,Thu,15:30,18:30,D.- 1.13,Yasmine van der Straten,yellow
+T2,38 Impact Entrepreneurship,2648,Diversity & Inclusion,TXA,Thu,15:30,18:30,B.0.03,Jenny Hoobler,yellow
+T2,38 Impact Entrepreneurship,2229,Investments,TXC,Fri,08:00,09:30,D.-1.13,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,38 Impact Entrepreneurship,2229,Investments,TXB,Fri,09:30,11:00,D.-1.13,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,38 Impact Entrepreneurship,2194,History of Economic Analysis,TXA,Fri,11:00,12:30,B.0.04,Francesco Franco,yellow
+T2,38 Impact Entrepreneurship,2763,Entrepreneurial Mindset,TXB,Fri,12:30,14:00,B.0.02,Miguel Alves Martins,blue
+T2,38 Impact Entrepreneurship,2582,Competitive Strategy: an analytical approach,TXA,Fri,15:30,17:00,D.-1.06,Vasco Santos,yellow
+T2,38 Impact Entrepreneurship,2206,Banking,TXA,Fri,08:00,09:30,D.-1.06,Ana Lacerda,yellow
+T2,38 Impact Entrepreneurship,2215,Auditing,TXA,Fri,09:30,11:00,D.-1.10,"Gonçalo Silva, Mário Freire",yellow
+T2,38 Impact Entrepreneurship,2217,Corporate Governance,TXA,Fri,11:00,12:30,B.0.08,António Nogueira Leite,yellow
+T2,38 Impact Entrepreneurship,2690,Shopper Marketing Management,TXA,Fri,15:30,17:00,B.0.03,Miguel Pinto Fernandes,yellow
+T2,38 Impact Entrepreneurship,2421,Applied Entrepreneurship,TXA,Fri,08:00,11:00,B.0.04,Miguel Muñoz Duarte,yellow
+T2,38 Impact Entrepreneurship,2763,Entrepreneurial Mindset,TXA,Fri,11:00,12:30,B.0.02,Miguel Alves Martins,blue
+T2,38 Impact Entrepreneurship,2229,Investments,TXA,Fri,15:30,17:00,D.-1.07,"Ertunç Aydogdu, Nicholas Hirschey",orange
+T2,38 Impact Entrepreneurship,2236,Private Equity,TXA,Fri,11:00,14:00,B.0.11,Luís Mota Duarte,yellow
+T2,38 Impact Entrepreneurship,2468,Technology Strategy,TXB,Fri,15:30,18:30,D.0.05,Adam Tatarynowicz,yellow
+T2,38 Impact Entrepreneurship,2691,Climate Finance,TXA,Fri,11:00,14:00,D.- 1.10,Alexandre C. Köberle,yellow
+T2,38 Impact Entrepreneurship,2176,Development Economics,TXA,Fri,15:30,18:30,D.- 1.10,Pedro Vicente,yellow
+T2,38 Impact Entrepreneurship,2468,Technology Strategy,TXA,Fri,11:00,14:00,D.0.05,Adam Tatarynowicz,yellow
+T2,38 Impact Entrepreneurship,2649,Energy and Climate change,TXA,Fri,15:30,18:30,D.- 1.04,Júlia Seixas,yellow
+T2,38 Impact Entrepreneurship,2359,Operations Management,TXB,Fri,15:30,18:30,D.- 1.12,Jiwen Ge,yellow
+T2,39 Public Policy,2194,History of Economic Analysis,TXA,Mon,09:30,11:00,D.-1.06,Francesco Franco,yellow
+T2,39 Public Policy,2743,Policy Appraisal,TXA,Mon,11:00,12:30,D.-1.07,Sónia Félix,"0.73,0.47,0.47"
+T2,39 Public Policy,2222,Financial Statement Analysis,TXE,Mon,12:30,14:00,D.-1.11,Marta Cota,yellow
+T2,39 Public Policy,2222,Financial Statement Analysis,TXC,Mon,15:30,17:00,D.-1.04,Marta Cota,yellow
+T2,39 Public Policy,2222,Financial Statement Analysis,TXA,Mon,17:00,18:30,D.-1.04,Marta Cota,yellow
+T2,39 Public Policy,2222,Financial Statement Analysis,TXB,Mon,18:30,20:00,D.-1.04,Marta Cota,yellow
+T2,39 Public Policy,9696,Stata,TXA,Mon,09:30,11:00,D.-1.07,Sónia Félix,"0.73,0.47,0.47"
+T2,39 Public Policy,2743,Policy Appraisal,TXB,Mon,12:30,14:00,D.-1.07,Sónia Félix,"0.73,0.47,0.47"
+T2,39 Public Policy,2745,Politics for Policy,TXB,Mon,15:30,18:30,D.-1.11,José Tavares,"0.73,0.47,0.47"
+T2,39 Public Policy,2388,Leadership and Change Management,TXA,Tue,11:00,14:00,B.0.03,Filipa Castanheira,yellow
+T2,39 Public Policy,2222,Financial Statement Analysis,TXB,Tue,15:30,17:00,B.0.11,Marta Cota,yellow
+T2,39 Public Policy,2222,Financial Statement Analysis,TXD,Tue,18:30,20:00,D.-1.04,Marta Cota,yellow
+T2,39 Public Policy,2746,Public Policy I,TXA,Tue,11:00,14:00,D.-1.06,Ana Cláudia Gouveia,"0.73,0.47,0.47"
+T2,39 Public Policy,2796,Economics of the European Union,TXA,Tue,15:30,18:30,B.0.09,José Tavares,yellow
+T2,39 Public Policy,2694,Leading Transformation,TXA,Tue,18:30,20:00,D.-1.07,Marco Berti,yellow
+T2,39 Public Policy,2738,Development Economics I,TXB,Tue,11:00,14:00,B.0.02,Pedro Vicente,"0.73,0.47,0.47"
+T2,39 Public Policy,2222,Financial Statement Analysis,TXA,Tue,12:30,14:00,D.-1.10,Marta Cota,yellow
+T2,39 Public Policy,9696,Stata,TXB,Wed,09:30,11:00,D.-1.05,Sónia Félix,"0.73,0.47,0.47"
+T2,39 Public Policy,2743,Policy Appraisal,TXB,Wed,11:00,12:30,D.-1.05,Sónia Félix,"0.73,0.47,0.47"
+T2,39 Public Policy,2743,Policy Appraisal,TXA,Wed,12:30,14:00,D.-1.05,Sónia Félix,"0.73,0.47,0.47"
+T2,39 Public Policy,2222,Financial Statement Analysis,TXE,Wed,15:30,17:00,D.-1.11,Marta Cota,yellow
+T2,39 Public Policy,2222,Financial Statement Analysis,TXC,Wed,17:00,18:30,D.-1.11,Marta Cota,yellow
+T2,39 Public Policy,2222,Financial Statement Analysis,TXD,Wed,18:30,20:00,D.-1.11,Marta Cota,yellow
+T2,39 Public Policy,2277,Impact Investments,TXA,Wed,15:30,18:30,D.-1.13,Yasmine van der Straten,yellow
+T2,39 Public Policy,2745,Politics for Policy,TXA,Wed,15:30,18:30,D.-1.04,José Tavares,"0.73,0.47,0.47"
+T2,39 Public Policy,2652,Fundamentals on Environment and Sustainability,TXA,Wed,15:30,18:30,D.0.04,Francisco Ferreira,yellow
+T2,39 Public Policy,2694,Leading Transformation,TXA,Wed,17:00,18:30,B.0.09,Marco Berti,yellow
+T2,39 Public Policy,2359,Operations Management,TXA,Thu,08:00,11:00,D.-1.13,Jiwen Ge,yellow
+T2,39 Public Policy,2277,Impact Investments,TXB,Thu,15:30,18:30,D.-1.13,Yasmine van der Straten,yellow
+T2,39 Public Policy,2194,History of Economic Analysis,TXA,Fri,11:00,12:30,B.0.04,Francesco Franco,yellow
+T2,39 Public Policy,2649,Energy and Climate change,TXA,Fri,15:30,18:30,D.-1.04,Júlia Seixas,yellow
+T2,39 Public Policy,2738,Development Economics I,TXA,Fri,11:00,14:00,D.-1.12,Pedro Vicente,"0.73,0.47,0.47"
+T2,39 Public Policy,2359,Operations Management,TXB,Fri,15:30,18:30,D.-1.12,Jiwen Ge,yellow
+T2,39 Public Policy,2746,Public Policy I,TXB,Fri,11:00,14:00,D.-1.13,Ana Cláudia Gouveia,"0.73,0.47,0.47"

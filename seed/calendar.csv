@@ -1,0 +1,17 @@
+key,first_day,last_day,label
+fall-bidding,2026-07-21,2026-07-23,Fall enrolments (bidding)
+t1-add-drop,2026-07-29,2026-07-31,Add/drop T1
+t1-classes,2026-08-31,2026-10-12,T1 classes
+t2-add-drop,2026-10-07,2026-10-09,Add/drop T2
+t1-exams,2026-10-14,2026-10-20,T1 exams
+t2-classes,2026-10-22,2026-12-04,T2 classes
+t1-makeup-exams,2026-10-26,2026-10-30,T1 make-up exams
+s1-t2-exams,2026-12-07,2026-12-21,T2 and S1 exams
+s1-t2-makeup-exams,2027-01-04,2027-01-16,S1 and T2 make-up exams
+spring-bidding,2027-01-18,2027-01-20,Spring enrolments (bidding)
+t3-add-drop,2027-01-26,2027-01-28,Add/drop T3
+t3-classes,2027-02-01,2027-03-16,T3 classes
+t3-exams,2027-03-18,2027-03-25,T3 exams
+t4-add-drop,2027-03-22,2027-03-24,Add/drop T4
+t4-classes,2027-04-05,2027-05-14,T4 classes
+s2-t4-exams,2027-05-17,2027-06-02,T4 and S2 exams

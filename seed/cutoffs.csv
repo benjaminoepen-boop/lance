@@ -1,0 +1,8 @@
+code,term,section,round,list,seats,bids,allocated,min_rank_value,max_rank_value,min_bid,zero_bids,source
+2277,T2,TXB,Fall 2026,primary,57,130,57,40.0,231.0,40.0,31,"rank list, one account"
+2477,S1,TXB,Fall 2026,primary,72,298,72,115.5,231.0,105.0,48,"rank list, one account"
+2277,T2,TXA,Fall 2026,primary,53,138,53,83.0,231.0,83.0,11,"rank list, one account"
+2477,S1,TXA,Fall 2026,primary,64,290,64,120.0,231.0,111.0,42,"rank list, one account"
+2477,S1,TXC,Fall 2026,primary,59,281,59,109.0,248.0,100.0,51,"rank list, one account"
+2416,T1,TXA,Fall 2026,alternate,0,117,0,,,,21,"rank list, one account"
+2652,S1,TXA,Fall 2026,alternate,15,30,5,20.0,101.0,20.0,0,"rank list, one account"

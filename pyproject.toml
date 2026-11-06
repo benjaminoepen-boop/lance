@@ -1,11 +1,17 @@
 [project]
-name = "festival-architect"
+name = "lance"
 version = "0.1.0"
-description = "Festival Architect: solo project for Introduction to Programming, Nova SBE 2026/27"
+description = "Lance: plan your Nova SBE course bidding. Team project, Introduction to Programming, Nova SBE 2026/27. Grew out of the solo project Festival Architect."
 requires-python = ">=3.12,<3.13"
 dependencies = [
-    "streamlit==1.62.0",
-    "pytest==9.1.1",
+    "flask>=3.0,<4",
+    "gunicorn>=23,<24",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "pdfplumber>=0.11",
 ]
 
 [tool.uv]
@@ -13,3 +19,4 @@ package = false
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = [".", "tests"]

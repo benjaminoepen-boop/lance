@@ -1,0 +1,1129 @@
+programme,code,term,name,ects,lecturers,type
+Management,2652,S1,Fundamentals on Environment and Sustainability,7,Francisco Ferreira,ELECTIVE
+Management,2648,S1,Diversity & Inclusion,7,Jenny Hoobler,ELECTIVE
+Management,2582,S1,Competitive Strategy: An Analytical Approach,7,Vasco Santos,ELECTIVE
+Management,2484,S1,Corporate Strategy and Transformation,7,Roberto Ragozzino,ELECTIVE
+Management,2485,S1,Innovation and Value Creation Wheel,7,Luís Lages,ELECTIVE
+Management,2698,S1,Management Consulting,7,Marco Berti,ELECTIVE
+Management,2460,S1,Strategy Consulting,7,Constança Casquinho,ELECTIVE
+Management,2327,S1,Brand Management,7,Sofia Kousi,ELECTIVE
+Management,2421,S1,Applied Entrepreneurship,7,Miguel Muñoz Duarte,ELECTIVE
+Management,2477,S1,Introduction to Programming,7,Ricardo Pereira,ELECTIVE
+Management,2232,S1,Applied Corporate Finance,7,Paulo Pinho,ELECTIVE
+Management,2229,S1,Investments,7,"Ertunç Aydogdu, Nicholas Hirschey",ELECTIVE
+Management,2229,S1,Investments,7,Martijn Boons,ELECTIVE
+Management,2206,S1,Banking,7,Ana Lacerda,ELECTIVE
+Management,2967,S1,Women in Leadership,7,Jenny Hoobler,ELECTIVE
+Management,2618,T1,Risk and Crisis Management,3.5,Sérgio da Silva Pinto,ELECTIVE
+Management,2468,T1,Technology Strategy,3.5,Adam Tatarynowicz,ELECTIVE
+Management,2352,T1,Quality Management,3.5,Ana Sofia Costa,ELECTIVE
+Management,2376,T1,Project Management,3.5,Paulo Faroleiro,ELECTIVE
+Management,2375,T1,Corporate Social Responsibility,3.5,João Loureiro Rodrigues,ELECTIVE
+Management,2613,T1,Asian Brands,3.5,Andrew Harrison,ELECTIVE
+Management,2448,T1,Business Model Innovation,3.5,João Castro,ELECTIVE
+Management,2128,T1,Competition Policy,3.5,Rúben Bento,ELECTIVE
+Management,2480,T1,Digital Strategy and Transformation,3.5,Adam Tatarynowicz,ELECTIVE
+Management,2454,T1,Doing Business in China,3.5,Andrew Harrison,ELECTIVE
+Management,2416,T1,Family Business,3.5,Alexandre Dias da Cunha,ELECTIVE
+Management,2490,T1,Geoeconomics and International Relations,3.5,Paulo Portas,ELECTIVE
+Management,2338,T1,International Business,3.5,Emanuel Gomes,ELECTIVE
+Management,2473,T1,Negotiation,3.5,Luís Almeida Costa,ELECTIVE
+Management,2446,T1,Small Business Management,3.5,Nuno Vasconcellos e Sá,ELECTIVE
+Management,2496,T1,Strategic Foresight and Scenario Planning,3.5,António Alvarenga,ELECTIVE
+Management,2337,T1,Integrated Marketing Communications,3.5,Jorge Velosa,ELECTIVE
+Management,2481,T1,Product Design and Development,3.5,João Castro,ELECTIVE
+Management,2389,T1,Customer Relationship Management,3.5,Elizabete Cardoso,ELECTIVE
+Management,2329,T1,Consumer and Managerial Decision Making,3.5,Luis Martinez,ELECTIVE
+Management,2643,T1,Social Media Marketing,3.5,António Marinho Torres,ELECTIVE
+Management,2332,T1,Entrepreneurship,3.5,Nadim Habib,ELECTIVE
+Management,2639,T1,Entrepreneurial Strategy,3.5,Roberto Ragozzino,ELECTIVE
+Management,2364,T1,Venture Simulation,3.5,António Marinho Torres,ELECTIVE
+Management,2257,T1,Futures and Options,3.5,João Amaro de Matos,ELECTIVE
+Management,2689,T1,Hospitality Trends,3.5,Sérgio Guerreiro,ELECTIVE
+Management,2971,T1,Investor Relations & Global Disclosure 3.5 Mark Oberle,,,ELECTIVE
+Management,2792,T1,AI in Organizations,3.5,Milton de Sousa,ELECTIVE
+Management,2359,T2,Operations Management,3.5,Jiwen Ge,ELECTIVE
+Management,2346,T2,Modeling Business Decisions,3.5,Sreyaa Guha,ELECTIVE
+Management,2468,T2,Technology Strategy,3.5,Adam Tatarynowicz,ELECTIVE
+Management,2440,T2,Big Data Analysis,3.5,Arash Laghaie,ELECTIVE
+Management,2793,T2,Supply Chain Management,3.5,Jiwen Ge,ELECTIVE
+Management,2751,T2,Sustainable Marketing,3.5,Arnaud Monnier,ELECTIVE
+Management,2217,T2,Corporate Governance,3.5,António Nogueira Leite,ELECTIVE
+Management,2649,T2,Energy and Climate Change,3.5,Júlia Seixas,ELECTIVE
+Management,2277,T2,Impact Investments,3.5,Yasmine van der Straten,ELECTIVE
+Management,2448,T2,Business Model Innovation,3.5,João Castro,ELECTIVE
+Management,2480,T2,Digital Strategy and Transformation,3.5,Adam Tatarynowicz,ELECTIVE
+Management,2694,T2,Leading Transformation,3.5,Marco Berti,ELECTIVE
+Management,2446,T2,Small Business Management,3.5,Nuno Vasconcellos e Sá,ELECTIVE
+Management,2337,T2,Integrated Marketing Communications,3.5,Jorge Velosa,ELECTIVE
+Management,2330,T2,Consumer Behavior,3.5,Arnaud Monnier,ELECTIVE
+Management,2791,T2,Advanced Product Design,3.5,João Castro,ELECTIVE
+Management,2493,T2,Marketing Analytics,3.5,Arash Laghaie,ELECTIVE
+Management,2441,T2,Digital Marketing,3.5,António Marinho Torres,ELECTIVE
+Management,2339,T2,International Marketing Strategy,3.5,António Marinho Torres,ELECTIVE
+Management,2690,T2,Shopper Marketing Management,3.5,Miguel Pinto Fernandes,ELECTIVE
+Management,2329,T2,Consumer and Managerial Decision Making,3.5,Luis Martinez,ELECTIVE
+Management,2588,T2,Science-Based Entrepreneurship and Innovation,3.5,Nuno Arantes e Oliveira,ELECTIVE
+Management,2622,T2,Blockchain Fundamentals,3.5,Shayan Eskandari,ELECTIVE
+Management,2621,T2,Algorithmic Governance,3.5,Leid Zejnilovic,ELECTIVE
+Management,2491,T2,Data Visualization,3.5,Qinlu Hu,ELECTIVE
+Management,2222,T2,Financial Statement Analysis,3.5,Marta Cota,ELECTIVE
+Management,2218,T2,Derivatives,3.5,João Amaro de Matos,ELECTIVE
+Management,2204,T2,"Mergers, Acquisitions, Restructuring",3.5,Pedro Carvalho,ELECTIVE
+Management,2215,T2,Auditing,3.5,"Gonçalo Silva, Mário Freire",ELECTIVE
+Management,2236,T2,Private Equity,3.5,Diogo Chalbert Santos,ELECTIVE
+Management,2388,T2,Leadership and Change Management,3.5,Filipa Castanheira,ELECTIVE
+Management,2778,T2,Cybersecurity in Organizations,3.5,Mário Monteiro Marques,ELECTIVE
+Management,2785,T2,Product Management in Technology,3.5,Sam Rhea,ELECTIVE
+Management,2498,T2,Luxury Seminar,3.5,"Inês Risques, Michael Pinkhasov",ELECTIVE
+Management,2651,T2,Digital Transformation in Hospitality,3.5,Bruno Horta Soares,ELECTIVE
+Management,2206,S2,Banking,7,Carla Rebelo,ELECTIVE
+Management,2220,S2,Entrepreneurial Finance & Venture Capital,7,André Filipe Silva,ELECTIVE
+Management,2232,S2,Applied Corporate Finance,7,"Rui Silva, Luís Barbosa, Pranav Desai",ELECTIVE
+Management,2477,S2,Introduction to Programming,7,Ricardo Pereira,ELECTIVE
+Management,2695,S2,Introduction to Machine Learning,7,Sabina Zejnilovic,ELECTIVE
+Management,2460,S2,Strategy Consulting,7,Constança Casquinho,ELECTIVE
+Management,2652,S2,Fundamentals on Environment and Sustainability,7,Francisco Ferreira,ELECTIVE
+Management,2327,S2,Brand Management,7,Sofia Kousi,ELECTIVE
+Management,2421,S2,Applied Entrepreneurship,7,Leif Brandle,ELECTIVE
+Management,2438,S2,Cross-Cultural Issues for Marketing,7,Carmen Lages,ELECTIVE
+Management,2437,S2,Luxury and Fashion Marketing,7,Catherine da Silveira,ELECTIVE
+Management,2483,S2,Applied Social Entrepreneurship,7,Loic Pedras,ELECTIVE
+Management,2484,S2,Corporate Strategy and Transformation,7,António Bernardo,ELECTIVE
+Management,2485,S2,Innovation and Value Creation Wheel,7,Luís Lages,ELECTIVE
+Management,2580,S2,Value-Based Health Care,7,João Marques Gomes,ELECTIVE
+Management,2585,S2,Evidence-Based Practices for Wellbeing,7,Sofia Kousi,ELECTIVE
+Management,2620,S2,Special Course L'Oreal Brandstorm Competition,7,Miguel Pinto Fernandes,ELECTIVE
+Management,2638,S2,Design Thinking for Social Innovation,7,Anne-Laure Fayard,ELECTIVE
+Management,2660,S2,Applied Sports Projects,3.5,Rui Biscaia,ELECTIVE
+Management,2661,S2,Better Marketing for Consumer Wellbeing,7,Nicole Mead,ELECTIVE
+Management,2698,S2,Management Consulting,7,Marco Berti,ELECTIVE
+Management,2359,T3,Operations Management,3.5,Jiwen Ge,ELECTIVE
+Management,2352,T3,Quality Management,3.5,Ana Sofia Costa,ELECTIVE
+Management,2451,T3,Operations Strategy,3.5,Junfei Lei,ELECTIVE
+Management,2793,T3,Supply Chain Management,3.5,Jiwen Ge,ELECTIVE
+Management,2657,T3,Hospitality Operations Management,3.5,TBD,ELECTIVE
+Management,2134,T3,Economics of Education,3.5,Ana Balcão Reis,ELECTIVE
+Management,2135,T3,Economics of Health and Health Care,3.5,Carolina Santos,ELECTIVE
+Management,2185,T3,Game Theory,3.5,Rúben Bento,ELECTIVE
+Management,2196,T3,International Migration,3.5,Cátia Batista,ELECTIVE
+Management,2214,T3,Asset Management,3.5,Felix Wilke,ELECTIVE
+Management,2215,T3,Auditing,3.5,"Gonçalo Silva, Mário Freire",ELECTIVE
+Management,2217,T3,Corporate Governance,3.5,António Nogueira Leite,ELECTIVE
+Management,2218,T3,Derivatives,3.5,Gustavo Freire,ELECTIVE
+Management,2668,T3,"Sustainability Evaluation of Policies, Plans and Projects",3.5,"Tomás Ramos, João Joanaz",ELECTIVE
+Management,2236,T3,Private Equity,3.5,Luís Mota Duarte,ELECTIVE
+Management,2239,T3,Corporate Valuation,3.5,Rosário André,ELECTIVE
+Management,2964,T3,AI for Economics and Business,3.5,João Brogueira de Sousa,ELECTIVE
+Management,2273,T3,Fintech Ventures,3.5,Afonso Eça,ELECTIVE
+Management,2277,T3,Impact Investments,3.5,Yasmine van der Straten,ELECTIVE
+Management,2338,T3,International Business,3.5,Yannick Wiessner,ELECTIVE
+Management,2334,T3,Global Human Resources Management,3.5,Filipa Rodrigues,ELECTIVE
+Management,2371,T3,"CIRCULAR ECONOMY: Eliminate, Circulate and Regenerate",3.5,Luís Veiga Martins,ELECTIVE
+Management,2337,T3,Integrated Marketing Communications,3.5,Jorge Velosa,ELECTIVE
+Management,2339,T3,International Marketing Strategy,3.5,António Marinho Torres,ELECTIVE
+Management,2389,T3,Customer Relationship Management,3.5,Elizabete Cardoso,ELECTIVE
+Management,2416,T3,Family Business,3.5,Alexandre Dias da Cunha,ELECTIVE
+Management,2448,T3,Business Model Innovation,3.5,Leif Brandle,ELECTIVE
+Management,2465,T3,Open Innovation,3.5,Paolo Leone,ELECTIVE
+Management,2490,T3,Geoeconomics and International Relations,3.5,Paulo Portas,ELECTIVE
+Management,2496,T3,Strategic Foresight and Scenario Planning,3.5,António Alvarenga,ELECTIVE
+Management,2613,T3,Asian Brands,3.5,Andrew Harrison,ELECTIVE
+Management,2622,T3,Blockchain Fundamentals,3.5,Leid Zejnilovic,ELECTIVE
+Management,2635,T3,Organizing for Good in the digital age,3.5,Paolo Leone,ELECTIVE
+Management,2614,T3,Revenue Management,3.5,Duarte Pimentel,ELECTIVE
+Management,2616,T3,Cracking the Sales Code,3.5,Filipe Simões de Almeida,ELECTIVE
+Management,2646,T3,Strategic Costing,3.5,Marta Almeida,ELECTIVE
+Management,2643,T3,Social Media Marketing,3.5,António Marinho Torres,ELECTIVE
+Management,2656,T3,Work & Family,3.5,Jenny Hoobler,ELECTIVE
+Management,2685,T3,Applied Quantitative Studies,3.5,Guang Zeng,ELECTIVE
+Management,2667,T3,Service Excellence,3.5,Sander Allegro,ELECTIVE
+Management,2715,T3,Sustainable Tourism,3.5,Graham Miller,ELECTIVE
+Management,2699,T3,Sports Club Management,3.5,Luís Vilar,ELECTIVE
+Management,2752,T3,Team Dynamics in Organizations,3.5,Sai Kalvapalle,ELECTIVE
+Management,2770,T3,Power and Social Change,3.5,Samantha Ortiz,ELECTIVE
+Management,2970,T3,Services Marketing,3.5,Carmen Lages,ELECTIVE
+Management,2330,T3,Consumer Behavior,3.5,Irene Consiglio,ELECTIVE
+Management,2332,T3,Entrepreneurship,3.5,Nadim Habib,ELECTIVE
+Management,2636,T3,Brands and Marketing in Asia's Emerging Markets,3.5,Andrew Harrison,ELECTIVE
+Management,2795,T3,Innovations in the Experience Economy,3.5,Euclides Major,ELECTIVE
+Management,2359,T4,Operations Management,3.5,Utku Serhatli,ELECTIVE
+Management,2644,T4,Sustainable Operations,3.5,Utku Serhatli,ELECTIVE
+Management,2968,T4,The Luxury Value Chain,3.5,"Inês Risques, Michael Pinkhasov",ELECTIVE
+Management,2158,T4,Economics of Health Systems,3.5,Carolina Santos,ELECTIVE
+Management,2185,T4,Game Theory,3.5,Rúben Bento,ELECTIVE
+Management,2215,T4,Auditing,3.5,"Gonçalo Silva, Mário Freire",ELECTIVE
+Management,2218,T4,Derivatives,3.5,Gustavo Freire,ELECTIVE
+Management,2491,T4,Data Visualization,3.5,Joe Costello,ELECTIVE
+Management,2236,T4,Private Equity,3.5,Luís Mota Duarte,ELECTIVE
+Management,2236,T4,Private Equity,3.5,Diogo Chalbert Santos,ELECTIVE
+Management,2239,T4,Corporate Valuation,3.5,Rosário André,ELECTIVE
+Management,2338,T4,International Business,3.5,Yannick Wiessner,ELECTIVE
+Management,2351,T4,Pricing Strategies,3.5,Jorge Velosa,ELECTIVE
+Management,2418,T4,WPP Master class,3.5,Jorge Velosa,ELECTIVE
+Management,2375,T4,Corporate Social Responsibility,3.5,João Loureiro Rodrigues,ELECTIVE
+Management,2397,T4,Innovation Management,3.5,António Marinho Torres,ELECTIVE
+Management,2417,T4,Management of Non-Profit Organizations,3.5,Silvia Herrero,ELECTIVE
+Management,2441,T4,Digital Marketing,3.5,António Marinho Torres,ELECTIVE
+Management,2448,T4,Business Model Innovation,3.5,Leif Brandle,ELECTIVE
+Management,2458,T4,Talent Development,3.5,Filipa Rodrigues,ELECTIVE
+Management,2465,T4,Open Innovation,3.5,Paolo Leone,ELECTIVE
+Management,2473,T4,Negotiation,3.5,Luís Almeida Costa,ELECTIVE
+Management,2475,T4,Sales and Retailing,3.5,Jorge Velosa,ELECTIVE
+Management,2500,T4,Performance and Progress,3.5,Marco Berti,ELECTIVE
+Management,2588,T4,Science-Based Entrepreneurship and Innovation,3.5,Nuno Arantes e Oliveira,ELECTIVE
+Management,2590,T4,Leading Social Enterprises with Impact in International Development,3.5,Filipe Alfaiate,ELECTIVE
+Management,2623,T4,Network Analytics,3.5,Michail Batikas,ELECTIVE
+Management,2635,T4,Organizing for Good in the digital age,3.5,Paolo Leone,ELECTIVE
+Management,2616,T4,Cracking the Sales Code,3.5,Filipe Simões de Almeida,ELECTIVE
+Management,2647,T4,Strategic Planning and Control,3.5,Marta Almeida,ELECTIVE
+Management,2656,T4,Work & Family,3.5,Jenny Hoobler,ELECTIVE
+Management,2663,T4,AI Impact on Business,3.5,"Rodrigo Belo, Junfei Lei",ELECTIVE
+Management,2663,T4,AI Impact on Business,3.5,"Junfei Lei, Rodrigo Belo",ELECTIVE
+Management,2685,T4,Applied Quantitative Studies,3.5,Guang Zeng,ELECTIVE
+Management,2676,T4,Finance and the transition to net zero,3.5,Fouad Hashem,ELECTIVE
+Management,2690,T4,Shopper Marketing Management,3.5,Miguel Pinto Fernandes,ELECTIVE
+Management,2708,T4,Sports Marketing,3.5,Luís Vilar,ELECTIVE
+Management,2716,T4,Regenerative Business,3.5,Graham Miller,ELECTIVE
+Management,2753,T4,Tourism & Hospitality Consulting,3.5,Miguel Bello,ELECTIVE
+Management,2749,T4,Management in the Public Sector,3.5,Adolfo Mesquita Nunes,ELECTIVE
+Management,2751,T4,Sustainable Marketing,3.5,Arnaud Monnier,ELECTIVE
+Management,2752,T4,Team Dynamics in Organizations,3.5,Sai Kalvapalle,ELECTIVE
+Management,2757,T4,Hotel Asset Management,3.5,Duarte Pimentel,ELECTIVE
+Management,2770,T4,Power and Social Change,3.5,Samantha Ortiz,ELECTIVE
+Management,2778,T4,Cybersecurity in Organizations,3.5,Mário Monteiro Marques,ELECTIVE
+Management,2788,T4,Aviation Management,3.5,Jonathan Eccles,ELECTIVE
+Management,2969,T4,E-Commerce: Strategy & Disruption,3.5,David Bernardo,ELECTIVE
+Management,2961,T4,Economics of Immigration,3.5,Cátia Batista,ELECTIVE
+Management,2330,T4,Consumer Behavior,3.5,Arnaud Monnier,ELECTIVE
+Management,2332,T4,Entrepreneurship,3.5,Nadim Habib,ELECTIVE
+Management,2592,T4,Strategy Implementation,3.5,João Silveira Lobo,ELECTIVE
+Management,2675,T4,European Union: Governance and Crises,3.5,António Vicente,ELECTIVE
+Management,2776,T4,Hotel Investment and Development,3.5,Carlos Miró,ELECTIVE
+Management,2176,S1,Development Economics,7,Pedro Vicente,OUT_PROGRAM
+Management,2784,S1,Curricular Internship - Semestral,7,João Loureiro Rodrigues,OUT_PROGRAM
+Management,2800,S1,Extracurricular Internship - Semestral,0,João Loureiro Rodrigues,OUT_PROGRAM
+Management,2238,T1,Financial Reporting,3.5,Camillo Riva,OUT_PROGRAM
+Management,2193,T1,Behavioral Economics and Finance,3.5,Pedro Pires,OUT_PROGRAM
+Management,2233,T1,Macroeconomics of Financial Markets,3.5,André de Castro Silva,OUT_PROGRAM
+Management,2688,T1,Curricular Internship - Trimestral,3.5,João Loureiro Rodrigues,OUT_PROGRAM
+Management,2799,T1,Extracurricular Internship - Trimestral,0,João Loureiro Rodrigues,OUT_PROGRAM
+Management,2796,T2,Economics of the European Union,3.5,José Tavares,OUT_PROGRAM
+Management,2194,T2,History of Economic Analysis,3.5,Francesco Franco,OUT_PROGRAM
+Management,2688,T2,Curricular Internship - Trimestral,3.5,João Loureiro Rodrigues,OUT_PROGRAM
+Management,2799,T2,Extracurricular Internship - Trimestral,0,João Loureiro Rodrigues,OUT_PROGRAM
+Management,2784,S2,Curricular Internship - Semestral,7,João Loureiro Rodrigues,OUT_PROGRAM
+Management,2800,S2,Extracurricular Internship - Semestral,0,João Loureiro Rodrigues,OUT_PROGRAM
+Management,2972,S2,European Law,7,Leonor Rossi,OUT_PROGRAM
+Management,2138,T3,Environmental Policy,3.5,Mateus Souza,OUT_PROGRAM
+Management,2145,T3,Labor Economics,3.5,Pedro Portugal,OUT_PROGRAM
+Management,2173,T3,Macroeconomic Theory,3.5,Francesco Franco,OUT_PROGRAM
+Management,2181,T3,Policy Evaluation,3.5,Nikita Melnikov,OUT_PROGRAM
+Management,2184,T3,Political Economy,3.5,José Tavares,OUT_PROGRAM
+Management,2193,T3,Behavioral Economics and Finance,3.5,Pedro Pires,OUT_PROGRAM
+Management,2238,T3,Financial Reporting,3.5,Camillo Riva,OUT_PROGRAM
+Management,2688,T3,Curricular Internship - Trimestral,3.5,João Loureiro Rodrigues,OUT_PROGRAM
+Management,2799,T3,Extracurricular Internship - Trimestral,0,João Loureiro Rodrigues,OUT_PROGRAM
+Management,2141,T4,Global Energy Markets,3.5,Mateus Souza,OUT_PROGRAM
+Management,2233,T4,Macroeconomics of Financial Markets,3.5,André de Castro Silva,OUT_PROGRAM
+Management,2235,T4,Credit Risk,3.5,Ante Sterc,OUT_PROGRAM
+Management,2248,T4,Fixed Income,3.5,Ante Sterc,OUT_PROGRAM
+Management,2279,T4,Islamic Finance,3.5,Fouad Hashem,OUT_PROGRAM
+Management,2281,T4,Behavioral Finance,3.5,Afonso Teixeira Duarte,OUT_PROGRAM
+Management,2687,T4,Public Policy,3.5,Alex Armand,OUT_PROGRAM
+Management,2688,T4,Curricular Internship - Trimestral,3.5,João Loureiro Rodrigues,OUT_PROGRAM
+Management,2799,T4,Extracurricular Internship - Trimestral,0,João Loureiro Rodrigues,OUT_PROGRAM
+Management,2197,T4,Advanced Behavioral Economics,3.5,Pedro Pires,OUT_PROGRAM
+Finance,2260,A,Nova Students Portfolio,7,"Miguel Marecos Duarte, Gonçalo Ribeiro",ELECTIVE
+Finance,2652,S1,Fundamentals on Environment and Sustainability,7,Francisco Ferreira,ELECTIVE
+Finance,2460,S1,Strategy Consulting,7,Constança Casquinho,ELECTIVE
+Finance,2477,S1,Introduction to Programming,7,Ricardo Pereira,ELECTIVE
+Finance,2232,S1,Applied Corporate Finance,7,Paulo Pinho,ELECTIVE
+Finance,2206,S1,Banking,7,Ana Lacerda,ELECTIVE
+Finance,2768,T1,Personal Finance,3.5,Vinay Pranjivan,ELECTIVE
+Finance,2772,T1,Research Methods for Finance,3.5,Zeshu Xu,ELECTIVE
+Finance,2278,T1,Sustainable Finance,3.5,Rodrigo Tavares,ELECTIVE
+Finance,2243,T1,Real Estate Finance,3.5,João Pedra Soares,ELECTIVE
+Finance,2375,T1,Corporate Social Responsibility,3.5,João Loureiro Rodrigues,ELECTIVE
+Finance,2454,T1,Doing Business in China,3.5,Andrew Harrison,ELECTIVE
+Finance,2416,T1,Family Business,3.5,Alexandre Dias da Cunha,ELECTIVE
+Finance,2338,T1,International Business,3.5,Emanuel Gomes,ELECTIVE
+Finance,2257,T1,Futures and Options,3.5,João Amaro de Matos,ELECTIVE
+Finance,2971,T1,Investor Relations & Global Disclosure 3.5 Mark Oberle,,,ELECTIVE
+Finance,2238,T1,Financial Reporting,3.5,Camillo Riva,ELECTIVE
+Finance,2193,T1,Behavioral Economics and Finance,3.5,Pedro Pires,ELECTIVE
+Finance,2233,T1,Macroeconomics of Financial Markets,3.5,André de Castro Silva,ELECTIVE
+Finance,2691,T2,Climate Finance,3.5,Alexandre C. Köberle,ELECTIVE
+Finance,2240,T2,Financial Intermediation,3.5,Bjorn Richter,ELECTIVE
+Finance,2217,T2,Corporate Governance,3.5,António Nogueira Leite,ELECTIVE
+Finance,2649,T2,Energy and Climate Change,3.5,Júlia Seixas,ELECTIVE
+Finance,2277,T2,Impact Investments,3.5,Yasmine van der Straten,ELECTIVE
+Finance,2493,T2,Marketing Analytics,3.5,Arash Laghaie,ELECTIVE
+Finance,2622,T2,Blockchain Fundamentals,3.5,Shayan Eskandari,ELECTIVE
+Finance,2621,T2,Algorithmic Governance,3.5,Leid Zejnilovic,ELECTIVE
+Finance,2491,T2,Data Visualization,3.5,Qinlu Hu,ELECTIVE
+Finance,2222,T2,Financial Statement Analysis,3.5,Marta Cota,ELECTIVE
+Finance,2218,T2,Derivatives,3.5,João Amaro de Matos,ELECTIVE
+Finance,2204,T2,"Mergers, Acquisitions, Restructuring",3.5,Pedro Carvalho,ELECTIVE
+Finance,2215,T2,Auditing,3.5,"Gonçalo Silva, Mário Freire",ELECTIVE
+Finance,2236,T2,Private Equity,3.5,Diogo Chalbert Santos,ELECTIVE
+Finance,2165,S2,Microeconometrics,7,Alex Armand,ELECTIVE
+Finance,2168,S2,Macroeconometrics,7,Luís Catela Nunes,ELECTIVE
+Finance,2206,S2,Banking,7,Carla Rebelo,ELECTIVE
+Finance,2220,S2,Entrepreneurial Finance & Venture Capital,7,André Filipe Silva,ELECTIVE
+Finance,2232,S2,Applied Corporate Finance,7,"Rui Silva, Luís Barbosa, Pranav Desai",ELECTIVE
+Finance,2477,S2,Introduction to Programming,7,Ricardo Pereira,ELECTIVE
+Finance,2695,S2,Introduction to Machine Learning,7,Sabina Zejnilovic,ELECTIVE
+Finance,2460,S2,Strategy Consulting,7,Constança Casquinho,ELECTIVE
+Finance,2652,S2,Fundamentals on Environment and Sustainability,7,Francisco Ferreira,ELECTIVE
+Finance,2226,T3,Hedge Funds,3.5,Carlos Almeida,ELECTIVE
+Finance,2691,T3,Climate Finance,3.5,Alexandre C. Köberle,ELECTIVE
+Finance,2768,T3,Personal Finance,3.5,Vinay Pranjivan,ELECTIVE
+Finance,2185,T3,Game Theory,3.5,Rúben Bento,ELECTIVE
+Finance,2214,T3,Asset Management,3.5,Felix Wilke,ELECTIVE
+Finance,2215,T3,Auditing,3.5,"Gonçalo Silva, Mário Freire",ELECTIVE
+Finance,2217,T3,Corporate Governance,3.5,António Nogueira Leite,ELECTIVE
+Finance,2218,T3,Derivatives,3.5,Gustavo Freire,ELECTIVE
+Finance,2668,T3,"Sustainability Evaluation of Policies, Plans and Projects",3.5,"Tomás Ramos, João Joanaz",ELECTIVE
+Finance,2236,T3,Private Equity,3.5,Luís Mota Duarte,ELECTIVE
+Finance,2239,T3,Corporate Valuation,3.5,Rosário André,ELECTIVE
+Finance,2964,T3,AI for Economics and Business,3.5,João Brogueira de Sousa,ELECTIVE
+Finance,2273,T3,Fintech Ventures,3.5,Afonso Eça,ELECTIVE
+Finance,2277,T3,Impact Investments,3.5,Yasmine van der Straten,ELECTIVE
+Finance,2622,T3,Blockchain Fundamentals,3.5,Leid Zejnilovic,ELECTIVE
+Finance,2635,T3,Organizing for Good in the digital age,3.5,Paolo Leone,ELECTIVE
+Finance,2646,T3,Strategic Costing,3.5,Marta Almeida,ELECTIVE
+Finance,2238,T3,Financial Reporting,3.5,Camillo Riva,ELECTIVE
+Finance,2225,T4,Risk Management,3.5,Rafael Sequeira,ELECTIVE
+Finance,2226,T4,Hedge Funds,3.5,Afonso Januário,ELECTIVE
+Finance,2240,T4,Financial Intermediation,3.5,João Cabral dos Santos,ELECTIVE
+Finance,2282,T4,Sovereign Advisory,3.5,João Moreira Rato,ELECTIVE
+Finance,2243,T4,Real Estate Finance,3.5,João Pedra Soares,ELECTIVE
+Finance,2673,T4,Decentralized Finance,3.5,Gonçalo Correia,ELECTIVE
+Finance,2755,T4,Advanced Financial Transactions in M&A,3.5,Silvina Rubio,ELECTIVE
+Finance,2768,T4,Personal Finance,3.5,Vinay Pranjivan,ELECTIVE
+Finance,2772,T4,Research Methods for Finance,3.5,Julio Crego,ELECTIVE
+Finance,2775,T4,Investment Philosophies,3.5,Firmino Morgado,ELECTIVE
+Finance,2959,T4,Private Equity and Financial Restructuring,3.5,Stefano Sacchetto,ELECTIVE
+Finance,2960,T4,Blue Finance,3.5,Gonçalo Ribeiro,ELECTIVE
+Finance,2962,T4,AI for Finance,3.5,Ricardo Chaves,ELECTIVE
+Finance,2185,T4,Game Theory,3.5,Rúben Bento,ELECTIVE
+Finance,2215,T4,Auditing,3.5,"Gonçalo Silva, Mário Freire",ELECTIVE
+Finance,2218,T4,Derivatives,3.5,Gustavo Freire,ELECTIVE
+Finance,2491,T4,Data Visualization,3.5,Joe Costello,ELECTIVE
+Finance,2236,T4,Private Equity,3.5,Luís Mota Duarte,ELECTIVE
+Finance,2236,T4,Private Equity,3.5,Diogo Chalbert Santos,ELECTIVE
+Finance,2239,T4,Corporate Valuation,3.5,Rosário André,ELECTIVE
+Finance,2623,T4,Network Analytics,3.5,Michail Batikas,ELECTIVE
+Finance,2635,T4,Organizing for Good in the digital age,3.5,Paolo Leone,ELECTIVE
+Finance,2647,T4,Strategic Planning and Control,3.5,Marta Almeida,ELECTIVE
+Finance,2676,T4,Finance and the transition to net zero,3.5,Fouad Hashem,ELECTIVE
+Finance,2233,T4,Macroeconomics of Financial Markets,3.5,André de Castro Silva,ELECTIVE
+Finance,2235,T4,Credit Risk,3.5,Ante Sterc,ELECTIVE
+Finance,2248,T4,Fixed Income,3.5,Ante Sterc,ELECTIVE
+Finance,2279,T4,Islamic Finance,3.5,Fouad Hashem,ELECTIVE
+Finance,2281,T4,Behavioral Finance,3.5,Afonso Teixeira Duarte,ELECTIVE
+Finance,2648,S1,Diversity & Inclusion,7,Jenny Hoobler,OUT_PROGRAM
+Finance,2484,S1,Corporate Strategy and Transformation,7,Roberto Ragozzino,OUT_PROGRAM
+Finance,2485,S1,Innovation and Value Creation Wheel,7,Luís Lages,OUT_PROGRAM
+Finance,2421,S1,Applied Entrepreneurship,7,Miguel Muñoz Duarte,OUT_PROGRAM
+Finance,2176,S1,Development Economics,7,Pedro Vicente,OUT_PROGRAM
+Finance,2784,S1,Curricular Internship - Semestral,7,João Loureiro Rodrigues,OUT_PROGRAM
+Finance,2800,S1,Extracurricular Internship - Semestral,0,João Loureiro Rodrigues,OUT_PROGRAM
+Finance,2468,T1,Technology Strategy,3.5,Adam Tatarynowicz,OUT_PROGRAM
+Finance,2352,T1,Quality Management,3.5,Ana Sofia Costa,OUT_PROGRAM
+Finance,2376,T1,Project Management,3.5,Paulo Faroleiro,OUT_PROGRAM
+Finance,2613,T1,Asian Brands,3.5,Andrew Harrison,OUT_PROGRAM
+Finance,2448,T1,Business Model Innovation,3.5,João Castro,OUT_PROGRAM
+Finance,2480,T1,Digital Strategy and Transformation,3.5,Adam Tatarynowicz,OUT_PROGRAM
+Finance,2490,T1,Geoeconomics and International Relations,3.5,Paulo Portas,OUT_PROGRAM
+Finance,2473,T1,Negotiation,3.5,Luís Almeida Costa,OUT_PROGRAM
+Finance,2446,T1,Small Business Management,3.5,Nuno Vasconcellos e Sá,OUT_PROGRAM
+Finance,2496,T1,Strategic Foresight and Scenario Planning,3.5,António Alvarenga,OUT_PROGRAM
+Finance,2481,T1,Product Design and Development,3.5,João Castro,OUT_PROGRAM
+Finance,2389,T1,Customer Relationship Management,3.5,Elizabete Cardoso,OUT_PROGRAM
+Finance,2329,T1,Consumer and Managerial Decision Making,3.5,Luis Martinez,OUT_PROGRAM
+Finance,2643,T1,Social Media Marketing,3.5,António Marinho Torres,OUT_PROGRAM
+Finance,2332,T1,Entrepreneurship,3.5,Nadim Habib,OUT_PROGRAM
+Finance,2639,T1,Entrepreneurial Strategy,3.5,Roberto Ragozzino,OUT_PROGRAM
+Finance,2364,T1,Venture Simulation,3.5,António Marinho Torres,OUT_PROGRAM
+Finance,2688,T1,Curricular Internship - Trimestral,3.5,João Loureiro Rodrigues,OUT_PROGRAM
+Finance,2799,T1,Extracurricular Internship - Trimestral,0,João Loureiro Rodrigues,OUT_PROGRAM
+Finance,2359,T2,Operations Management,3.5,Jiwen Ge,OUT_PROGRAM
+Finance,2346,T2,Modeling Business Decisions,3.5,Sreyaa Guha,OUT_PROGRAM
+Finance,2468,T2,Technology Strategy,3.5,Adam Tatarynowicz,OUT_PROGRAM
+Finance,2440,T2,Big Data Analysis,3.5,Arash Laghaie,OUT_PROGRAM
+Finance,2751,T2,Sustainable Marketing,3.5,Arnaud Monnier,OUT_PROGRAM
+Finance,2448,T2,Business Model Innovation,3.5,João Castro,OUT_PROGRAM
+Finance,2480,T2,Digital Strategy and Transformation,3.5,Adam Tatarynowicz,OUT_PROGRAM
+Finance,2446,T2,Small Business Management,3.5,Nuno Vasconcellos e Sá,OUT_PROGRAM
+Finance,2330,T2,Consumer Behavior,3.5,Arnaud Monnier,OUT_PROGRAM
+Finance,2791,T2,Advanced Product Design,3.5,João Castro,OUT_PROGRAM
+Finance,2441,T2,Digital Marketing,3.5,António Marinho Torres,OUT_PROGRAM
+Finance,2329,T2,Consumer and Managerial Decision Making,3.5,Luis Martinez,OUT_PROGRAM
+Finance,2588,T2,Science-Based Entrepreneurship and Innovation,3.5,Nuno Arantes e Oliveira,OUT_PROGRAM
+Finance,2388,T2,Leadership and Change Management,3.5,Filipa Castanheira,OUT_PROGRAM
+Finance,2651,T2,Digital Transformation in Hospitality,3.5,Bruno Horta Soares,OUT_PROGRAM
+Finance,2796,T2,Economics of the European Union,3.5,José Tavares,OUT_PROGRAM
+Finance,2194,T2,History of Economic Analysis,3.5,Francesco Franco,OUT_PROGRAM
+Finance,2688,T2,Curricular Internship - Trimestral,3.5,João Loureiro Rodrigues,OUT_PROGRAM
+Finance,2799,T2,Extracurricular Internship - Trimestral,0,João Loureiro Rodrigues,OUT_PROGRAM
+Finance,2421,S2,Applied Entrepreneurship,7,Leif Brandle,OUT_PROGRAM
+Finance,2438,S2,Cross-Cultural Issues for Marketing,7,Carmen Lages,OUT_PROGRAM
+Finance,2483,S2,Applied Social Entrepreneurship,7,Loic Pedras,OUT_PROGRAM
+Finance,2484,S2,Corporate Strategy and Transformation,7,António Bernardo,OUT_PROGRAM
+Finance,2485,S2,Innovation and Value Creation Wheel,7,Luís Lages,OUT_PROGRAM
+Finance,2580,S2,Value-Based Health Care,7,João Marques Gomes,OUT_PROGRAM
+Finance,2638,S2,Design Thinking for Social Innovation,7,Anne-Laure Fayard,OUT_PROGRAM
+Finance,2784,S2,Curricular Internship - Semestral,7,João Loureiro Rodrigues,OUT_PROGRAM
+Finance,2800,S2,Extracurricular Internship - Semestral,0,João Loureiro Rodrigues,OUT_PROGRAM
+Finance,2972,S2,European Law,7,Leonor Rossi,OUT_PROGRAM
+Finance,2359,T3,Operations Management,3.5,Jiwen Ge,OUT_PROGRAM
+Finance,2352,T3,Quality Management,3.5,Ana Sofia Costa,OUT_PROGRAM
+Finance,2451,T3,Operations Strategy,3.5,Junfei Lei,OUT_PROGRAM
+Finance,2657,T3,Hospitality Operations Management,3.5,TBD,OUT_PROGRAM
+Finance,2134,T3,Economics of Education,3.5,Ana Balcão Reis,OUT_PROGRAM
+Finance,2135,T3,Economics of Health and Health Care,3.5,Carolina Santos,OUT_PROGRAM
+Finance,2196,T3,International Migration,3.5,Cátia Batista,OUT_PROGRAM
+Finance,2338,T3,International Business,3.5,Yannick Wiessner,OUT_PROGRAM
+Finance,2371,T3,"CIRCULAR ECONOMY: Eliminate, Circulate and Regenerate",3.5,Luís Veiga Martins,OUT_PROGRAM
+Finance,2389,T3,Customer Relationship Management,3.5,Elizabete Cardoso,OUT_PROGRAM
+Finance,2416,T3,Family Business,3.5,Alexandre Dias da Cunha,OUT_PROGRAM
+Finance,2448,T3,Business Model Innovation,3.5,Leif Brandle,OUT_PROGRAM
+Finance,2465,T3,Open Innovation,3.5,Paolo Leone,OUT_PROGRAM
+Finance,2490,T3,Geoeconomics and International Relations,3.5,Paulo Portas,OUT_PROGRAM
+Finance,2496,T3,Strategic Foresight and Scenario Planning,3.5,António Alvarenga,OUT_PROGRAM
+Finance,2613,T3,Asian Brands,3.5,Andrew Harrison,OUT_PROGRAM
+Finance,2614,T3,Revenue Management,3.5,Duarte Pimentel,OUT_PROGRAM
+Finance,2616,T3,Cracking the Sales Code,3.5,Filipe Simões de Almeida,OUT_PROGRAM
+Finance,2643,T3,Social Media Marketing,3.5,António Marinho Torres,OUT_PROGRAM
+Finance,2667,T3,Service Excellence,3.5,Sander Allegro,OUT_PROGRAM
+Finance,2699,T3,Sports Club Management,3.5,Luís Vilar,OUT_PROGRAM
+Finance,2752,T3,Team Dynamics in Organizations,3.5,Sai Kalvapalle,OUT_PROGRAM
+Finance,2770,T3,Power and Social Change,3.5,Samantha Ortiz,OUT_PROGRAM
+Finance,2330,T3,Consumer Behavior,3.5,Irene Consiglio,OUT_PROGRAM
+Finance,2332,T3,Entrepreneurship,3.5,Nadim Habib,OUT_PROGRAM
+Finance,2636,T3,Brands and Marketing in Asia's Emerging Markets,3.5,Andrew Harrison,OUT_PROGRAM
+Finance,2795,T3,Innovations in the Experience Economy,3.5,Euclides Major,OUT_PROGRAM
+Finance,2138,T3,Environmental Policy,3.5,Mateus Souza,OUT_PROGRAM
+Finance,2145,T3,Labor Economics,3.5,Pedro Portugal,OUT_PROGRAM
+Finance,2173,T3,Macroeconomic Theory,3.5,Francesco Franco,OUT_PROGRAM
+Finance,2181,T3,Policy Evaluation,3.5,Nikita Melnikov,OUT_PROGRAM
+Finance,2184,T3,Political Economy,3.5,José Tavares,OUT_PROGRAM
+Finance,2193,T3,Behavioral Economics and Finance,3.5,Pedro Pires,OUT_PROGRAM
+Finance,2688,T3,Curricular Internship - Trimestral,3.5,João Loureiro Rodrigues,OUT_PROGRAM
+Finance,2799,T3,Extracurricular Internship - Trimestral,0,João Loureiro Rodrigues,OUT_PROGRAM
+Finance,2359,T4,Operations Management,3.5,Utku Serhatli,OUT_PROGRAM
+Finance,2644,T4,Sustainable Operations,3.5,Utku Serhatli,OUT_PROGRAM
+Finance,2158,T4,Economics of Health Systems,3.5,Carolina Santos,OUT_PROGRAM
+Finance,2338,T4,International Business,3.5,Yannick Wiessner,OUT_PROGRAM
+Finance,2351,T4,Pricing Strategies,3.5,Jorge Velosa,OUT_PROGRAM
+Finance,2375,T4,Corporate Social Responsibility,3.5,João Loureiro Rodrigues,OUT_PROGRAM
+Finance,2397,T4,Innovation Management,3.5,António Marinho Torres,OUT_PROGRAM
+Finance,2417,T4,Management of Non-Profit Organizations,3.5,Silvia Herrero,OUT_PROGRAM
+Finance,2441,T4,Digital Marketing,3.5,António Marinho Torres,OUT_PROGRAM
+Finance,2448,T4,Business Model Innovation,3.5,Leif Brandle,OUT_PROGRAM
+Finance,2458,T4,Talent Development,3.5,Filipa Rodrigues,OUT_PROGRAM
+Finance,2465,T4,Open Innovation,3.5,Paolo Leone,OUT_PROGRAM
+Finance,2473,T4,Negotiation,3.5,Luís Almeida Costa,OUT_PROGRAM
+Finance,2475,T4,Sales and Retailing,3.5,Jorge Velosa,OUT_PROGRAM
+Finance,2500,T4,Performance and Progress,3.5,Marco Berti,OUT_PROGRAM
+Finance,2588,T4,Science-Based Entrepreneurship and Innovation,3.5,Nuno Arantes e Oliveira,OUT_PROGRAM
+Finance,2590,T4,Leading Social Enterprises with Impact in International Development 3.5 1379 - Filipe Alfaiate,,,OUT_PROGRAM
+Finance,2616,T4,Cracking the Sales Code,3.5,Filipe Simões de Almeida,OUT_PROGRAM
+Finance,2663,T4,AI Impact on Business,3.5,"Rodrigo Belo, Junfei Lei",OUT_PROGRAM
+Finance,2663,T4,AI Impact on Business,3.5,"Junfei Lei, Rodrigo Belo",OUT_PROGRAM
+Finance,2716,T4,Regenerative Business,3.5,Graham Miller,OUT_PROGRAM
+Finance,2749,T4,Management in the Public Sector,3.5,Adolfo Mesquita Nunes,OUT_PROGRAM
+Finance,2751,T4,Sustainable Marketing,3.5,Arnaud Monnier,OUT_PROGRAM
+Finance,2752,T4,Team Dynamics in Organizations,3.5,Sai Kalvapalle,OUT_PROGRAM
+Finance,2757,T4,Hotel Asset Management,3.5,Duarte Pimentel,OUT_PROGRAM
+Finance,2770,T4,Power and Social Change,3.5,Samantha Ortiz,OUT_PROGRAM
+Finance,2961,T4,Economics of Immigration,3.5,Cátia Batista,OUT_PROGRAM
+Finance,2330,T4,Consumer Behavior,3.5,Arnaud Monnier,OUT_PROGRAM
+Finance,2332,T4,Entrepreneurship,3.5,Nadim Habib,OUT_PROGRAM
+Finance,2592,T4,Strategy Implementation,3.5,João Silveira Lobo,OUT_PROGRAM
+Finance,2675,T4,European Union: Governance and Crises,3.5,António Vicente,OUT_PROGRAM
+Finance,2776,T4,Hotel Investment and Development,3.5,Carlos Miró,OUT_PROGRAM
+Finance,2141,T4,Global Energy Markets,3.5,Mateus Souza,OUT_PROGRAM
+Finance,2687,T4,Public Policy,3.5,Alex Armand,OUT_PROGRAM
+Finance,2688,T4,Curricular Internship - Trimestral,3.5,João Loureiro Rodrigues,OUT_PROGRAM
+Finance,2799,T4,Extracurricular Internship - Trimestral,0,João Loureiro Rodrigues,OUT_PROGRAM
+Finance,2197,T4,Advanced Behavioral Economics,3.5,Pedro Pires,OUT_PROGRAM
+Business Analytics,2582,S1,Competitive Strategy: An Analytical Approach,7,Vasco Santos,ELECTIVE
+Business Analytics,2484,S1,Corporate Strategy and Transformation,7,Roberto Ragozzino,ELECTIVE
+Business Analytics,2421,S1,Applied Entrepreneurship,7,Miguel Muñoz Duarte,ELECTIVE
+Business Analytics,2468,T1,Technology Strategy,3.5,Adam Tatarynowicz,ELECTIVE
+Business Analytics,2352,T1,Quality Management,3.5,Ana Sofia Costa,ELECTIVE
+Business Analytics,2448,T1,Business Model Innovation,3.5,João Castro,ELECTIVE
+Business Analytics,2128,T1,Competition Policy,3.5,Rúben Bento,ELECTIVE
+Business Analytics,2496,T1,Strategic Foresight and Scenario Planning,3.5,António Alvarenga,ELECTIVE
+Business Analytics,2481,T1,Product Design and Development,3.5,João Castro,ELECTIVE
+Business Analytics,2389,T1,Customer Relationship Management,3.5,Elizabete Cardoso,ELECTIVE
+Business Analytics,2639,T1,Entrepreneurial Strategy,3.5,Roberto Ragozzino,ELECTIVE
+Business Analytics,2359,T2,Operations Management,3.5,Jiwen Ge,ELECTIVE
+Business Analytics,2468,T2,Technology Strategy,3.5,Adam Tatarynowicz,ELECTIVE
+Business Analytics,2440,T2,Big Data Analysis,3.5,Arash Laghaie,ELECTIVE
+Business Analytics,2793,T2,Supply Chain Management,3.5,Jiwen Ge,ELECTIVE
+Business Analytics,2649,T2,Energy and Climate Change,3.5,Júlia Seixas,ELECTIVE
+Business Analytics,2448,T2,Business Model Innovation,3.5,João Castro,ELECTIVE
+Business Analytics,2791,T2,Advanced Product Design,3.5,João Castro,ELECTIVE
+Business Analytics,2493,T2,Marketing Analytics,3.5,Arash Laghaie,ELECTIVE
+Business Analytics,2441,T2,Digital Marketing,3.5,António Marinho Torres,ELECTIVE
+Business Analytics,2588,T2,Science-Based Entrepreneurship and Innovation,3.5,Nuno Arantes e Oliveira,ELECTIVE
+Business Analytics,2622,T2,Blockchain Fundamentals,3.5,Shayan Eskandari,ELECTIVE
+Business Analytics,2621,T2,Algorithmic Governance,3.5,Leid Zejnilovic,ELECTIVE
+Business Analytics,2218,T2,Derivatives,3.5,João Amaro de Matos,ELECTIVE
+Business Analytics,2778,T2,Cybersecurity in Organizations,3.5,Mário Monteiro Marques,ELECTIVE
+Business Analytics,2785,T2,Product Management in Technology,3.5,Sam Rhea,ELECTIVE
+Business Analytics,2220,S2,Entrepreneurial Finance & Venture Capital,7,André Filipe Silva,ELECTIVE
+Business Analytics,2421,S2,Applied Entrepreneurship,7,Leif Brandle,ELECTIVE
+Business Analytics,2484,S2,Corporate Strategy and Transformation,7,António Bernardo,ELECTIVE
+Business Analytics,2638,S2,Design Thinking for Social Innovation,7,Anne-Laure Fayard,ELECTIVE
+Business Analytics,2359,T3,Operations Management,3.5,Jiwen Ge,ELECTIVE
+Business Analytics,2352,T3,Quality Management,3.5,Ana Sofia Costa,ELECTIVE
+Business Analytics,2451,T3,Operations Strategy,3.5,Junfei Lei,ELECTIVE
+Business Analytics,2793,T3,Supply Chain Management,3.5,Jiwen Ge,ELECTIVE
+Business Analytics,2134,T3,Economics of Education,3.5,Ana Balcão Reis,ELECTIVE
+Business Analytics,2135,T3,Economics of Health and Health Care,3.5,Carolina Santos,ELECTIVE
+Business Analytics,2185,T3,Game Theory,3.5,Rúben Bento,ELECTIVE
+Business Analytics,2196,T3,International Migration,3.5,Cátia Batista,ELECTIVE
+Business Analytics,2214,T3,Asset Management,3.5,Felix Wilke,ELECTIVE
+Business Analytics,2218,T3,Derivatives,3.5,Gustavo Freire,ELECTIVE
+Business Analytics,2273,T3,Fintech Ventures,3.5,Afonso Eça,ELECTIVE
+Business Analytics,2371,T3,"CIRCULAR ECONOMY: Eliminate, Circulate and Regenerate",3.5,Luís Veiga Martins,ELECTIVE
+Business Analytics,2389,T3,Customer Relationship Management,3.5,Elizabete Cardoso,ELECTIVE
+Business Analytics,2448,T3,Business Model Innovation,3.5,Leif Brandle,ELECTIVE
+Business Analytics,2465,T3,Open Innovation,3.5,Paolo Leone,ELECTIVE
+Business Analytics,2496,T3,Strategic Foresight and Scenario Planning,3.5,António Alvarenga,ELECTIVE
+Business Analytics,2622,T3,Blockchain Fundamentals,3.5,Leid Zejnilovic,ELECTIVE
+Business Analytics,2635,T3,Organizing for Good in the digital age,3.5,Paolo Leone,ELECTIVE
+Business Analytics,2616,T3,Cracking the Sales Code,3.5,Filipe Simões de Almeida,ELECTIVE
+Business Analytics,2359,T4,Operations Management,3.5,Utku Serhatli,ELECTIVE
+Business Analytics,2644,T4,Sustainable Operations,3.5,Utku Serhatli,ELECTIVE
+Business Analytics,2185,T4,Game Theory,3.5,Rúben Bento,ELECTIVE
+Business Analytics,2218,T4,Derivatives,3.5,Gustavo Freire,ELECTIVE
+Business Analytics,2397,T4,Innovation Management,3.5,António Marinho Torres,ELECTIVE
+Business Analytics,2441,T4,Digital Marketing,3.5,António Marinho Torres,ELECTIVE
+Business Analytics,2448,T4,Business Model Innovation,3.5,Leif Brandle,ELECTIVE
+Business Analytics,2465,T4,Open Innovation,3.5,Paolo Leone,ELECTIVE
+Business Analytics,2588,T4,Science-Based Entrepreneurship and Innovation,3.5,Nuno Arantes e Oliveira,ELECTIVE
+Business Analytics,2623,T4,Network Analytics,3.5,Michail Batikas,ELECTIVE
+Business Analytics,2635,T4,Organizing for Good in the digital age,3.5,Paolo Leone,ELECTIVE
+Business Analytics,2616,T4,Cracking the Sales Code,3.5,Filipe Simões de Almeida,ELECTIVE
+Business Analytics,2663,T4,AI Impact on Business,3.5,"Rodrigo Belo, Junfei Lei",ELECTIVE
+Business Analytics,2663,T4,AI Impact on Business,3.5,"Junfei Lei, Rodrigo Belo",ELECTIVE
+Business Analytics,2716,T4,Regenerative Business,3.5,Graham Miller,ELECTIVE
+Business Analytics,2778,T4,Cybersecurity in Organizations,3.5,Mário Monteiro Marques,ELECTIVE
+Business Analytics,2961,T4,Economics of Immigration,3.5,Cátia Batista,ELECTIVE
+Business Analytics,2599,T1,Project Scoping,3.5,Lénia Mestrinho,EXCLUSIVE_ELECTIVE
+Business Analytics,2610,S2,Business Analytics Special Project,7,Patrícia Xufre,EXCLUSIVE_ELECTIVE
+Business Analytics,2612,T3,Advanced Programming for Data Science,3.5,Luís Guimarãis,EXCLUSIVE_ELECTIVE
+Business Analytics,2442,T4,Design and Construction of Data Centric Apps,3.5,TBD,EXCLUSIVE_ELECTIVE
+Business Analytics,2758,T4,Advanced Topics in Machine Learning,3.5,Qiwei Han,EXCLUSIVE_ELECTIVE
+Business Analytics,2779,T4,Engineering of Data Analysis,3.5,Nuno Preguiça,EXCLUSIVE_ELECTIVE
+Business Analytics,2652,S1,Fundamentals on Environment and Sustainability,7,Francisco Ferreira,OUT_PROGRAM
+Business Analytics,2485,S1,Innovation and Value Creation Wheel,7,Luís Lages,OUT_PROGRAM
+Business Analytics,2460,S1,Strategy Consulting,7,Constança Casquinho,OUT_PROGRAM
+Business Analytics,2232,S1,Applied Corporate Finance,7,Paulo Pinho,OUT_PROGRAM
+Business Analytics,2206,S1,Banking,7,Ana Lacerda,OUT_PROGRAM
+Business Analytics,2784,S1,Curricular Internship - Semestral,7,João Loureiro Rodrigues,OUT_PROGRAM
+Business Analytics,2800,S1,Extracurricular Internship - Semestral,0,João Loureiro Rodrigues,OUT_PROGRAM
+Business Analytics,2376,T1,Project Management,3.5,Paulo Faroleiro,OUT_PROGRAM
+Business Analytics,2243,T1,Real Estate Finance,3.5,João Pedra Soares,OUT_PROGRAM
+Business Analytics,2375,T1,Corporate Social Responsibility,3.5,João Loureiro Rodrigues,OUT_PROGRAM
+Business Analytics,2613,T1,Asian Brands,3.5,Andrew Harrison,OUT_PROGRAM
+Business Analytics,2454,T1,Doing Business in China,3.5,Andrew Harrison,OUT_PROGRAM
+Business Analytics,2416,T1,Family Business,3.5,Alexandre Dias da Cunha,OUT_PROGRAM
+Business Analytics,2490,T1,Geoeconomics and International Relations,3.5,Paulo Portas,OUT_PROGRAM
+Business Analytics,2338,T1,International Business,3.5,Emanuel Gomes,OUT_PROGRAM
+Business Analytics,2473,T1,Negotiation,3.5,Luís Almeida Costa,OUT_PROGRAM
+Business Analytics,2446,T1,Small Business Management,3.5,Nuno Vasconcellos e Sá,OUT_PROGRAM
+Business Analytics,2643,T1,Social Media Marketing,3.5,António Marinho Torres,OUT_PROGRAM
+Business Analytics,2257,T1,Futures and Options,3.5,João Amaro de Matos,OUT_PROGRAM
+Business Analytics,2193,T1,Behavioral Economics and Finance,3.5,Pedro Pires,OUT_PROGRAM
+Business Analytics,2233,T1,Macroeconomics of Financial Markets,3.5,André de Castro Silva,OUT_PROGRAM
+Business Analytics,2688,T1,Curricular Internship - Trimestral,3.5,João Loureiro Rodrigues,OUT_PROGRAM
+Business Analytics,2799,T1,Extracurricular Internship - Trimestral,0,João Loureiro Rodrigues,OUT_PROGRAM
+Business Analytics,2751,T2,Sustainable Marketing,3.5,Arnaud Monnier,OUT_PROGRAM
+Business Analytics,2217,T2,Corporate Governance,3.5,António Nogueira Leite,OUT_PROGRAM
+Business Analytics,2277,T2,Impact Investments,3.5,Yasmine van der Straten,OUT_PROGRAM
+Business Analytics,2446,T2,Small Business Management,3.5,Nuno Vasconcellos e Sá,OUT_PROGRAM
+Business Analytics,2215,T2,Auditing,3.5,"Gonçalo Silva, Mário Freire",OUT_PROGRAM
+Business Analytics,2236,T2,Private Equity,3.5,Diogo Chalbert Santos,OUT_PROGRAM
+Business Analytics,2388,T2,Leadership and Change Management,3.5,Filipa Castanheira,OUT_PROGRAM
+Business Analytics,2651,T2,Digital Transformation in Hospitality,3.5,Bruno Horta Soares,OUT_PROGRAM
+Business Analytics,2194,T2,History of Economic Analysis,3.5,Francesco Franco,OUT_PROGRAM
+Business Analytics,2688,T2,Curricular Internship - Trimestral,3.5,João Loureiro Rodrigues,OUT_PROGRAM
+Business Analytics,2799,T2,Extracurricular Internship - Trimestral,0,João Loureiro Rodrigues,OUT_PROGRAM
+Business Analytics,2206,S2,Banking,7,Carla Rebelo,OUT_PROGRAM
+Business Analytics,2232,S2,Applied Corporate Finance,7,"Rui Silva, Luís Barbosa, Pranav Desai",OUT_PROGRAM
+Business Analytics,2460,S2,Strategy Consulting,7,Constança Casquinho,OUT_PROGRAM
+Business Analytics,2652,S2,Fundamentals on Environment and Sustainability,7,Francisco Ferreira,OUT_PROGRAM
+Business Analytics,2438,S2,Cross-Cultural Issues for Marketing,7,Carmen Lages,OUT_PROGRAM
+Business Analytics,2483,S2,Applied Social Entrepreneurship,7,Loic Pedras,OUT_PROGRAM
+Business Analytics,2485,S2,Innovation and Value Creation Wheel,7,Luís Lages,OUT_PROGRAM
+Business Analytics,2580,S2,Value-Based Health Care,7,João Marques Gomes,OUT_PROGRAM
+Business Analytics,2784,S2,Curricular Internship - Semestral,7,João Loureiro Rodrigues,OUT_PROGRAM
+Business Analytics,2800,S2,Extracurricular Internship - Semestral,0,João Loureiro Rodrigues,OUT_PROGRAM
+Business Analytics,2215,T3,Auditing,3.5,"Gonçalo Silva, Mário Freire",OUT_PROGRAM
+Business Analytics,2217,T3,Corporate Governance,3.5,António Nogueira Leite,OUT_PROGRAM
+Business Analytics,2236,T3,Private Equity,3.5,Luís Mota Duarte,OUT_PROGRAM
+Business Analytics,2239,T3,Corporate Valuation,3.5,Rosário André,OUT_PROGRAM
+Business Analytics,2277,T3,Impact Investments,3.5,Yasmine van der Straten,OUT_PROGRAM
+Business Analytics,2338,T3,International Business,3.5,Yannick Wiessner,OUT_PROGRAM
+Business Analytics,2416,T3,Family Business,3.5,Alexandre Dias da Cunha,OUT_PROGRAM
+Business Analytics,2490,T3,Geoeconomics and International Relations,3.5,Paulo Portas,OUT_PROGRAM
+Business Analytics,2613,T3,Asian Brands,3.5,Andrew Harrison,OUT_PROGRAM
+Business Analytics,2614,T3,Revenue Management,3.5,Duarte Pimentel,OUT_PROGRAM
+Business Analytics,2646,T3,Strategic Costing,3.5,Marta Almeida,OUT_PROGRAM
+Business Analytics,2643,T3,Social Media Marketing,3.5,António Marinho Torres,OUT_PROGRAM
+Business Analytics,2667,T3,Service Excellence,3.5,Sander Allegro,OUT_PROGRAM
+Business Analytics,2699,T3,Sports Club Management,3.5,Luís Vilar,OUT_PROGRAM
+Business Analytics,2752,T3,Team Dynamics in Organizations,3.5,Sai Kalvapalle,OUT_PROGRAM
+Business Analytics,2770,T3,Power and Social Change,3.5,Samantha Ortiz,OUT_PROGRAM
+Business Analytics,2138,T3,Environmental Policy,3.5,Mateus Souza,OUT_PROGRAM
+Business Analytics,2145,T3,Labor Economics,3.5,Pedro Portugal,OUT_PROGRAM
+Business Analytics,2173,T3,Macroeconomic Theory,3.5,Francesco Franco,OUT_PROGRAM
+Business Analytics,2181,T3,Policy Evaluation,3.5,Nikita Melnikov,OUT_PROGRAM
+Business Analytics,2184,T3,Political Economy,3.5,José Tavares,OUT_PROGRAM
+Business Analytics,2193,T3,Behavioral Economics and Finance,3.5,Pedro Pires,OUT_PROGRAM
+Business Analytics,2688,T3,Curricular Internship - Trimestral,3.5,João Loureiro Rodrigues,OUT_PROGRAM
+Business Analytics,2799,T3,Extracurricular Internship - Trimestral,0,João Loureiro Rodrigues,OUT_PROGRAM
+Business Analytics,2243,T4,Real Estate Finance,3.5,João Pedra Soares,OUT_PROGRAM
+Business Analytics,2158,T4,Economics of Health Systems,3.5,Carolina Santos,OUT_PROGRAM
+Business Analytics,2215,T4,Auditing,3.5,"Gonçalo Silva, Mário Freire",OUT_PROGRAM
+Business Analytics,2236,T4,Private Equity,3.5,Luís Mota Duarte,OUT_PROGRAM
+Business Analytics,2236,T4,Private Equity,3.5,Diogo Chalbert Santos,OUT_PROGRAM
+Business Analytics,2239,T4,Corporate Valuation,3.5,Rosário André,OUT_PROGRAM
+Business Analytics,2338,T4,International Business,3.5,Yannick Wiessner,OUT_PROGRAM
+Business Analytics,2351,T4,Pricing Strategies,3.5,Jorge Velosa,OUT_PROGRAM
+Business Analytics,2375,T4,Corporate Social Responsibility,3.5,João Loureiro Rodrigues,OUT_PROGRAM
+Business Analytics,2417,T4,Management of Non-Profit Organizations,3.5,Silvia Herrero,OUT_PROGRAM
+Business Analytics,2458,T4,Talent Development,3.5,Filipa Rodrigues,OUT_PROGRAM
+Business Analytics,2473,T4,Negotiation,3.5,Luís Almeida Costa,OUT_PROGRAM
+Business Analytics,2475,T4,Sales and Retailing,3.5,Jorge Velosa,OUT_PROGRAM
+Business Analytics,2500,T4,Performance and Progress,3.5,Marco Berti,OUT_PROGRAM
+Business Analytics,2590,T4,Leading Social Enterprises with Impact in International Development,3.5,Filipe Alfaiate,OUT_PROGRAM
+Business Analytics,2647,T4,Strategic Planning and Control,3.5,Marta Almeida,OUT_PROGRAM
+Business Analytics,2676,T4,Finance and the transition to net zero,3.5,Fouad Hashem,OUT_PROGRAM
+Business Analytics,2749,T4,Management in the Public Sector,3.5,Adolfo Mesquita Nunes,OUT_PROGRAM
+Business Analytics,2751,T4,Sustainable Marketing,3.5,Arnaud Monnier,OUT_PROGRAM
+Business Analytics,2752,T4,Team Dynamics in Organizations,3.5,Sai Kalvapalle,OUT_PROGRAM
+Business Analytics,2757,T4,Hotel Asset Management,3.5,Duarte Pimentel,OUT_PROGRAM
+Business Analytics,2770,T4,Power and Social Change,3.5,Samantha Ortiz,OUT_PROGRAM
+Business Analytics,2141,T4,Global Energy Markets,3.5,Mateus Souza,OUT_PROGRAM
+Business Analytics,2233,T4,Macroeconomics of Financial Markets,3.5,André de Castro Silva,OUT_PROGRAM
+Business Analytics,2235,T4,Credit Risk,3.5,Ante Sterc,OUT_PROGRAM
+Business Analytics,2248,T4,Fixed Income,3.5,Ante Sterc,OUT_PROGRAM
+Business Analytics,2279,T4,Islamic Finance,3.5,Fouad Hashem,OUT_PROGRAM
+Business Analytics,2281,T4,Behavioral Finance,3.5,Afonso Teixeira Duarte,OUT_PROGRAM
+Business Analytics,2687,T4,Public Policy,3.5,Alex Armand,OUT_PROGRAM
+Business Analytics,2688,T4,Curricular Internship - Trimestral,3.5,João Loureiro Rodrigues,OUT_PROGRAM
+Business Analytics,2799,T4,Extracurricular Internship - Trimestral,0,João Loureiro Rodrigues,OUT_PROGRAM
+Economics,2652,S1,Fundamentals on Environment and Sustainability,7,Francisco Ferreira,ELECTIVE
+Economics,2477,S1,Introduction to Programming,7,Ricardo Pereira,ELECTIVE
+Economics,2229,S1,Investments,7,"Ertunç Aydogdu, Nicholas Hirschey",ELECTIVE
+Economics,2229,S1,Investments,7,Martijn Boons,ELECTIVE
+Economics,2206,S1,Banking,7,Ana Lacerda,ELECTIVE
+Economics,2176,S1,Development Economics,7,Pedro Vicente,ELECTIVE
+Economics,2772,T1,Research Methods for Finance,3.5,Zeshu Xu,ELECTIVE
+Economics,2240,T1,Financial Intermediation,3.5,Bjorn Richter,ELECTIVE
+Economics,2278,T1,Sustainable Finance,3.5,Rodrigo Tavares,ELECTIVE
+Economics,2243,T1,Real Estate Finance,3.5,João Pedra Soares,ELECTIVE
+Economics,2128,T1,Competition Policy,3.5,Rúben Bento,ELECTIVE
+Economics,2257,T1,Futures and Options,3.5,João Amaro de Matos,ELECTIVE
+Economics,2238,T1,Financial Reporting,3.5,Camillo Riva,ELECTIVE
+Economics,2193,T1,Behavioral Economics and Finance,3.5,Pedro Pires,ELECTIVE
+Economics,2233,T1,Macroeconomics of Financial Markets,3.5,André de Castro Silva,ELECTIVE
+Economics,2691,T2,Climate Finance,3.5,Alexandre C. Köberle,ELECTIVE
+Economics,2240,T2,Financial Intermediation,3.5,Bjorn Richter,ELECTIVE
+Economics,2745,T2,Politics for Policy,3.5,José Tavares,ELECTIVE
+Economics,2649,T2,Energy and Climate Change,3.5,Júlia Seixas,ELECTIVE
+Economics,2277,T2,Impact Investments,3.5,Yasmine van der Straten,ELECTIVE
+Economics,2493,T2,Marketing Analytics,3.5,Arash Laghaie,ELECTIVE
+Economics,2622,T2,Blockchain Fundamentals,3.5,Shayan Eskandari,ELECTIVE
+Economics,2621,T2,Algorithmic Governance,3.5,Leid Zejnilovic,ELECTIVE
+Economics,2491,T2,Data Visualization,3.5,Qinlu Hu,ELECTIVE
+Economics,2222,T2,Financial Statement Analysis,3.5,Marta Cota,ELECTIVE
+Economics,2218,T2,Derivatives,3.5,João Amaro de Matos,ELECTIVE
+Economics,2215,T2,Auditing,3.5,"Gonçalo Silva, Mário Freire",ELECTIVE
+Economics,2236,T2,Private Equity,3.5,Diogo Chalbert Santos,ELECTIVE
+Economics,2796,T2,Economics of the European Union,3.5,José Tavares,ELECTIVE
+Economics,2194,T2,History of Economic Analysis,3.5,Francesco Franco,ELECTIVE
+Economics,2206,S2,Banking,7,Carla Rebelo,ELECTIVE
+Economics,2477,S2,Introduction to Programming,7,Ricardo Pereira,ELECTIVE
+Economics,2695,S2,Introduction to Machine Learning,7,Sabina Zejnilovic,ELECTIVE
+Economics,2652,S2,Fundamentals on Environment and Sustainability,7,Francisco Ferreira,ELECTIVE
+Economics,2972,S2,European Law,7,Leonor Rossi,ELECTIVE
+Economics,2226,T3,Hedge Funds,3.5,Carlos Almeida,ELECTIVE
+Economics,2691,T3,Climate Finance,3.5,Alexandre C. Köberle,ELECTIVE
+Economics,2134,T3,Economics of Education,3.5,Ana Balcão Reis,ELECTIVE
+Economics,2135,T3,Economics of Health and Health Care,3.5,Carolina Santos,ELECTIVE
+Economics,2196,T3,International Migration,3.5,Cátia Batista,ELECTIVE
+Economics,2214,T3,Asset Management,3.5,Felix Wilke,ELECTIVE
+Economics,2215,T3,Auditing,3.5,"Gonçalo Silva, Mário Freire",ELECTIVE
+Economics,2218,T3,Derivatives,3.5,Gustavo Freire,ELECTIVE
+Economics,2668,T3,"Sustainability Evaluation of Policies, Plans and Projects",3.5,"Tomás Ramos, João Joanaz",ELECTIVE
+Economics,2236,T3,Private Equity,3.5,Luís Mota Duarte,ELECTIVE
+Economics,2964,T3,AI for Economics and Business,3.5,João Brogueira de Sousa,ELECTIVE
+Economics,2273,T3,Fintech Ventures,3.5,Afonso Eça,ELECTIVE
+Economics,2277,T3,Impact Investments,3.5,Yasmine van der Straten,ELECTIVE
+Economics,2622,T3,Blockchain Fundamentals,3.5,Leid Zejnilovic,ELECTIVE
+Economics,2635,T3,Organizing for Good in the digital age,3.5,Paolo Leone,ELECTIVE
+Economics,2770,T3,Power and Social Change,3.5,Samantha Ortiz,ELECTIVE
+Economics,2138,T3,Environmental Policy,3.5,Mateus Souza,ELECTIVE
+Economics,2145,T3,Labor Economics,3.5,Pedro Portugal,ELECTIVE
+Economics,2173,T3,Macroeconomic Theory,3.5,Francesco Franco,ELECTIVE
+Economics,2181,T3,Policy Evaluation,3.5,Nikita Melnikov,ELECTIVE
+Economics,2184,T3,Political Economy,3.5,José Tavares,ELECTIVE
+Economics,2193,T3,Behavioral Economics and Finance,3.5,Pedro Pires,ELECTIVE
+Economics,2238,T3,Financial Reporting,3.5,Camillo Riva,ELECTIVE
+Economics,2225,T4,Risk Management,3.5,Rafael Sequeira,ELECTIVE
+Economics,2226,T4,Hedge Funds,3.5,Afonso Januário,ELECTIVE
+Economics,2240,T4,Financial Intermediation,3.5,João Cabral dos Santos,ELECTIVE
+Economics,2282,T4,Sovereign Advisory,3.5,João Moreira Rato,ELECTIVE
+Economics,2243,T4,Real Estate Finance,3.5,João Pedra Soares,ELECTIVE
+Economics,2755,T4,Advanced Financial Transactions in M&A,3.5,Silvina Rubio,ELECTIVE
+Economics,2772,T4,Research Methods for Finance,3.5,Julio Crego,ELECTIVE
+Economics,2131,T4,Economic Growth,3.5,Miguel Lebre de Freitas,ELECTIVE
+Economics,2737,T4,Private Sector Development,3.5,Roberto Rocha,ELECTIVE
+Economics,2158,T4,Economics of Health Systems,3.5,Carolina Santos,ELECTIVE
+Economics,2215,T4,Auditing,3.5,"Gonçalo Silva, Mário Freire",ELECTIVE
+Economics,2218,T4,Derivatives,3.5,Gustavo Freire,ELECTIVE
+Economics,2491,T4,Data Visualization,3.5,Joe Costello,ELECTIVE
+Economics,2236,T4,Private Equity,3.5,Luís Mota Duarte,ELECTIVE
+Economics,2236,T4,Private Equity,3.5,Diogo Chalbert Santos,ELECTIVE
+Economics,2623,T4,Network Analytics,3.5,Michail Batikas,ELECTIVE
+Economics,2635,T4,Organizing for Good in the digital age,3.5,Paolo Leone,ELECTIVE
+Economics,2676,T4,Finance and the transition to net zero,3.5,Fouad Hashem,ELECTIVE
+Economics,2770,T4,Power and Social Change,3.5,Samantha Ortiz,ELECTIVE
+Economics,2961,T4,Economics of Immigration,3.5,Cátia Batista,ELECTIVE
+Economics,2675,T4,European Union: Governance and Crises,3.5,António Vicente,ELECTIVE
+Economics,2141,T4,Global Energy Markets,3.5,Mateus Souza,ELECTIVE
+Economics,2233,T4,Macroeconomics of Financial Markets,3.5,André de Castro Silva,ELECTIVE
+Economics,2235,T4,Credit Risk,3.5,Ante Sterc,ELECTIVE
+Economics,2248,T4,Fixed Income,3.5,Ante Sterc,ELECTIVE
+Economics,2281,T4,Behavioral Finance,3.5,Afonso Teixeira Duarte,ELECTIVE
+Economics,2687,T4,Public Policy,3.5,Alex Armand,ELECTIVE
+Economics,2197,T4,Advanced Behavioral Economics,3.5,Pedro Pires,ELECTIVE
+Economics,2648,S1,Diversity & Inclusion,7,Jenny Hoobler,OUT_PROGRAM
+Economics,2582,S1,Competitive Strategy: An Analytical Approach,7,Vasco Santos,OUT_PROGRAM
+Economics,2484,S1,Corporate Strategy and Transformation,7,Roberto Ragozzino,OUT_PROGRAM
+Economics,2485,S1,Innovation and Value Creation Wheel,7,Luís Lages,OUT_PROGRAM
+Economics,2460,S1,Strategy Consulting,7,Constança Casquinho,OUT_PROGRAM
+Economics,2421,S1,Applied Entrepreneurship,7,Miguel Muñoz Duarte,OUT_PROGRAM
+Economics,2232,S1,Applied Corporate Finance,7,Paulo Pinho,OUT_PROGRAM
+Economics,2784,S1,Curricular Internship - Semestral,7,João Loureiro Rodrigues,OUT_PROGRAM
+Economics,2800,S1,Extracurricular Internship - Semestral,0,João Loureiro Rodrigues,OUT_PROGRAM
+Economics,2468,T1,Technology Strategy,3.5,Adam Tatarynowicz,OUT_PROGRAM
+Economics,2352,T1,Quality Management,3.5,Ana Sofia Costa,OUT_PROGRAM
+Economics,2376,T1,Project Management,3.5,Paulo Faroleiro,OUT_PROGRAM
+Economics,2375,T1,Corporate Social Responsibility,3.5,João Loureiro Rodrigues,OUT_PROGRAM
+Economics,2613,T1,Asian Brands,3.5,Andrew Harrison,OUT_PROGRAM
+Economics,2448,T1,Business Model Innovation,3.5,João Castro,OUT_PROGRAM
+Economics,2454,T1,Doing Business in China,3.5,Andrew Harrison,OUT_PROGRAM
+Economics,2416,T1,Family Business,3.5,Alexandre Dias da Cunha,OUT_PROGRAM
+Economics,2490,T1,Geoeconomics and International Relations,3.5,Paulo Portas,OUT_PROGRAM
+Economics,2338,T1,International Business,3.5,Emanuel Gomes,OUT_PROGRAM
+Economics,2473,T1,Negotiation,3.5,Luís Almeida Costa,OUT_PROGRAM
+Economics,2446,T1,Small Business Management,3.5,Nuno Vasconcellos e Sá,OUT_PROGRAM
+Economics,2496,T1,Strategic Foresight and Scenario Planning,3.5,António Alvarenga,OUT_PROGRAM
+Economics,2481,T1,Product Design and Development,3.5,João Castro,OUT_PROGRAM
+Economics,2389,T1,Customer Relationship Management,3.5,Elizabete Cardoso,OUT_PROGRAM
+Economics,2329,T1,Consumer and Managerial Decision Making,3.5,Luis Martinez,OUT_PROGRAM
+Economics,2643,T1,Social Media Marketing,3.5,António Marinho Torres,OUT_PROGRAM
+Economics,2332,T1,Entrepreneurship,3.5,Nadim Habib,OUT_PROGRAM
+Economics,2639,T1,Entrepreneurial Strategy,3.5,Roberto Ragozzino,OUT_PROGRAM
+Economics,2364,T1,Venture Simulation,3.5,António Marinho Torres,OUT_PROGRAM
+Economics,2688,T1,Curricular Internship - Trimestral,3.5,João Loureiro Rodrigues,OUT_PROGRAM
+Economics,2799,T1,Extracurricular Internship - Trimestral,0,João Loureiro Rodrigues,OUT_PROGRAM
+Economics,2359,T2,Operations Management,3.5,Jiwen Ge,OUT_PROGRAM
+Economics,2346,T2,Modeling Business Decisions,3.5,Sreyaa Guha,OUT_PROGRAM
+Economics,2468,T2,Technology Strategy,3.5,Adam Tatarynowicz,OUT_PROGRAM
+Economics,2440,T2,Big Data Analysis,3.5,Arash Laghaie,OUT_PROGRAM
+Economics,2751,T2,Sustainable Marketing,3.5,Arnaud Monnier,OUT_PROGRAM
+Economics,2217,T2,Corporate Governance,3.5,António Nogueira Leite,OUT_PROGRAM
+Economics,2448,T2,Business Model Innovation,3.5,João Castro,OUT_PROGRAM
+Economics,2446,T2,Small Business Management,3.5,Nuno Vasconcellos e Sá,OUT_PROGRAM
+Economics,2791,T2,Advanced Product Design,3.5,João Castro,OUT_PROGRAM
+Economics,2441,T2,Digital Marketing,3.5,António Marinho Torres,OUT_PROGRAM
+Economics,2329,T2,Consumer and Managerial Decision Making,3.5,Luis Martinez,OUT_PROGRAM
+Economics,2588,T2,Science-Based Entrepreneurship and Innovation,3.5,Nuno Arantes e Oliveira,OUT_PROGRAM
+Economics,2388,T2,Leadership and Change Management,3.5,Filipa Castanheira,OUT_PROGRAM
+Economics,2688,T2,Curricular Internship - Trimestral,3.5,João Loureiro Rodrigues,OUT_PROGRAM
+Economics,2799,T2,Extracurricular Internship - Trimestral,0,João Loureiro Rodrigues,OUT_PROGRAM
+Economics,2220,S2,Entrepreneurial Finance & Venture Capital,7,André Filipe Silva,OUT_PROGRAM
+Economics,2232,S2,Applied Corporate Finance,7,"Rui Silva, Luís Barbosa, Pranav Desai",OUT_PROGRAM
+Economics,2460,S2,Strategy Consulting,7,Constança Casquinho,OUT_PROGRAM
+Economics,2421,S2,Applied Entrepreneurship,7,Leif Brandle,OUT_PROGRAM
+Economics,2438,S2,Cross-Cultural Issues for Marketing,7,Carmen Lages,OUT_PROGRAM
+Economics,2483,S2,Applied Social Entrepreneurship,7,Loic Pedras,OUT_PROGRAM
+Economics,2484,S2,Corporate Strategy and Transformation,7,António Bernardo,OUT_PROGRAM
+Economics,2485,S2,Innovation and Value Creation Wheel,7,Luís Lages,OUT_PROGRAM
+Economics,2580,S2,Value-Based Health Care,7,João Marques Gomes,OUT_PROGRAM
+Economics,2638,S2,Design Thinking for Social Innovation,7,Anne-Laure Fayard,OUT_PROGRAM
+Economics,2784,S2,Curricular Internship - Semestral,7,João Loureiro Rodrigues,OUT_PROGRAM
+Economics,2800,S2,Extracurricular Internship - Semestral,0,João Loureiro Rodrigues,OUT_PROGRAM
+Economics,2359,T3,Operations Management,3.5,Jiwen Ge,OUT_PROGRAM
+Economics,2352,T3,Quality Management,3.5,Ana Sofia Costa,OUT_PROGRAM
+Economics,2451,T3,Operations Strategy,3.5,Junfei Lei,OUT_PROGRAM
+Economics,2217,T3,Corporate Governance,3.5,António Nogueira Leite,OUT_PROGRAM
+Economics,2239,T3,Corporate Valuation,3.5,Rosário André,OUT_PROGRAM
+Economics,2338,T3,International Business,3.5,Yannick Wiessner,OUT_PROGRAM
+Economics,2371,T3,"CIRCULAR ECONOMY: Eliminate, Circulate and Regenerate",3.5,Luís Veiga Martins,OUT_PROGRAM
+Economics,2389,T3,Customer Relationship Management,3.5,Elizabete Cardoso,OUT_PROGRAM
+Economics,2416,T3,Family Business,3.5,Alexandre Dias da Cunha,OUT_PROGRAM
+Economics,2448,T3,Business Model Innovation,3.5,Leif Brandle,OUT_PROGRAM
+Economics,2465,T3,Open Innovation,3.5,Paolo Leone,OUT_PROGRAM
+Economics,2490,T3,Geoeconomics and International Relations,3.5,Paulo Portas,OUT_PROGRAM
+Economics,2496,T3,Strategic Foresight and Scenario Planning,3.5,António Alvarenga,OUT_PROGRAM
+Economics,2613,T3,Asian Brands,3.5,Andrew Harrison,OUT_PROGRAM
+Economics,2614,T3,Revenue Management,3.5,Duarte Pimentel,OUT_PROGRAM
+Economics,2616,T3,Cracking the Sales Code,3.5,Filipe Simões de Almeida,OUT_PROGRAM
+Economics,2646,T3,Strategic Costing,3.5,Marta Almeida,OUT_PROGRAM
+Economics,2643,T3,Social Media Marketing,3.5,António Marinho Torres,OUT_PROGRAM
+Economics,2656,T3,Work & Family,3.5,Jenny Hoobler,OUT_PROGRAM
+Economics,2667,T3,Service Excellence,3.5,Sander Allegro,OUT_PROGRAM
+Economics,2699,T3,Sports Club Management,3.5,Luís Vilar,OUT_PROGRAM
+Economics,2752,T3,Team Dynamics in Organizations,3.5,Sai Kalvapalle,OUT_PROGRAM
+Economics,2332,T3,Entrepreneurship,3.5,Nadim Habib,OUT_PROGRAM
+Economics,2636,T3,Brands and Marketing in Asia's Emerging Markets,3.5,Andrew Harrison,OUT_PROGRAM
+Economics,2688,T3,Curricular Internship - Trimestral,3.5,João Loureiro Rodrigues,OUT_PROGRAM
+Economics,2799,T3,Extracurricular Internship - Trimestral,0,João Loureiro Rodrigues,OUT_PROGRAM
+Economics,2359,T4,Operations Management,3.5,Utku Serhatli,OUT_PROGRAM
+Economics,2644,T4,Sustainable Operations,3.5,Utku Serhatli,OUT_PROGRAM
+Economics,2239,T4,Corporate Valuation,3.5,Rosário André,OUT_PROGRAM
+Economics,2338,T4,International Business,3.5,Yannick Wiessner,OUT_PROGRAM
+Economics,2351,T4,Pricing Strategies,3.5,Jorge Velosa,OUT_PROGRAM
+Economics,2375,T4,Corporate Social Responsibility,3.5,João Loureiro Rodrigues,OUT_PROGRAM
+Economics,2397,T4,Innovation Management,3.5,António Marinho Torres,OUT_PROGRAM
+Economics,2417,T4,Management of Non-Profit Organizations,3.5,Silvia Herrero,OUT_PROGRAM
+Economics,2441,T4,Digital Marketing,3.5,António Marinho Torres,OUT_PROGRAM
+Economics,2448,T4,Business Model Innovation,3.5,Leif Brandle,OUT_PROGRAM
+Economics,2458,T4,Talent Development,3.5,Filipa Rodrigues,OUT_PROGRAM
+Economics,2465,T4,Open Innovation,3.5,Paolo Leone,OUT_PROGRAM
+Economics,2473,T4,Negotiation,3.5,Luís Almeida Costa,OUT_PROGRAM
+Economics,2475,T4,Sales and Retailing,3.5,Jorge Velosa,OUT_PROGRAM
+Economics,2500,T4,Performance and Progress,3.5,Marco Berti,OUT_PROGRAM
+Economics,2588,T4,Science-Based Entrepreneurship and Innovation,3.5,Nuno Arantes e Oliveira,OUT_PROGRAM
+Economics,2590,T4,Leading Social Enterprises with Impact in International Development,3.5,Filipe Alfaiate,OUT_PROGRAM
+Economics,2616,T4,Cracking the Sales Code,3.5,Filipe Simões de Almeida,OUT_PROGRAM
+Economics,2647,T4,Strategic Planning and Control,3.5,Marta Almeida,OUT_PROGRAM
+Economics,2656,T4,Work & Family,3.5,Jenny Hoobler,OUT_PROGRAM
+Economics,2663,T4,AI Impact on Business,3.5,"Rodrigo Belo, Junfei Lei",OUT_PROGRAM
+Economics,2716,T4,Regenerative Business,3.5,Graham Miller,OUT_PROGRAM
+Economics,2749,T4,Management in the Public Sector,3.5,Adolfo Mesquita Nunes,OUT_PROGRAM
+Economics,2751,T4,Sustainable Marketing,3.5,Arnaud Monnier,OUT_PROGRAM
+Economics,2752,T4,Team Dynamics in Organizations,3.5,Sai Kalvapalle,OUT_PROGRAM
+Economics,2757,T4,Hotel Asset Management,3.5,Duarte Pimentel,OUT_PROGRAM
+Economics,2332,T4,Entrepreneurship,3.5,Nadim Habib,OUT_PROGRAM
+Economics,2592,T4,Strategy Implementation,3.5,João Silveira Lobo,OUT_PROGRAM
+Economics,2279,T4,Islamic Finance,3.5,Fouad Hashem,OUT_PROGRAM
+Economics,2688,T4,Curricular Internship - Trimestral,3.5,João Loureiro Rodrigues,OUT_PROGRAM
+Economics,2799,T4,Extracurricular Internship - Trimestral,0,João Loureiro Rodrigues,OUT_PROGRAM
+Impact Entrepreneurship,2652,S1,Fundamentals on Environment and Sustainability,,Francisco Ferreira,ELECTIVE
+Impact Entrepreneurship,2648,S1,Diversity & Inclusion,,Jenny Hoobler,ELECTIVE
+Impact Entrepreneurship,2582,S1,Competitive Strategy: An Analytical Approach,,Vasco Santos,ELECTIVE
+Impact Entrepreneurship,2484,S1,Corporate Strategy and Transformation,,Roberto Ragozzino,ELECTIVE
+Impact Entrepreneurship,2485,S1,Innovation and Value Creation Wheel,,Luís Lages,ELECTIVE
+Impact Entrepreneurship,2698,S1,Management Consulting,,Marco Berti,ELECTIVE
+Impact Entrepreneurship,2460,S1,Strategy Consulting,,Constança Casquinho,ELECTIVE
+Impact Entrepreneurship,2421,S1,Applied Entrepreneurship,,Miguel Muñoz Duarte,ELECTIVE
+Impact Entrepreneurship,2477,S1,Introduction to Programming,,Ricardo Pereira,ELECTIVE
+Impact Entrepreneurship,2232,S1,Applied Corporate Finance,,Paulo Pinho,ELECTIVE
+Impact Entrepreneurship,2229,S1,Investments,,"Ertunç Aydogdu, Nicholas Hirschey",ELECTIVE
+Impact Entrepreneurship,2229,S1,Investments,,Martijn Boons,ELECTIVE
+Impact Entrepreneurship,2206,S1,Banking,,Ana Lacerda,ELECTIVE
+Impact Entrepreneurship,2176,S1,Development Economics,,Pedro Vicente,ELECTIVE
+Impact Entrepreneurship,2784,S1,Curricular Internship - Semestral,,João Loureiro Rodrigues,ELECTIVE
+Impact Entrepreneurship,2618,T1,Risk and Crisis Management,,Sérgio da Silva Pinto,ELECTIVE
+Impact Entrepreneurship,2468,T1,Technology Strategy,,Adam Tatarynowicz,ELECTIVE
+Impact Entrepreneurship,2352,T1,Quality Management,,Ana Sofia Costa,ELECTIVE
+Impact Entrepreneurship,2768,T1,Personal Finance,,Vinay Pranjivan,ELECTIVE
+Impact Entrepreneurship,2772,T1,Research Methods for Finance,,Zeshu Xu,ELECTIVE
+Impact Entrepreneurship,2240,T1,Financial Intermediation,,Bjorn Richter,ELECTIVE
+Impact Entrepreneurship,2278,T1,Sustainable Finance,,Rodrigo Tavares,ELECTIVE
+Impact Entrepreneurship,2243,T1,Real Estate Finance,,João Pedra Soares,ELECTIVE
+Impact Entrepreneurship,2375,T1,Corporate Social Responsibility,,João Loureiro Rodrigues,ELECTIVE
+Impact Entrepreneurship,2613,T1,Asian Brands,,Andrew Harrison,ELECTIVE
+Impact Entrepreneurship,2448,T1,Business Model Innovation,,João Castro,ELECTIVE
+Impact Entrepreneurship,2128,T1,Competition Policy,,Rúben Bento,ELECTIVE
+Impact Entrepreneurship,2480,T1,Digital Strategy and Transformation,,Adam Tatarynowicz,ELECTIVE
+Impact Entrepreneurship,2416,T1,Family Business,,Alexandre Dias da Cunha,ELECTIVE
+Impact Entrepreneurship,2490,T1,Geoeconomics and International Relations,,Paulo Portas,ELECTIVE
+Impact Entrepreneurship,2338,T1,International Business,,Emanuel Gomes,ELECTIVE
+Impact Entrepreneurship,2473,T1,Negotiation,,Luís Almeida Costa,ELECTIVE
+Impact Entrepreneurship,2496,T1,Strategic Foresight and Scenario Planning,,António Alvarenga,ELECTIVE
+Impact Entrepreneurship,2337,T1,Integrated Marketing Communications,,Jorge Velosa,ELECTIVE
+Impact Entrepreneurship,2481,T1,Product Design and Development,,João Castro,ELECTIVE
+Impact Entrepreneurship,2389,T1,Customer Relationship Management,,Elizabete Cardoso,ELECTIVE
+Impact Entrepreneurship,2329,T1,Consumer and Managerial Decision Making,,Luis Martinez,ELECTIVE
+Impact Entrepreneurship,2643,T1,Social Media Marketing,,António Marinho Torres,ELECTIVE
+Impact Entrepreneurship,2639,T1,Entrepreneurial Strategy,,Roberto Ragozzino,ELECTIVE
+Impact Entrepreneurship,2364,T1,Venture Simulation,,António Marinho Torres,ELECTIVE
+Impact Entrepreneurship,2257,T1,Futures and Options,,João Amaro de Matos,ELECTIVE
+Impact Entrepreneurship,2689,T1,Hospitality Trends,,Sérgio Guerreiro,ELECTIVE
+Impact Entrepreneurship,2193,T1,Behavioral Economics and Finance,,Pedro Pires,ELECTIVE
+Impact Entrepreneurship,2233,T1,Macroeconomics of Financial Markets,,André de Castro Silva,ELECTIVE
+Impact Entrepreneurship,2688,T1,Curricular Internship - Trimestral,,João Loureiro Rodrigues,ELECTIVE
+Impact Entrepreneurship,2359,T2,Operations Management,,Jiwen Ge,ELECTIVE
+Impact Entrepreneurship,2346,T2,Modeling Business Decisions,,Sreyaa Guha,ELECTIVE
+Impact Entrepreneurship,2468,T2,Technology Strategy,,Adam Tatarynowicz,ELECTIVE
+Impact Entrepreneurship,2440,T2,Big Data Analysis,,Arash Laghaie,ELECTIVE
+Impact Entrepreneurship,2691,T2,Climate Finance,,Alexandre C. Köberle,ELECTIVE
+Impact Entrepreneurship,2240,T2,Financial Intermediation,,Bjorn Richter,ELECTIVE
+Impact Entrepreneurship,2751,T2,Sustainable Marketing,,Arnaud Monnier,ELECTIVE
+Impact Entrepreneurship,2217,T2,Corporate Governance,,António Nogueira Leite,ELECTIVE
+Impact Entrepreneurship,2649,T2,Energy and Climate Change,,Júlia Seixas,ELECTIVE
+Impact Entrepreneurship,2277,T2,Impact Investments,,Yasmine van der Straten,ELECTIVE
+Impact Entrepreneurship,2448,T2,Business Model Innovation,,João Castro,ELECTIVE
+Impact Entrepreneurship,2480,T2,Digital Strategy and Transformation,,Adam Tatarynowicz,ELECTIVE
+Impact Entrepreneurship,2694,T2,Leading Transformation,,Marco Berti,ELECTIVE
+Impact Entrepreneurship,2337,T2,Integrated Marketing Communications,,Jorge Velosa,ELECTIVE
+Impact Entrepreneurship,2791,T2,Advanced Product Design,,João Castro,ELECTIVE
+Impact Entrepreneurship,2493,T2,Marketing Analytics,,Arash Laghaie,ELECTIVE
+Impact Entrepreneurship,2441,T2,Digital Marketing,,António Marinho Torres,ELECTIVE
+Impact Entrepreneurship,2339,T2,International Marketing Strategy,,António Marinho Torres,ELECTIVE
+Impact Entrepreneurship,2690,T2,Shopper Marketing Management,,Miguel Pinto Fernandes,ELECTIVE
+Impact Entrepreneurship,2329,T2,Consumer and Managerial Decision Making,,Luis Martinez,ELECTIVE
+Impact Entrepreneurship,2588,T2,Science-Based Entrepreneurship and Innovation,,Nuno Arantes e Oliveira,ELECTIVE
+Impact Entrepreneurship,2622,T2,Blockchain Fundamentals,,Shayan Eskandari,ELECTIVE
+Impact Entrepreneurship,2621,T2,Algorithmic Governance,,Leid Zejnilovic,ELECTIVE
+Impact Entrepreneurship,2491,T2,Data Visualization,,Qinlu Hu,ELECTIVE
+Impact Entrepreneurship,2222,T2,Financial Statement Analysis,,Marta Cota,ELECTIVE
+Impact Entrepreneurship,2218,T2,Derivatives,,João Amaro de Matos,ELECTIVE
+Impact Entrepreneurship,2215,T2,Auditing,,"Gonçalo Silva, Mário Freire",ELECTIVE
+Impact Entrepreneurship,2236,T2,Private Equity,,Diogo Chalbert Santos,ELECTIVE
+Impact Entrepreneurship,2388,T2,Leadership and Change Management,,Filipa Castanheira,ELECTIVE
+Impact Entrepreneurship,2778,T2,Cybersecurity in Organizations,,Mário Monteiro Marques,ELECTIVE
+Impact Entrepreneurship,2796,T2,Economics of the European Union,,José Tavares,ELECTIVE
+Impact Entrepreneurship,2194,T2,History of Economic Analysis,,Francesco Franco,ELECTIVE
+Impact Entrepreneurship,2688,T2,Curricular Internship - Trimestral,,João Loureiro Rodrigues,ELECTIVE
+Impact Entrepreneurship,2206,S2,Banking,,Carla Rebelo,ELECTIVE
+Impact Entrepreneurship,2220,S2,Entrepreneurial Finance & Venture Capital,,André Filipe Silva,ELECTIVE
+Impact Entrepreneurship,2232,S2,Applied Corporate Finance Desai,,"Rui Silva, Luís Barbosa, Pranav",ELECTIVE
+Impact Entrepreneurship,2477,S2,Introduction to Programming,,Ricardo Pereira,ELECTIVE
+Impact Entrepreneurship,2695,S2,Introduction to Machine Learning,,Sabina Zejnilovic,ELECTIVE
+Impact Entrepreneurship,2460,S2,Strategy Consulting,,Constança Casquinho,ELECTIVE
+Impact Entrepreneurship,2652,S2,Fundamentals on Environment and Sustainability,,Francisco Ferreira,ELECTIVE
+Impact Entrepreneurship,2421,S2,Applied Entrepreneurship,,Leif Brandle,ELECTIVE
+Impact Entrepreneurship,2438,S2,Cross-Cultural Issues for Marketing,,Carmen Lages,ELECTIVE
+Impact Entrepreneurship,2437,S2,Luxury and Fashion Marketing,,Catherine da Silveira,ELECTIVE
+Impact Entrepreneurship,2483,S2,Applied Social Entrepreneurship,,Loic Pedras,ELECTIVE
+Impact Entrepreneurship,2484,S2,Corporate Strategy and Transformation,,António Bernardo,ELECTIVE
+Impact Entrepreneurship,2485,S2,Innovation and Value Creation Wheel,,Luís Lages,ELECTIVE
+Impact Entrepreneurship,2580,S2,Value-Based Health Care,,João Marques Gomes,ELECTIVE
+Impact Entrepreneurship,2585,S2,Evidence-Based Practices for Wellbeing,,Sofia Kousi,ELECTIVE
+Impact Entrepreneurship,2638,S2,Design Thinking for Social Innovation,,Anne-Laure Fayard,ELECTIVE
+Impact Entrepreneurship,2660,S2,Applied Sports Projects,,Rui Biscaia,ELECTIVE
+Impact Entrepreneurship,2661,S2,Better Marketing for Consumer Wellbeing,,Nicole Mead,ELECTIVE
+Impact Entrepreneurship,2698,S2,Management Consulting,,Marco Berti,ELECTIVE
+Impact Entrepreneurship,2784,S2,Curricular Internship - Semestral,,João Loureiro Rodrigues,ELECTIVE
+Impact Entrepreneurship,2972,S2,European Law,,Leonor Rossi,ELECTIVE
+Impact Entrepreneurship,2359,T3,Operations Management,,Jiwen Ge,ELECTIVE
+Impact Entrepreneurship,2352,T3,Quality Management,,Ana Sofia Costa,ELECTIVE
+Impact Entrepreneurship,2451,T3,Operations Strategy,,Junfei Lei,ELECTIVE
+Impact Entrepreneurship,2657,T3,Hospitality Operations Management,,TBD,ELECTIVE
+Impact Entrepreneurship,2226,T3,Hedge Funds,,Carlos Almeida,ELECTIVE
+Impact Entrepreneurship,2691,T3,Climate Finance,,Alexandre C. Köberle,ELECTIVE
+Impact Entrepreneurship,2768,T3,Personal Finance,,Vinay Pranjivan,ELECTIVE
+Impact Entrepreneurship,2134,T3,Economics of Education,,Ana Balcão Reis,ELECTIVE
+Impact Entrepreneurship,2135,T3,Economics of Health and Health Care,,Carolina Santos,ELECTIVE
+Impact Entrepreneurship,2185,T3,Game Theory,,Rúben Bento,ELECTIVE
+Impact Entrepreneurship,2196,T3,International Migration,,Cátia Batista,ELECTIVE
+Impact Entrepreneurship,2214,T3,Asset Management,,Felix Wilke,ELECTIVE
+Impact Entrepreneurship,2215,T3,Auditing,,"Gonçalo Silva, Mário Freire",ELECTIVE
+Impact Entrepreneurship,2217,T3,Corporate Governance,,António Nogueira Leite,ELECTIVE
+Impact Entrepreneurship,2218,T3,Derivatives,,Gustavo Freire,ELECTIVE
+Impact Entrepreneurship,2668,T3,"Sustainability Evaluation of Policies, Plans and Projects",,"Tomás Ramos, João Joanaz",ELECTIVE
+Impact Entrepreneurship,2236,T3,Private Equity,,Luís Mota Duarte,ELECTIVE
+Impact Entrepreneurship,2239,T3,Corporate Valuation,,Rosário André,ELECTIVE
+Impact Entrepreneurship,2964,T3,AI for Economics and Business,,João Brogueira de Sousa,ELECTIVE
+Impact Entrepreneurship,2273,T3,Fintech Ventures,,Afonso Eça,ELECTIVE
+Impact Entrepreneurship,2277,T3,Impact Investments,,Yasmine van der Straten,ELECTIVE
+Impact Entrepreneurship,2338,T3,International Business,,Yannick Wiessner,ELECTIVE
+Impact Entrepreneurship,2334,T3,Global Human Resources Management,,Filipa Rodrigues,ELECTIVE
+Impact Entrepreneurship,2371,T3,"CIRCULAR ECONOMY: Eliminate, Circulate and Regenerate",,Luís Veiga Martins,ELECTIVE
+Impact Entrepreneurship,2337,T3,Integrated Marketing Communications,,Jorge Velosa,ELECTIVE
+Impact Entrepreneurship,2339,T3,International Marketing Strategy,,António Marinho Torres,ELECTIVE
+Impact Entrepreneurship,2389,T3,Customer Relationship Management,,Elizabete Cardoso,ELECTIVE
+Impact Entrepreneurship,2416,T3,Family Business,,Alexandre Dias da Cunha,ELECTIVE
+Impact Entrepreneurship,2448,T3,Business Model Innovation,,Leif Brandle,ELECTIVE
+Impact Entrepreneurship,2465,T3,Open Innovation,,Paolo Leone,ELECTIVE
+Impact Entrepreneurship,2490,T3,Geoeconomics and International Relations,,Paulo Portas,ELECTIVE
+Impact Entrepreneurship,2496,T3,Strategic Foresight and Scenario Planning,,António Alvarenga,ELECTIVE
+Impact Entrepreneurship,2613,T3,Asian Brands,,Andrew Harrison,ELECTIVE
+Impact Entrepreneurship,2622,T3,Blockchain Fundamentals,,Leid Zejnilovic,ELECTIVE
+Impact Entrepreneurship,2635,T3,Organizing for Good in the digital age,,Paolo Leone,ELECTIVE
+Impact Entrepreneurship,2614,T3,Revenue Management,,Duarte Pimentel,ELECTIVE
+Impact Entrepreneurship,2616,T3,Cracking the Sales Code,,Filipe Simões de Almeida,ELECTIVE
+Impact Entrepreneurship,2646,T3,Strategic Costing,,Marta Almeida,ELECTIVE
+Impact Entrepreneurship,2643,T3,Social Media Marketing,,António Marinho Torres,ELECTIVE
+Impact Entrepreneurship,2656,T3,Work & Family,,Jenny Hoobler,ELECTIVE
+Impact Entrepreneurship,2685,T3,Applied Quantitative Studies,,Guang Zeng,ELECTIVE
+Impact Entrepreneurship,2667,T3,Service Excellence,,Sander Allegro,ELECTIVE
+Impact Entrepreneurship,2715,T3,Sustainable Tourism,,Graham Miller,ELECTIVE
+Impact Entrepreneurship,2699,T3,Sports Club Management,,Luís Vilar,ELECTIVE
+Impact Entrepreneurship,2752,T3,Team Dynamics in Organizations,,Sai Kalvapalle,ELECTIVE
+Impact Entrepreneurship,2770,T3,Power and Social Change,,Samantha Ortiz,ELECTIVE
+Impact Entrepreneurship,2636,T3,Brands and Marketing in Asia's Emerging Markets,,Andrew Harrison,ELECTIVE
+Impact Entrepreneurship,2795,T3,Innovations in the Experience Economy,,Euclides Major,ELECTIVE
+Impact Entrepreneurship,2138,T3,Environmental Policy,,Mateus Souza,ELECTIVE
+Impact Entrepreneurship,2145,T3,Labor Economics,,Pedro Portugal,ELECTIVE
+Impact Entrepreneurship,2173,T3,Macroeconomic Theory,,Francesco Franco,ELECTIVE
+Impact Entrepreneurship,2181,T3,Policy Evaluation,,Nikita Melnikov,ELECTIVE
+Impact Entrepreneurship,2184,T3,Political Economy,,José Tavares,ELECTIVE
+Impact Entrepreneurship,2193,T3,Behavioral Economics and Finance,,Pedro Pires,ELECTIVE
+Impact Entrepreneurship,2688,T3,Curricular Internship - Trimestral,,João Loureiro Rodrigues,ELECTIVE
+Impact Entrepreneurship,2359,T4,Operations Management,,Utku Serhatli,ELECTIVE
+Impact Entrepreneurship,2644,T4,Sustainable Operations,,Utku Serhatli,ELECTIVE
+Impact Entrepreneurship,2225,T4,Risk Management,,Rafael Sequeira,ELECTIVE
+Impact Entrepreneurship,2226,T4,Hedge Funds,,Afonso Januário,ELECTIVE
+Impact Entrepreneurship,2240,T4,Financial Intermediation,,João Cabral dos Santos,ELECTIVE
+Impact Entrepreneurship,2282,T4,Sovereign Advisory,,João Moreira Rato,ELECTIVE
+Impact Entrepreneurship,2243,T4,Real Estate Finance,,João Pedra Soares,ELECTIVE
+Impact Entrepreneurship,2673,T4,Decentralized Finance,,Gonçalo Correia,ELECTIVE
+Impact Entrepreneurship,2755,T4,Advanced Financial Transactions in M&A,,Silvina Rubio,ELECTIVE
+Impact Entrepreneurship,2768,T4,Personal Finance,,Vinay Pranjivan,ELECTIVE
+Impact Entrepreneurship,2772,T4,Research Methods for Finance,,Julio Crego,ELECTIVE
+Impact Entrepreneurship,2775,T4,Investment Philosophies,,Firmino Morgado,ELECTIVE
+Impact Entrepreneurship,2960,T4,Blue Finance,,Gonçalo Ribeiro,ELECTIVE
+Impact Entrepreneurship,2158,T4,Economics of Health Systems,,Carolina Santos,ELECTIVE
+Impact Entrepreneurship,2185,T4,Game Theory,,Rúben Bento,ELECTIVE
+Impact Entrepreneurship,2215,T4,Auditing,,"Gonçalo Silva, Mário Freire",ELECTIVE
+Impact Entrepreneurship,2218,T4,Derivatives,,Gustavo Freire,ELECTIVE
+Impact Entrepreneurship,2491,T4,Data Visualization,,Joe Costello,ELECTIVE
+Impact Entrepreneurship,2236,T4,Private Equity,,Luís Mota Duarte,ELECTIVE
+Impact Entrepreneurship,2236,T4,Private Equity,,Diogo Chalbert Santos,ELECTIVE
+Impact Entrepreneurship,2239,T4,Corporate Valuation,,Rosário André,ELECTIVE
+Impact Entrepreneurship,2338,T4,International Business,,Yannick Wiessner,ELECTIVE
+Impact Entrepreneurship,2351,T4,Pricing Strategies,,Jorge Velosa,ELECTIVE
+Impact Entrepreneurship,2375,T4,Corporate Social Responsibility,,João Loureiro Rodrigues,ELECTIVE
+Impact Entrepreneurship,2397,T4,Innovation Management,,António Marinho Torres,ELECTIVE
+Impact Entrepreneurship,2417,T4,Management of Non-Profit Organizations,,Silvia Herrero,ELECTIVE
+Impact Entrepreneurship,2441,T4,Digital Marketing,,António Marinho Torres,ELECTIVE
+Impact Entrepreneurship,2448,T4,Business Model Innovation,,Leif Brandle,ELECTIVE
+Impact Entrepreneurship,2458,T4,Talent Development,,Filipa Rodrigues,ELECTIVE
+Impact Entrepreneurship,2465,T4,Open Innovation,,Paolo Leone,ELECTIVE
+Impact Entrepreneurship,2473,T4,Negotiation,,Luís Almeida Costa,ELECTIVE
+Impact Entrepreneurship,2475,T4,Sales and Retailing,,Jorge Velosa,ELECTIVE
+Impact Entrepreneurship,2500,T4,Performance and Progress,,Marco Berti,ELECTIVE
+Impact Entrepreneurship,2588,T4,Science-Based Entrepreneurship and Innovation,,Nuno Arantes e Oliveira,ELECTIVE
+Impact Entrepreneurship,2590,T4,Leading Social Enterprises with Impact in International Development,,Filipe Alfaiate,ELECTIVE
+Impact Entrepreneurship,2623,T4,Network Analytics,,Michail Batikas,ELECTIVE
+Impact Entrepreneurship,2635,T4,Organizing for Good in the digital age,,Paolo Leone,ELECTIVE
+Impact Entrepreneurship,2616,T4,Cracking the Sales Code,,Filipe Simões de Almeida,ELECTIVE
+Impact Entrepreneurship,2647,T4,Strategic Planning and Control,,Marta Almeida,ELECTIVE
+Impact Entrepreneurship,2656,T4,Work & Family,,Jenny Hoobler,ELECTIVE
+Impact Entrepreneurship,2663,T4,AI Impact on Business,,"Rodrigo Belo, Junfei Lei",ELECTIVE
+Impact Entrepreneurship,2663,T4,AI Impact on Business,,"Junfei Lei, Rodrigo Belo",ELECTIVE
+Impact Entrepreneurship,2685,T4,Applied Quantitative Studies,,Guang Zeng,ELECTIVE
+Impact Entrepreneurship,2676,T4,Finance and the transition to net zero,,Fouad Hashem,ELECTIVE
+Impact Entrepreneurship,2690,T4,Shopper Marketing Management,,Miguel Pinto Fernandes,ELECTIVE
+Impact Entrepreneurship,2708,T4,Sports Marketing,,Luís Vilar,ELECTIVE
+Impact Entrepreneurship,2716,T4,Regenerative Business,,Graham Miller,ELECTIVE
+Impact Entrepreneurship,2753,T4,Tourism & Hospitality Consulting,,Miguel Bello,ELECTIVE
+Impact Entrepreneurship,2749,T4,Management in the Public Sector,,Adolfo Mesquita Nunes,ELECTIVE
+Impact Entrepreneurship,2751,T4,Sustainable Marketing,,Arnaud Monnier,ELECTIVE
+Impact Entrepreneurship,2752,T4,Team Dynamics in Organizations,,Sai Kalvapalle,ELECTIVE
+Impact Entrepreneurship,2757,T4,Hotel Asset Management,,Duarte Pimentel,ELECTIVE
+Impact Entrepreneurship,2770,T4,Power and Social Change,,Samantha Ortiz,ELECTIVE
+Impact Entrepreneurship,2778,T4,Cybersecurity in Organizations,,Mário Monteiro Marques,ELECTIVE
+Impact Entrepreneurship,2969,T4,E-Commerce: Strategy & Disruption,,David Bernardo,ELECTIVE
+Impact Entrepreneurship,2961,T4,Economics of Immigration,,Cátia Batista,ELECTIVE
+Impact Entrepreneurship,2592,T4,Strategy Implementation,,João Silveira Lobo,ELECTIVE
+Impact Entrepreneurship,2675,T4,European Union: Governance and Crises,,António Vicente,ELECTIVE
+Impact Entrepreneurship,2776,T4,Hotel Investment and Development,,Carlos Miró,ELECTIVE
+Impact Entrepreneurship,2141,T4,Global Energy Markets,,Mateus Souza,ELECTIVE
+Impact Entrepreneurship,2233,T4,Macroeconomics of Financial Markets,,André de Castro Silva,ELECTIVE
+Impact Entrepreneurship,2235,T4,Credit Risk,,Ante Sterc,ELECTIVE
+Impact Entrepreneurship,2248,T4,Fixed Income,,Ante Sterc,ELECTIVE
+Impact Entrepreneurship,2279,T4,Islamic Finance,,Fouad Hashem,ELECTIVE
+Impact Entrepreneurship,2687,T4,Public Policy,,Alex Armand,ELECTIVE
+Impact Entrepreneurship,2688,T4,Curricular Internship - Trimestral,,João Loureiro Rodrigues,ELECTIVE
+Impact Entrepreneurship,2197,T4,Advanced Behavioral Economics,,Pedro Pires,ELECTIVE
+Impact Entrepreneurship,2800,S1,Extracurricular Internship - Semestral,,João Loureiro Rodrigues,OUT_PROGRAM
+Impact Entrepreneurship,2376,T1,Project Management,,Paulo Faroleiro,OUT_PROGRAM
+Impact Entrepreneurship,2454,T1,Doing Business in China,,Andrew Harrison,OUT_PROGRAM
+Impact Entrepreneurship,2446,T1,Small Business Management,,Nuno Vasconcellos e Sá,OUT_PROGRAM
+Impact Entrepreneurship,2799,T1,Extracurricular Internship - Trimestral,,João Loureiro Rodrigues,OUT_PROGRAM
+Impact Entrepreneurship,2446,T2,Small Business Management,,Nuno Vasconcellos e Sá,OUT_PROGRAM
+Impact Entrepreneurship,2651,T2,Digital Transformation in Hospitality,,Bruno Horta Soares,OUT_PROGRAM
+Impact Entrepreneurship,2799,T2,Extracurricular Internship - Trimestral,,João Loureiro Rodrigues,OUT_PROGRAM
+Impact Entrepreneurship,2165,S2,Microeconometrics,,Alex Armand,OUT_PROGRAM
+Impact Entrepreneurship,2168,S2,Macroeconometrics,,Luís Catela Nunes,OUT_PROGRAM
+Impact Entrepreneurship,2800,S2,Extracurricular Internship - Semestral,,João Loureiro Rodrigues,OUT_PROGRAM
+Impact Entrepreneurship,2799,T3,Extracurricular Internship - Trimestral,,João Loureiro Rodrigues,OUT_PROGRAM
+Public Policy,2652,S1,Fundamentals on Environment and Sustainability,,Francisco Ferreira M,ELECTIVE
+Public Policy,2784,S1,Curricular Internship - Semestral,,João Loureiro Rodrigues Open Area,ELECTIVE
+Public Policy,2376,T1,Project Management,,Paulo Faroleiro M,ELECTIVE
+Public Policy,2768,T1,Personal Finance,,Vinay Pranjivan F,ELECTIVE
+Public Policy,2128,T1,Competition Policy,,Rúben Bento E,ELECTIVE
+Public Policy,2490,T1,Geoeconomics and International Relations,,Paulo Portas M,ELECTIVE
+Public Policy,2473,T1,Negotiation,,Luís Almeida Costa M,ELECTIVE
+Public Policy,2193,T1,Behavioral Economics and Finance,,Pedro Pires E,ELECTIVE
+Public Policy,2688,T1,Curricular Internship - Trimestral,,João Loureiro Rodrigues Open Area,ELECTIVE
+Public Policy,2359,T2,Operations Management,,Jiwen Ge M,ELECTIVE
+Public Policy,2649,T2,Energy and Climate Change,,Júlia Seixas M,ELECTIVE
+Public Policy,2277,T2,Impact Investments,,Yasmine van der Straten F,ELECTIVE
+Public Policy,2694,T2,Leading Transformation,,Marco Berti M,ELECTIVE
+Public Policy,2222,T2,Financial Statement Analysis,,Marta Cota C,ELECTIVE
+Public Policy,2388,T2,Leadership and Change Management,,Filipa Castanheira M,ELECTIVE
+Public Policy,2796,T2,Economics of the European Union,,José Tavares E,ELECTIVE
+Public Policy,2194,T2,History of Economic Analysis,,Francesco Franco E,ELECTIVE
+Public Policy,2688,T2,Curricular Internship - Trimestral,,João Loureiro Rodrigues Open Area,ELECTIVE
+Public Policy,2652,S2,Fundamentals on Environment and Sustainability,,Francisco Ferreira M,ELECTIVE
+Public Policy,2483,S2,Applied Social Entrepreneurship,,Loic Pedras M,ELECTIVE
+Public Policy,2638,S2,Design Thinking for Social Innovation,,Anne-Laure Fayard M,ELECTIVE
+Public Policy,2784,S2,Curricular Internship - Semestral,,João Loureiro Rodrigues Open Area,ELECTIVE
+Public Policy,2972,S2,European Law,,Leonor Rossi SC,ELECTIVE
+Public Policy,2359,T3,Operations Management,,Jiwen Ge M,ELECTIVE
+Public Policy,2768,T3,Personal Finance,,Vinay Pranjivan F,ELECTIVE
+Public Policy,2134,T3,Economics of Education,,Ana Balcão Reis E,ELECTIVE
+Public Policy,2135,T3,Economics of Health and Health Care,,Carolina Santos E,ELECTIVE
+Public Policy,2185,T3,Game Theory,,Rúben Bento E,ELECTIVE
+Public Policy,2196,T3,International Migration,,Cátia Batista E,ELECTIVE
+Public Policy,2668,T3,"Sustainability Evaluation of Policies, Plans and Projects",,"Tomás Ramos, João Joanaz M",ELECTIVE
+Public Policy,2277,T3,Impact Investments,,Yasmine van der Straten F,ELECTIVE
+Public Policy,2371,T3,"CIRCULAR ECONOMY: Eliminate, Circulate and Regenerate",,Luís Veiga Martins E,ELECTIVE
+Public Policy,2490,T3,Geoeconomics and International Relations,,Paulo Portas M,ELECTIVE
+Public Policy,2635,T3,Organizing for Good in the digital age,,Paolo Leone M,ELECTIVE
+Public Policy,2646,T3,Strategic Costing,,Marta Almeida M,ELECTIVE
+Public Policy,2770,T3,Power and Social Change,,Samantha Ortiz M,ELECTIVE
+Public Policy,2138,T3,Environmental Policy,,Mateus Souza E,ELECTIVE
+Public Policy,2145,T3,Labor Economics,,Pedro Portugal E,ELECTIVE
+Public Policy,2184,T3,Political Economy,,José Tavares E,ELECTIVE
+Public Policy,2193,T3,Behavioral Economics and Finance,,Pedro Pires E,ELECTIVE
+Public Policy,2688,T3,Curricular Internship - Trimestral,,João Loureiro Rodrigues Open Area,ELECTIVE
+Public Policy,2359,T4,Operations Management,,Utku Serhatli M,ELECTIVE
+Public Policy,2644,T4,Sustainable Operations,,Utku Serhatli M,ELECTIVE
+Public Policy,2282,T4,Sovereign Advisory,,João Moreira Rato E,ELECTIVE
+Public Policy,2768,T4,Personal Finance,,Vinay Pranjivan F,ELECTIVE
+Public Policy,2737,T4,Private Sector Development,,Roberto Rocha E,ELECTIVE
+Public Policy,2158,T4,Economics of Health Systems,,Carolina Santos E,ELECTIVE
+Public Policy,2185,T4,Game Theory,,Rúben Bento E,ELECTIVE
+Public Policy,2417,T4,Management of Non-Profit Organizations,,Silvia Herrero M,ELECTIVE
+Public Policy,2473,T4,Negotiation,,Luís Almeida Costa M,ELECTIVE
+Public Policy,2590,T4,Leading Social Enterprises with Impact in International Development,,Filipe Alfaiate M,ELECTIVE
+Public Policy,2635,T4,Organizing for Good in the digital age,,Paolo Leone M,ELECTIVE
+Public Policy,2647,T4,Strategic Planning and Control,,Marta Almeida M,ELECTIVE
+Public Policy,2749,T4,Management in the Public Sector,,Adolfo Mesquita Nunes M,ELECTIVE
+Public Policy,2770,T4,Power and Social Change,,Samantha Ortiz M,ELECTIVE
+Public Policy,2961,T4,Economics of Immigration,,Cátia Batista E,ELECTIVE
+Public Policy,2675,T4,European Union: Governance and Crises,,António Vicente E,ELECTIVE
+Public Policy,2141,T4,Global Energy Markets,,Mateus Souza E,ELECTIVE
+Public Policy,2279,T4,Islamic Finance,,Fouad Hashem F,ELECTIVE
+Public Policy,2688,T4,Curricular Internship - Trimestral,,João Loureiro Rodrigues Open Area,ELECTIVE
+Public Policy,2174,S1,Macroeconomic Analysis,,Miguel Lebre de Freitas E,ELECTIVE
+Public Policy,2188,S1,Microeconomic Analysis,,Mateus Souza E,ELECTIVE
+Public Policy,2232,S1,Applied Corporate Finance,,Paulo Pinho F,ELECTIVE
+Public Policy,2800,S1,Extracurricular Internship - Semestral,,João Loureiro Rodrigues Open Area,ELECTIVE
+Public Policy,2238,T1,Financial Reporting,,Camillo Riva F,ELECTIVE
+Public Policy,2799,T1,Extracurricular Internship - Trimestral,,João Loureiro Rodrigues Open Area,ELECTIVE
+Public Policy,2799,T2,Extracurricular Internship - Trimestral,,João Loureiro Rodrigues Open Area,ELECTIVE
+Public Policy,2232,S2,Applied Corporate Finance,,"Rui Silva, Luís Barbosa, Pranav Desai F",ELECTIVE
+Public Policy,2800,S2,Extracurricular Internship - Semestral,,João Loureiro Rodrigues Open Area,ELECTIVE
+Public Policy,2238,T3,Financial Reporting,,Camillo Riva F,ELECTIVE
+Public Policy,2799,T3,Extracurricular Internship - Trimestral,,João Loureiro Rodrigues Open Area,ELECTIVE
+Public Policy,2799,T4,Extracurricular Internship - Trimestral,,João Loureiro Rodrigues Open Area,ELECTIVE

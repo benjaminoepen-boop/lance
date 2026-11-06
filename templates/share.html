@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Lance · Share prices{% endblock %}
+{% block content %}
+<h1 class="sr">Share prices</h1>
+<section class="card">
+  <div class="figure" style="padding:0 0 8px"><h2 style="margin:0">Sections with past prices</h2><b class="num" id="coverage-text">{{ coverage.covered }} of {{ coverage.total }}</b></div>
+  <div class="bar"><i id="coverage-bar" style="width:{{ coverage.percent }}%"></i></div>
+  <p class="muted" style="margin-top:10px">After a round, everyone sees the full list of bids in their own sections. Nova publishes none of it. Pooled, these lists tell the next students what a seat really costs.</p>
+</section>
+<div class="steps">
+  <section class="card step"><span class="n">1</span><b>Keep the button</b>
+    <p class="muted small" style="margin-bottom:10px">Drag it to your bookmarks bar.</p>
+    <a class="bookmarklet" href="{{ bookmarklet }}" draggable="true" data-bookmarklet>Copy my rank lists</a></section>
+  <section class="card step"><span class="n">2</span><b>Run it on the platform</b>
+    <p class="muted small">Log in to the bidding platform, open the tab <i>Rank</i>, click the button. It goes through your sections by itself and copies the result.</p></section>
+  <section class="card step"><span class="n">3</span><b>Paste it here</b>
+    <textarea class="field copy-box" id="export" placeholder="Paste here" aria-label="Your export" style="min-height:70px"></textarea>
+    <button type="button" class="btn primary" id="send">Share</button>
+    <p class="small" id="share-result" style="margin-top:8px"></p></section>
+</div>
+<section class="card">
+  <h2>What leaves your browser</h2>
+  <ul class="plain muted">
+    <li>Read: course, section, seats, and per row the bid, the rank value and whether it won a seat.</li>
+    <li>Never read: the student column and the ECTS column.</li>
+    <li>Stored here: only totals per section. The rows are thrown away right after counting.</li>
+  </ul>
+</section>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='share.js') }}"></script>{% endblock %}

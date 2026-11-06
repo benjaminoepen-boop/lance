@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>{% block title %}Lance{% endblock %}</title>
+<meta name="description" content="Plan your Nova SBE course bidding: timetable clashes, past prices and what a bid will really cost.">
+<meta name="theme-color" content="#f5f5f7">
+<link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+<link rel="icon" href="{{ url_for('static', filename='icon.svg') }}" type="image/svg+xml">
+<link rel="apple-touch-icon" href="{{ url_for('static', filename='icon.svg') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+</head>
+<body data-page="{{ active }}">
+{% set icons = {
+ 'planner': '<svg width="15" height="15" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="13" height="12" rx="2"/><path d="M2 7h13M6 1.5v3M11 1.5v3"/></svg>',
+ 'bids': '<svg width="15" height="15" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 14h11M5 14V8M8.5 14V4M12 14v-4"/></svg>',
+ 'rules': '<svg width="15" height="15" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 2.5h8l3 3v9H3z"/><path d="M6 8h5M6 11h5"/></svg>',
+ 'share': '<svg width="15" height="15" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.5 11V2.5M5 6l3.5-3.5L12 6M3 11v3.5h11V11"/></svg>'
+} %}
+{% set nav = [('planner','Planner','t1',url_for('planner')),('bids','Bids','t2',url_for('bids')),('rules','Rules','t3',url_for('rules')),('share','Share prices','t4',url_for('share'))] %}
+<div class="shell">
+  <aside class="side">
+    <a class="brand" href="{{ url_for('planner') }}"><i><svg width="14" height="14" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 14 14 3M9.5 3H14v4.5"/></svg></i>Lance</a>
+    {% for key, label, tile, href in nav %}
+    <a class="nav-item {{ 'on' if active == key }}" href="{{ href }}"><span class="tile {{ tile }}">{{ icons[key]|safe }}</span>{{ label }}</a>
+    {% endfor %}
+    <p class="side-note">Student project in Introduction to Programming. Not an official Nova SBE system. Bids are placed on Nova's platform only.</p>
+  </aside>
+  <main class="main" id="main">
+    {% block head %}{% endblock %}
+    {% block content %}{% endblock %}
+  </main>
+</div>
+<nav class="tabbar" aria-label="Sections">
+  {% for key, label, tile, href in nav %}
+  <a class="{{ 'on' if active == key }}" href="{{ href }}">{{ icons[key]|safe }}<span>{{ label.split(' ')[0] }}</span></a>
+  {% endfor %}
+</nav>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+<script src="{{ url_for('static', filename='common.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

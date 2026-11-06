@@ -1,0 +1,246 @@
+id,offering_id,section,lecturers,delivery
+2128-T1-TXA,2128-T1,TXA,Rúben Bento,on campus
+2174-S1-TXA,2174-S1,TXA,Miguel Lebre de Freitas,on campus
+2175-S1-TXA,2175-S1,TXA,Paulo M. M. Rodrigues,on campus
+2176-S1-TXA,2176-S1,TXA,Pedro Vicente,on campus
+2188-S1-TXA,2188-S1,TXA,Mateus Souza,on campus
+2193-T1-TXA,2193-T1,TXA,Pedro Pires,on campus
+2194-T2-TXA,2194-T2,TXA,Francesco Franco,on campus
+2204-T2-TXA,2204-T2,TXA,Pedro Carvalho,on campus
+2206-S1-TXA,2206-S1,TXA,Ana Lacerda,on campus
+2215-T2-TXA,2215-T2,TXA,"Gonçalo Silva, Mário Freire",on campus
+2217-T2-TXA,2217-T2,TXA,António Nogueira Leite,on campus
+2218-T2-TXA,2218-T2,TXA,João Amaro de Matos,on campus
+2222-T2-TXA,2222-T2,TXA,Marta Cota,on campus
+2222-T2-TXB,2222-T2,TXB,Marta Cota,on campus
+2222-T2-TXC,2222-T2,TXC,Marta Cota,on campus
+2222-T2-TXD,2222-T2,TXD,Marta Cota,on campus
+2222-T2-TXE,2222-T2,TXE,Marta Cota,on campus
+2229-S1-TXA,2229-S1,TXA,"Ertunç Aydogdu, Nicholas Hirschey",on campus
+2229-S1-TXB,2229-S1,TXB,"Ertunç Aydogdu, Nicholas Hirschey",on campus
+2229-S1-TXC,2229-S1,TXC,"Ertunç Aydogdu, Nicholas Hirschey",on campus
+2229-S1-TXD,2229-S1,TXD,"Ertunç Aydogdu, Nicholas Hirschey",on campus
+2229-S1-TXE,2229-S1,TXE,"Ertunç Aydogdu, Nicholas Hirschey",on campus
+2229-S1-TXF,2229-S1,TXF,"Ertunç Aydogdu, Nicholas Hirschey",on campus
+2229-S1-TXG,2229-S1,TXG,Martijn Boons,on campus
+2229-S1-TXH,2229-S1,TXH,Martijn Boons,on campus
+2232-S1-TXA,2232-S1,TXA,Paulo Pinho,on campus
+2232-S1-TXB,2232-S1,TXB,Paulo Pinho,on campus
+2233-T1-TXA,2233-T1,TXA,André de Castro Silva,on campus
+2236-T2-TXA,2236-T2,TXA,Luís Mota Duarte,on campus
+2238-T1-TXA,2238-T1,TXA,Camillo Riva,on campus
+2238-T1-TXB,2238-T1,TXB,Camillo Riva,on campus
+2240-T1-TXA,2240-T1,TXA,Carla Rebelo,on campus
+2240-T2-TXA,2240-T2,TXA,Carla Rebelo,on campus
+2243-T1-TXA,2243-T1,TXA,João Pedra Soares,on campus
+2253-S1-TXA,2253-S1,TXA,"Stefano Sacchetto, Tim Eisert",on campus
+2253-S1-TXB,2253-S1,TXB,"Stefano Sacchetto, Tim Eisert",on campus
+2253-S1-TXC,2253-S1,TXC,"Stefano Sacchetto, Tim Eisert",on campus
+2253-S1-TXD,2253-S1,TXD,"Stefano Sacchetto, Tim Eisert",on campus
+2253-S1-TXE,2253-S1,TXE,"Ekaterina Gavrilova, Rui Albuquerque",on campus
+2253-S1-TXF,2253-S1,TXF,"Ekaterina Gavrilova, Rui Albuquerque",on campus
+2253-S1-TXG,2253-S1,TXG,Rui Albuquerque,on campus
+2253-S1-TXH,2253-S1,TXH,Rui Albuquerque,on campus
+2257-T1-TXA,2257-T1,TXA,João Amaro de Matos,on campus
+2260-S1-TXA,2260-S1,TXA,"Gonçalo Ribeiro, Miguel Marecos Duarte",on campus
+2270-T2-TXA,2270-T2,TXA,Tatyana Marchuk,on campus
+2270-T2-TXB,2270-T2,TXB,Tatyana Marchuk,on campus
+2270-T2-TXC,2270-T2,TXC,Tatyana Marchuk,on campus
+2270-T2-TXD,2270-T2,TXD,Tatyana Marchuk,on campus
+2270-T2-TXE,2270-T2,TXE,Tatyana Marchuk,on campus
+2270-T2-TXF,2270-T2,TXF,Tatyana Marchuk,on campus
+2270-T2-TXG,2270-T2,TXG,Bernardo Forbes Costa,on campus
+2270-T2-TXH,2270-T2,TXH,Bernardo Forbes Costa,on campus
+2277-T2-TXA,2277-T2,TXA,Yasmine van der Straten,on campus
+2277-T2-TXB,2277-T2,TXB,Yasmine van der Straten,on campus
+2278-T1-TXA,2278-T1,TXA,Rodrigo Tavares,on campus
+2278-T1-TXB,2278-T1,TXB,Rodrigo Tavares,on campus
+2327-S1-TXA,2327-S1,TXA,Sofia Kousi,on campus
+2327-S1-TXB,2327-S1,TXB,Sofia Kousi,on campus
+2329-T1-TXA,2329-T1,TXA,Luis Martinez,on campus
+2329-T1-TXB,2329-T1,TXB,Luis Martinez,on campus
+2329-T2-TXA,2329-T2,TXA,Luis Martinez,on campus
+2329-T2-TXB,2329-T2,TXB,Vera Colaço,on campus
+2330-T2-TXA,2330-T2,TXA,Arnaud Monnier,on campus
+2332-T1-TXA,2332-T1,TXA,Nadim Habib,on campus
+2336-T1-TXA,2336-T1,TXA,Filipa Rodrigues,blended
+2336-T1-TXB,2336-T1,TXB,Filipa Rodrigues,blended
+2336-T1-TXC,2336-T1,TXC,Filipa Rodrigues,blended
+2336-T1-TXD,2336-T1,TXD,Filipa Rodrigues,blended
+2336-T1-TXE,2336-T1,TXE,Filipa Rodrigues,blended
+2336-T2-TXA,2336-T2,TXA,Filipa Rodrigues,blended
+2336-T2-TXB,2336-T2,TXB,Filipa Rodrigues,blended
+2336-T2-TXC,2336-T2,TXC,Filipa Rodrigues,blended
+2337-T1-TXA,2337-T1,TXA,Jorge Velosa,on campus
+2337-T2-TXA,2337-T2,TXA,Jorge Velosa,on campus
+2338-T1-TXA,2338-T1,TXA,Emanuel Gomes,on campus
+2338-T1-TXB,2338-T1,TXB,Emanuel Gomes,on campus
+2339-T2-TXA,2339-T2,TXA,António Marinho Torres,on campus
+2346-T2-TXA,2346-T2,TXA,Sreyaa Guha,on campus
+2346-T2-TXB,2346-T2,TXB,Sreyaa Guha,on campus
+2352-T1-TXA,2352-T1,TXA,Ana Sofia Costa,on campus
+2359-T2-TXA,2359-T2,TXA,Jiwen Ge,on campus
+2359-T2-TXB,2359-T2,TXB,Jiwen Ge,on campus
+2364-T1-TXA,2364-T1,TXA,António Marinho Torres,on campus
+2375-T1-TXA,2375-T1,TXA,João Loureiro Rodrigues,blended
+2376-T1-TXA,2376-T1,TXA,Paulo Faroleiro,on campus
+2388-T2-TXA,2388-T2,TXA,Filipa Castanheira,on campus
+2389-T1-TXA,2389-T1,TXA,Elizabete Cardoso,on campus
+2414-S1-TXA,2414-S1,TXA,Gonçalo Rocha,blended
+2414-S1-TXC,2414-S1,TXC,Luís Barbosa,blended
+2414-S1-TXD,2414-S1,TXD,Luís Barbosa,blended
+2416-T1-TXA,2416-T1,TXA,Alexandre Dias da Cunha,on campus
+2421-S1-TXA,2421-S1,TXA,Miguel Muñoz Duarte,on campus
+2431-S1-TXA,2431-S1,TXA,"Daniela Schmitt, Fan Zhang, Miguel Pinto Fernandes",blended
+2431-S1-TXB,2431-S1,TXB,"Daniela Schmitt, Fan Zhang, Miguel Pinto Fernandes",blended
+2431-S1-TXC,2431-S1,TXC,"Daniela Schmitt, Fan Zhang, Miguel Pinto Fernandes",blended
+2431-S1-TXD,2431-S1,TXD,"Daniela Schmitt, Fan Zhang, Miguel Pinto Fernandes",blended
+2431-S1-TXE,2431-S1,TXE,"Daniela Schmitt, Fan Zhang, Miguel Pinto Fernandes",blended
+2431-S1-TXF,2431-S1,TXF,"Daniela Schmitt, Fan Zhang, Miguel Pinto Fernandes",blended
+2431-S1-TXG,2431-S1,TXG,"Daniela Schmitt, Fan Zhang, Miguel Pinto Fernandes",blended
+2431-S1-TXH,2431-S1,TXH,"Daniela Schmitt, Fan Zhang, Miguel Pinto Fernandes",blended
+2431-S1-TXI,2431-S1,TXI,"Daniela Schmitt, Fan Zhang, Miguel Pinto Fernandes",blended
+2431-S1-TXJ,2431-S1,TXJ,"Daniela Schmitt, Fan Zhang, Miguel Pinto Fernandes",blended
+2440-T2-TXA,2440-T2,TXA,Arash Laghaie,on campus
+2440-T2-TXB,2440-T2,TXB,Arash Laghaie,on campus
+2441-T2-TXA,2441-T2,TXA,António Marinho Torres,on campus
+2446-T1-TXA,2446-T1,TXA,Nuno Vasconcellos e Sá,on campus
+2446-T2-TXA,2446-T2,TXA,Nuno Vasconcellos e Sá,on campus
+2448-T1-TXA,2448-T1,TXA,João Castro,on campus
+2448-T2-TXA,2448-T2,TXA,João Castro,on campus
+2454-T1-TXA,2454-T1,TXA,Andrew Harrison,on campus
+2459-S1-TXA,2459-S1,TXA,Marco Galo,blended
+2459-S1-TXB,2459-S1,TXB,Marco Galo,blended
+2459-S1-TXC,2459-S1,TXC,Marco Galo,blended
+2459-S1-TXD,2459-S1,TXD,Marco Galo,blended
+2459-S1-TXE,2459-S1,TXE,José Campino,blended
+2459-S1-TXF,2459-S1,TXF,José Campino,blended
+2459-S1-TXG,2459-S1,TXG,José Campino,blended
+2459-S1-TXH,2459-S1,TXH,José Campino,blended
+2459-S1-TXI,2459-S1,TXI,José Campino,blended
+2459-S1-TXJ,2459-S1,TXJ,Marco Galo,blended
+2460-S1-TXA,2460-S1,TXA,Constança Casquinho,on campus
+2463-T2-TXA,2463-T2,TXA,Jan Corstjens,blended
+2463-T2-TXB,2463-T2,TXB,Jan Corstjens,blended
+2463-T2-TXC,2463-T2,TXC,Jan Corstjens,blended
+2463-T2-TXD,2463-T2,TXD,Jan Corstjens,blended
+2463-T2-TXE,2463-T2,TXE,Jan Corstjens,blended
+2468-T1-TXA,2468-T1,TXA,Adam Tatarynowicz,on campus
+2468-T2-TXA,2468-T2,TXA,Adam Tatarynowicz,on campus
+2468-T2-TXB,2468-T2,TXB,Adam Tatarynowicz,on campus
+2473-T1-TXA,2473-T1,TXA,Luís Almeida Costa,on campus
+2477-S1-TXA,2477-S1,TXA,Ricardo Pereira,blended
+2477-S1-TXB,2477-S1,TXB,Ricardo Pereira,blended
+2477-S1-TXC,2477-S1,TXC,Ricardo Pereira,blended
+2480-T1-TXA,2480-T1,TXA,Adam Tatarynowicz,on campus
+2480-T2-TXA,2480-T2,TXA,Adam Tatarynowicz,on campus
+2481-T1-TXA,2481-T1,TXA,João Castro,on campus
+2481-T1-TXB,2481-T1,TXB,João Castro,on campus
+2484-S1-TXA,2484-S1,TXA,Roberto Ragozzino,on campus
+2485-S1-TXA,2485-S1,TXA,Luís Lages,on campus
+2490-T1-TXA,2490-T1,TXA,Paulo Portas,on campus
+2491-T2-TXA,2491-T2,TXA,Qinlu Hu,blended
+2491-T2-TXB,2491-T2,TXB,Qinlu Hu,blended
+2493-T2-TXA,2493-T2,TXA,Arash Laghaie,on campus
+2496-T1-TXA,2496-T1,TXA,António Alvarenga,on campus
+2496-T1-TXB,2496-T1,TXB,António Alvarenga,on campus
+2496-T2-TXA,2496-T2,TXA,António Alvarenga,on campus
+2498-T2-TXA,2498-T2,TXA,"Inês Risques, Michael Pinkhasov",on campus
+2581-S1-TXA,2581-S1,TXA,António Freitas Miguel,blended
+2581-S1-TXB,2581-S1,TXB,António Freitas Miguel,blended
+2581-S1-TXC,2581-S1,TXC,António Freitas Miguel,blended
+2581-S1-TXD,2581-S1,TXD,António Freitas Miguel,blended
+2581-S1-TXE,2581-S1,TXE,António Freitas Miguel,blended
+2582-S1-TXA,2582-S1,TXA,Vasco Santos,on campus
+2584-S1-TXA,2584-S1,TXA,Afonso Almeida Costa,on campus
+2584-S1-TXB,2584-S1,TXB,Afonso Almeida Costa,on campus
+2584-S1-TXC,2584-S1,TXC,Afonso Almeida Costa,on campus
+2588-T2-TXA,2588-T2,TXA,Nuno Arantes e Oliveira,on campus
+2588-T2-TXB,2588-T2,TXB,Nuno Arantes e Oliveira,on campus
+2599-T1-TXA,2599-T1,TXA,Lénia Mestrinho,on campus
+2609-T2-TXA,2609-T2,TXA,Filipa Baptista,on campus
+2609-T2-TXB,2609-T2,TXB,Filipa Baptista,on campus
+2609-T2-TXC,2609-T2,TXC,Filipa Baptista,on campus
+2613-T1-TXA,2613-T1,TXA,Andrew Harrison,on campus
+2616-T2-TXA,2616-T2,TXA,Filipe Simões de Almeida,on campus
+2618-T1-TXA,2618-T1,TXA,Sérgio da Silva Pinto,on campus
+2621-T2-TXA,2621-T2,TXA,Leid Zejnilovic,on campus
+2622-T2-TXA,2622-T2,TXA,Shayan Eskandari,on campus
+2628-S1-TXA,2628-S1,TXA,John Herniman,on campus
+2628-S1-TXB,2628-S1,TXB,John Herniman,on campus
+2632-T1-TXA,2632-T1,TXA,Nadim Habib,on campus
+2632-T1-TXB,2632-T1,TXB,Nadim Habib,on campus
+2639-T1-TXA,2639-T1,TXA,Roberto Ragozzino,on campus
+2639-T1-TXB,2639-T1,TXB,Roberto Ragozzino,on campus
+2643-T1-TXA,2643-T1,TXA,António Marinho Torres,on campus
+2648-S1-TXA,2648-S1,TXA,Jenny Hoobler,on campus
+2649-T2-TXA,2649-T2,TXA,Júlia Seixas,on campus
+2651-T2-TXA,2651-T2,TXA,Bruno Horta Soares,on campus
+2652-S1-TXA,2652-S1,TXA,Francisco Ferreira,on campus
+2659-T2-TXA,2659-T2,TXA,Qinlu Hu,on campus
+2659-T2-TXB,2659-T2,TXB,Qinlu Hu,on campus
+2659-T2-TXC,2659-T2,TXC,Qinlu Hu,on campus
+2689-T1-TXA,2689-T1,TXA,Sérgio Guerreiro,on campus
+2690-T2-TXA,2690-T2,TXA,Miguel Pinto Fernandes,on campus
+2691-T2-TXA,2691-T2,TXA,Alexandre C. Köberle,on campus
+2693-T2-TXA,2693-T2,TXA,"João Castro, Pedro Oliveira",on campus
+2693-T2-TXB,2693-T2,TXB,"João Castro, Pedro Oliveira",on campus
+2694-T2-TXA,2694-T2,TXA,Marco Berti,on campus
+2698-S1-TXA,2698-S1,TXA,Marco Berti,on campus
+2738-T2-TXA,2738-T2,TXA,Pedro Vicente,on campus
+2738-T2-TXB,2738-T2,TXB,Pedro Vicente,on campus
+2740-T1-TXA,2740-T1,TXA,"Ana Grifo, Madalena Resende",on campus
+2740-T1-TXB,2740-T1,TXB,"Ana Grifo, Madalena Resende",on campus
+2741-T1-TXA,2741-T1,TXA,Pedro Pires,on campus
+2741-T1-TXB,2741-T1,TXB,Pedro Pires,on campus
+2743-T2-TXA,2743-T2,TXA,Sónia Félix,on campus
+2743-T2-TXB,2743-T2,TXB,Sónia Félix,on campus
+2745-T2-TXA,2745-T2,TXA,José Tavares,on campus
+2745-T2-TXB,2745-T2,TXB,José Tavares,on campus
+2746-T2-TXA,2746-T2,TXA,Ana Cláudia Gouveia,on campus
+2746-T2-TXB,2746-T2,TXB,Ana Cláudia Gouveia,on campus
+2748-T1-TXA,2748-T1,TXA,"Márcia Pereira, Maria João Braga",on campus
+2748-T1-TXB,2748-T1,TXB,"Márcia Pereira, Maria João Braga",on campus
+2750-T1-TXA,2750-T1,TXA,António Nogueira Leite,on campus
+2750-T1-TXB,2750-T1,TXB,António Nogueira Leite,on campus
+2751-T2-TXA,2751-T2,TXA,Arnaud Monnier,on campus
+2762-T1-TXA,2762-T1,TXA,Rodrigo Belo,on campus
+2762-T1-TXB,2762-T1,TXB,Rodrigo Belo,on campus
+2762-T1-TXC,2762-T1,TXC,Rodrigo Belo,on campus
+2763-T2-TXA,2763-T2,TXA,Miguel Alves Martins,on campus
+2763-T2-TXB,2763-T2,TXB,Miguel Alves Martins,on campus
+2766-T1-TXA,2766-T1,TXA,Yufei Shen,on campus
+2766-T1-TXB,2766-T1,TXB,Yufei Shen,on campus
+2766-T1-TXC,2766-T1,TXC,Yufei Shen,on campus
+2768-T1-TXA,2768-T1,TXA,Vinay Pranjivan,on campus
+2771-T1-TXA,2771-T1,TXA,Patrícia Ramos,on campus
+2771-T1-TXB,2771-T1,TXB,Patrícia Ramos,on campus
+2771-T1-TXC,2771-T1,TXC,Patrícia Ramos,on campus
+2772-T1-TXA,2772-T1,TXA,Zeshu Xu,on campus
+2772-T1-TXB,2772-T1,TXB,Zeshu Xu,on campus
+2773-T2-TXA,2773-T2,TXA,Sreyaa Guha,on campus
+2773-T2-TXB,2773-T2,TXB,Sreyaa Guha,on campus
+2773-T2-TXC,2773-T2,TXC,Sreyaa Guha,on campus
+2778-T2-TXA,2778-T2,TXA,Mário Monteiro Marques,on campus
+2785-T2-TXA,2785-T2,TXA,Sam Reha,on campus
+2786-T2-TXA,2786-T2,TXA,"Filipa Rodrigues, Irene Consiglio",on campus
+2789-T1-TXA,2789-T1,TXA,Roberto Rocha,on campus
+2789-T1-TXB,2789-T1,TXB,Roberto Rocha,on campus
+2790-T1-TXA,2790-T1,TXA,Fábio Santos,on campus
+2790-T1-TXB,2790-T1,TXB,Fábio Santos,on campus
+2791-T2-TXA,2791-T2,TXA,João Castro,on campus
+2792-T1-TXA,2792-T1,TXA,Milton de Sousa,on campus
+2793-T2-TXB,2793-T2,TXB,Jiwen Ge,on campus
+2796-T2-TXA,2796-T2,TXA,José Tavares,on campus
+2966-T1-TXA,2966-T1,TXA,Ana Amaro,blended
+2966-T1-TXB,2966-T1,TXB,Ana Amaro,blended
+2966-T1-TXC,2966-T1,TXC,Ana Amaro,blended
+2966-T1-TXD,2966-T1,TXD,Ana Amaro,on campus
+2966-T2-TXA,2966-T2,TXA,Ana Amaro,blended
+2966-T2-TXB,2966-T2,TXB,Ana Amaro,blended
+2966-T2-TXC,2966-T2,TXC,Ana Amaro,blended
+2966-T2-TXD,2966-T2,TXD,Ana Amaro,blended
+2967-S1-TXA,2967-S1,TXA,Jenny Hoobler,on campus
+2971-T1-TXA,2971-T1,TXA,Mark Oberle,on campus
+9696-T2-TXA,9696-T2,TXA,Sónia Félix,on campus
+9696-T2-TXB,9696-T2,TXB,Sónia Félix,on campus

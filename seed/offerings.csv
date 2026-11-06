@@ -1,0 +1,306 @@
+id,code,name,term,semester,ects,lecturers,has_schedule
+2128-T1,2128,Competition Policy,T1,Fall,3.5,Rúben Bento,1
+2131-T4,2131,Economic Growth,T4,Spring,3.5,Miguel Lebre de Freitas,0
+2134-T3,2134,Economics of Education,T3,Spring,3.5,Ana Balcão Reis,0
+2135-T3,2135,Economics of Health and Health Care,T3,Spring,3.5,Carolina Santos,0
+2138-T3,2138,Environmental Policy,T3,Spring,3.5,Mateus Souza,0
+2141-T4,2141,Global Energy Markets,T4,Spring,3.5,Mateus Souza,0
+2145-T3,2145,Labor Economics,T3,Spring,3.5,Pedro Portugal,0
+2158-T4,2158,Economics of Health Systems,T4,Spring,3.5,Carolina Santos,0
+2165-S2,2165,Microeconometrics,S2,Spring,7.0,Alex Armand,0
+2168-S2,2168,Macroeconometrics,S2,Spring,7.0,Luís Catela Nunes,0
+2173-T3,2173,Macroeconomic Theory,T3,Spring,3.5,Francesco Franco,0
+2174-S1,2174,Macroeconomic Analysis,S1,Fall,7.0,Miguel Lebre de Freitas,1
+2175-S1,2175,Econometrics,S1,Fall,7.0,Paulo M. M. Rodrigues,1
+2176-S1,2176,Development Economics,S1,Fall,7.0,Pedro Vicente,1
+2181-T3,2181,Policy Evaluation,T3,Spring,3.5,Nikita Melnikov,0
+2184-T3,2184,Political Economy,T3,Spring,3.5,José Tavares,0
+2185-T3,2185,Game Theory,T3,Spring,3.5,Rúben Bento,0
+2185-T4,2185,Game Theory,T4,Spring,3.5,Rúben Bento,0
+2188-S1,2188,Microeconomic Analysis,S1,Fall,7.0,Mateus Souza,1
+2193-T1,2193,Behavioral Economics and Finance,T1,Fall,3.5,Pedro Pires,1
+2193-T3,2193,Behavioral Economics and Finance,T3,Spring,3.5,Pedro Pires,0
+2194-T2,2194,History of Economic Analysis,T2,Fall,3.5,Francesco Franco,1
+2196-T3,2196,International Migration,T3,Spring,3.5,Cátia Batista,0
+2197-T4,2197,Advanced Behavioral Economics,T4,Spring,3.5,Pedro Pires,0
+2204-T2,2204,"Mergers, Acquisitions, Restructuring",T2,Fall,3.5,Pedro Carvalho,1
+2206-S1,2206,Banking,S1,Fall,7.0,Ana Lacerda,1
+2206-S2,2206,Banking,S2,Spring,7.0,Carla Rebelo,0
+2214-T3,2214,Asset Management,T3,Spring,3.5,Felix Wilke,0
+2215-T2,2215,Auditing,T2,Fall,3.5,"Gonçalo Silva, Mário Freire",1
+2215-T3,2215,Auditing,T3,Spring,3.5,"Gonçalo Silva, Mário Freire",0
+2215-T4,2215,Auditing,T4,Spring,3.5,"Gonçalo Silva, Mário Freire",0
+2217-T2,2217,Corporate Governance,T2,Fall,3.5,António Nogueira Leite,1
+2217-T3,2217,Corporate Governance,T3,Spring,3.5,António Nogueira Leite,0
+2218-T2,2218,Derivatives,T2,Fall,3.5,João Amaro de Matos,1
+2218-T3,2218,Derivatives,T3,Spring,3.5,Gustavo Freire,0
+2218-T4,2218,Derivatives,T4,Spring,3.5,Gustavo Freire,0
+2220-S2,2220,Entrepreneurial Finance & Venture Capital,S2,Spring,7.0,André Filipe Silva,0
+2222-T2,2222,Financial Statement Analysis,T2,Fall,3.5,Marta Cota,1
+2225-T4,2225,Risk Management,T4,Spring,3.5,Rafael Sequeira,0
+2226-T3,2226,Hedge Funds,T3,Spring,3.5,Carlos Almeida,0
+2226-T4,2226,Hedge Funds,T4,Spring,3.5,Afonso Januário,0
+2229-S1,2229,Investments,S1,Fall,7.0,"Ertunç Aydogdu, Martijn Boons, Nicholas Hirschey",1
+2232-S1,2232,Applied Corporate Finance,S1,Fall,7.0,Paulo Pinho,1
+2232-S2,2232,Applied Corporate Finance,S2,Spring,7.0,"Luís Barbosa, Pranav Desai, Rui Silva",0
+2233-T1,2233,Macroeconomics of Financial Markets,T1,Fall,3.5,André de Castro Silva,1
+2233-T4,2233,Macroeconomics of Financial Markets,T4,Spring,3.5,André de Castro Silva,0
+2235-T4,2235,Credit Risk,T4,Spring,3.5,Ante Sterc,0
+2236-T2,2236,Private Equity,T2,Fall,3.5,Luís Mota Duarte,1
+2236-T3,2236,Private Equity,T3,Spring,3.5,Luís Mota Duarte,0
+2236-T4,2236,Private Equity,T4,Spring,3.5,"Diogo Chalbert Santos, Luís Mota Duarte",0
+2238-T1,2238,Financial Reporting,T1,Fall,3.5,Camillo Riva,1
+2238-T3,2238,Financial Reporting,T3,Spring,3.5,Camillo Riva,0
+2239-T3,2239,Corporate Valuation,T3,Spring,3.5,Rosário André,0
+2239-T4,2239,Corporate Valuation,T4,Spring,3.5,Rosário André,0
+2240-T1,2240,Financial Intermediation,T1,Fall,3.5,Carla Rebelo,1
+2240-T2,2240,Financial Intermediation,T2,Fall,3.5,Carla Rebelo,1
+2240-T4,2240,Financial Intermediation,T4,Spring,3.5,João Cabral dos Santos,0
+2243-T1,2243,Real Estate Finance,T1,Fall,3.5,João Pedra Soares,1
+2243-T4,2243,Real Estate Finance,T4,Spring,3.5,João Pedra Soares,0
+2248-T4,2248,Fixed Income,T4,Spring,3.5,Ante Sterc,0
+2253-S1,2253,Corporate Finance,S1,Fall,7.0,"Ekaterina Gavrilova, Rui Albuquerque, Stefano Sacchetto, Tim Eisert",1
+2257-T1,2257,Futures and Options,T1,Fall,3.5,João Amaro de Matos,1
+2260-S1,2260,Nova Students Portfolio,S1,Fall,7.0,"Gonçalo Ribeiro, Miguel Marecos Duarte",1
+2270-T2,2270,Financial Modeling,T2,Fall,3.5,"Bernardo Forbes Costa, Tatyana Marchuk",1
+2273-T3,2273,Fintech Ventures,T3,Spring,3.5,Afonso Eça,0
+2277-T2,2277,Impact Investments,T2,Fall,3.5,Yasmine van der Straten,1
+2277-T3,2277,Impact Investments,T3,Spring,3.5,Yasmine van der Straten,0
+2278-T1,2278,Sustainable Finance,T1,Fall,3.5,Rodrigo Tavares,1
+2279-T4,2279,Islamic Finance,T4,Spring,3.5,Fouad Hashem,0
+2281-T4,2281,Behavioral Finance,T4,Spring,3.5,Afonso Teixeira Duarte,0
+2282-T4,2282,Sovereign Advisory,T4,Spring,3.5,João Moreira Rato,0
+2327-S1,2327,Brand Management,S1,Fall,7.0,Sofia Kousi,1
+2327-S2,2327,Brand Management,S2,Spring,7.0,Sofia Kousi,0
+2329-T1,2329,Consumer and Managerial Decision Making,T1,Fall,3.5,Luis Martinez,1
+2329-T2,2329,Consumer and Managerial Decision Making,T2,Fall,3.5,"Luis Martinez, Vera Colaço",1
+2330-T2,2330,Consumer Behavior,T2,Fall,3.5,Arnaud Monnier,1
+2330-T3,2330,Consumer Behavior,T3,Spring,3.5,Irene Consiglio,0
+2330-T4,2330,Consumer Behavior,T4,Spring,3.5,Arnaud Monnier,0
+2332-T1,2332,Entrepreneurship,T1,Fall,3.5,Nadim Habib,1
+2332-T3,2332,Entrepreneurship,T3,Spring,3.5,Nadim Habib,0
+2332-T4,2332,Entrepreneurship,T4,Spring,3.5,Nadim Habib,0
+2334-T3,2334,Global Human Resources Management,T3,Spring,3.5,Filipa Rodrigues,0
+2336-T1,2336,Human Resources Management,T1,Fall,3.5,Filipa Rodrigues,1
+2336-T2,2336,Human Resources Management,T2,Fall,3.5,Filipa Rodrigues,1
+2337-T1,2337,Integrated Marketing Communications,T1,Fall,3.5,Jorge Velosa,1
+2337-T2,2337,Integrated Marketing Communications,T2,Fall,3.5,Jorge Velosa,1
+2337-T3,2337,Integrated Marketing Communications,T3,Spring,3.5,Jorge Velosa,0
+2338-T1,2338,International Business,T1,Fall,3.5,Emanuel Gomes,1
+2338-T3,2338,International Business,T3,Spring,3.5,Yannick Wiessner,0
+2338-T4,2338,International Business,T4,Spring,3.5,Yannick Wiessner,0
+2339-T2,2339,International Marketing Strategy,T2,Fall,3.5,António Marinho Torres,1
+2339-T3,2339,International Marketing Strategy,T3,Spring,3.5,António Marinho Torres,0
+2346-T2,2346,Modeling Business Decisions,T2,Fall,3.5,Sreyaa Guha,1
+2351-T4,2351,Pricing Strategies,T4,Spring,3.5,Jorge Velosa,0
+2352-T1,2352,Quality Management,T1,Fall,3.5,Ana Sofia Costa,1
+2352-T3,2352,Quality Management,T3,Spring,3.5,Ana Sofia Costa,0
+2359-T2,2359,Operations Management,T2,Fall,3.5,Jiwen Ge,1
+2359-T3,2359,Operations Management,T3,Spring,3.5,Jiwen Ge,0
+2359-T4,2359,Operations Management,T4,Spring,3.5,Utku Serhatli,0
+2364-T1,2364,Venture Simulation,T1,Fall,3.5,António Marinho Torres,1
+2371-T3,2371,"CIRCULAR ECONOMY: Eliminate, Circulate and Regenerate",T3,Spring,3.5,Luís Veiga Martins,0
+2375-T1,2375,Corporate Social Responsibility,T1,Fall,3.5,João Loureiro Rodrigues,1
+2375-T4,2375,Corporate Social Responsibility,T4,Spring,3.5,João Loureiro Rodrigues,0
+2376-T1,2376,Project Management,T1,Fall,3.5,Paulo Faroleiro,1
+2388-T2,2388,Leadership and Change Management,T2,Fall,3.5,Filipa Castanheira,1
+2389-T1,2389,Customer Relationship Management,T1,Fall,3.5,Elizabete Cardoso,1
+2389-T3,2389,Customer Relationship Management,T3,Spring,3.5,Elizabete Cardoso,0
+2397-T4,2397,Innovation Management,T4,Spring,3.5,António Marinho Torres,0
+2414-S1,2414,Financial Management,S1,Fall,7.0,"Gonçalo Rocha, Luís Barbosa",1
+2416-T1,2416,Family Business,T1,Fall,3.5,Alexandre Dias da Cunha,1
+2416-T3,2416,Family Business,T3,Spring,3.5,Alexandre Dias da Cunha,0
+2417-T4,2417,Management of Non-Profit Organizations,T4,Spring,3.5,Silvia Herrero,0
+2418-T4,2418,WPP Master class,T4,Spring,3.5,Jorge Velosa,0
+2421-S1,2421,Applied Entrepreneurship,S1,Fall,7.0,Miguel Muñoz Duarte,1
+2421-S2,2421,Applied Entrepreneurship,S2,Spring,7.0,Leif Brandle,0
+2431-S1,2431,Marketing Management,S1,Fall,7.0,"Daniela Schmitt, Fan Zhang, Miguel Pinto Fernandes",1
+2437-S2,2437,Luxury and Fashion Marketing,S2,Spring,7.0,Catherine da Silveira,0
+2438-S2,2438,Cross-Cultural Issues for Marketing,S2,Spring,7.0,Carmen Lages,0
+2440-T2,2440,Big Data Analysis,T2,Fall,3.5,Arash Laghaie,1
+2441-T2,2441,Digital Marketing,T2,Fall,3.5,António Marinho Torres,1
+2441-T4,2441,Digital Marketing,T4,Spring,3.5,António Marinho Torres,0
+2442-T4,2442,Design and Construction of Data Centric Apps,T4,Spring,3.5,TBD,0
+2446-T1,2446,Small Business Management,T1,Fall,3.5,Nuno Vasconcellos e Sá,1
+2446-T2,2446,Small Business Management,T2,Fall,3.5,Nuno Vasconcellos e Sá,1
+2448-T1,2448,Business Model Innovation,T1,Fall,3.5,João Castro,1
+2448-T2,2448,Business Model Innovation,T2,Fall,3.5,João Castro,1
+2448-T3,2448,Business Model Innovation,T3,Spring,3.5,Leif Brandle,0
+2448-T4,2448,Business Model Innovation,T4,Spring,3.5,Leif Brandle,0
+2451-T3,2451,Operations Strategy,T3,Spring,3.5,Junfei Lei,0
+2454-T1,2454,Doing Business in China,T1,Fall,3.5,Andrew Harrison,1
+2458-T4,2458,Talent Development,T4,Spring,3.5,Filipa Rodrigues,0
+2459-S1,2459,Advanced Strategy,S1,Fall,7.0,"José Campino, Marco Galo",1
+2460-S1,2460,Strategy Consulting,S1,Fall,7.0,Constança Casquinho,1
+2460-S2,2460,Strategy Consulting,S2,Spring,7.0,Constança Casquinho,0
+2463-T2,2463,Advanced Topics in Human Resources Management,T2,Fall,3.5,Jan Corstjens,1
+2465-T3,2465,Open Innovation,T3,Spring,3.5,Paolo Leone,0
+2465-T4,2465,Open Innovation,T4,Spring,3.5,Paolo Leone,0
+2468-T1,2468,Technology Strategy,T1,Fall,3.5,Adam Tatarynowicz,1
+2468-T2,2468,Technology Strategy,T2,Fall,3.5,Adam Tatarynowicz,1
+2473-T1,2473,Negotiation,T1,Fall,3.5,Luís Almeida Costa,1
+2473-T4,2473,Negotiation,T4,Spring,3.5,Luís Almeida Costa,0
+2475-T4,2475,Sales and Retailing,T4,Spring,3.5,Jorge Velosa,0
+2477-S1,2477,Introduction to Programming,S1,Fall,7.0,Ricardo Pereira,1
+2477-S2,2477,Introduction to Programming,S2,Spring,7.0,Ricardo Pereira,0
+2480-T1,2480,Digital Strategy and Transformation,T1,Fall,3.5,Adam Tatarynowicz,1
+2480-T2,2480,Digital Strategy and Transformation,T2,Fall,3.5,Adam Tatarynowicz,1
+2481-T1,2481,Product Design and Development,T1,Fall,3.5,João Castro,1
+2483-S2,2483,Applied Social Entrepreneurship,S2,Spring,7.0,Loic Pedras,0
+2484-S1,2484,Corporate Strategy and Transformation,S1,Fall,7.0,Roberto Ragozzino,1
+2484-S2,2484,Corporate Strategy and Transformation,S2,Spring,7.0,António Bernardo,0
+2485-S1,2485,Innovation and Value Creation Wheel,S1,Fall,7.0,Luís Lages,1
+2485-S2,2485,Innovation and Value Creation Wheel,S2,Spring,7.0,Luís Lages,0
+2490-T1,2490,Geoeconomics and International Relations,T1,Fall,3.5,Paulo Portas,1
+2490-T3,2490,Geoeconomics and International Relations,T3,Spring,3.5,Paulo Portas,0
+2491-T2,2491,Data Visualization,T2,Fall,3.5,Qinlu Hu,1
+2491-T4,2491,Data Visualization,T4,Spring,3.5,Joe Costello,0
+2493-T2,2493,Marketing Analytics,T2,Fall,3.5,Arash Laghaie,1
+2496-T1,2496,Strategic Foresight and Scenario Planning,T1,Fall,3.5,António Alvarenga,1
+2496-T2,2496,Strategic Foresight and Scenario Planning,T2,Fall,3.5,António Alvarenga,1
+2496-T3,2496,Strategic Foresight and Scenario Planning,T3,Spring,3.5,António Alvarenga,0
+2498-T2,2498,Luxury Seminar,T2,Fall,3.5,"Inês Risques, Michael Pinkhasov",1
+2500-T4,2500,Performance and Progress,T4,Spring,3.5,Marco Berti,0
+2580-S2,2580,Value-Based Health Care,S2,Spring,7.0,João Marques Gomes,0
+2581-S1,2581,Advanced Financial Management,S1,Fall,7.0,António Freitas Miguel,1
+2582-S1,2582,Competitive Strategy: An Analytical Approach,S1,Fall,7.0,Vasco Santos,1
+2584-S1,2584,Strategy,S1,Fall,7.0,Afonso Almeida Costa,1
+2585-S2,2585,Evidence-Based Practices for Wellbeing,S2,Spring,7.0,Sofia Kousi,0
+2588-T2,2588,Science-Based Entrepreneurship and Innovation,T2,Fall,3.5,Nuno Arantes e Oliveira,1
+2588-T4,2588,Science-Based Entrepreneurship and Innovation,T4,Spring,3.5,Nuno Arantes e Oliveira,0
+2590-T4,2590,Leading Social Enterprises with Impact in International Development,T4,Spring,3.5,Filipe Alfaiate,0
+2592-T4,2592,Strategy Implementation,T4,Spring,3.5,João Silveira Lobo,0
+2599-T1,2599,Project scoping,T1,Fall,3.5,Lénia Mestrinho,1
+2609-T2,2609,Data Visualization for Business Analytics,T2,Fall,3.5,Filipa Baptista,1
+2610-S2,2610,Business Analytics Special Project,S2,Spring,7.0,Patrícia Xufre,0
+2612-T3,2612,Advanced Programming for Data Science,T3,Spring,3.5,Luís Guimarãis,0
+2613-T1,2613,Asian Brands,T1,Fall,3.5,Andrew Harrison,1
+2613-T3,2613,Asian Brands,T3,Spring,3.5,Andrew Harrison,0
+2614-T3,2614,Revenue Management,T3,Spring,3.5,Duarte Pimentel,0
+2616-T2,2616,Cracking the Sales Code,T2,Fall,3.5,Filipe Simões de Almeida,1
+2616-T3,2616,Cracking the Sales Code,T3,Spring,3.5,Filipe Simões de Almeida,0
+2616-T4,2616,Cracking the Sales Code,T4,Spring,3.5,Filipe Simões de Almeida,0
+2618-T1,2618,Risk and Crisis Management,T1,Fall,3.5,Sérgio da Silva Pinto,1
+2620-S2,2620,Special Course L'Oreal Brandstorm Competition,S2,Spring,7.0,Miguel Pinto Fernandes,0
+2621-T2,2621,Algorithmic Governance,T2,Fall,3.5,Leid Zejnilovic,1
+2622-T2,2622,Blockchain Fundamentals,T2,Fall,3.5,Shayan Eskandari,1
+2622-T3,2622,Blockchain Fundamentals,T3,Spring,3.5,Leid Zejnilovic,0
+2623-T4,2623,Network Analytics,T4,Spring,3.5,Michail Batikas,0
+2628-S1,2628,Entrepreneurship with Impact,S1,Fall,7.0,John Herniman,1
+2632-T1,2632,Opportunity Identification,T1,Fall,3.5,Nadim Habib,1
+2635-T3,2635,Organizing for Good in the digital age,T3,Spring,3.5,Paolo Leone,0
+2635-T4,2635,Organizing for Good in the digital age,T4,Spring,3.5,Paolo Leone,0
+2636-T3,2636,Brands and Marketing in Asia's Emerging Markets,T3,Spring,3.5,Andrew Harrison,0
+2638-S2,2638,Design Thinking for Social Innovation,S2,Spring,7.0,Anne-Laure Fayard,0
+2639-T1,2639,Entrepreneurial Strategy,T1,Fall,3.5,Roberto Ragozzino,1
+2643-T1,2643,Social Media Marketing,T1,Fall,3.5,António Marinho Torres,1
+2643-T3,2643,Social Media Marketing,T3,Spring,3.5,António Marinho Torres,0
+2644-T4,2644,Sustainable Operations,T4,Spring,3.5,Utku Serhatli,0
+2646-T3,2646,Strategic Costing,T3,Spring,3.5,Marta Almeida,0
+2647-T4,2647,Strategic Planning and Control,T4,Spring,3.5,Marta Almeida,0
+2648-S1,2648,Diversity & Inclusion,S1,Fall,7.0,Jenny Hoobler,1
+2649-T2,2649,Energy and Climate Change,T2,Fall,3.5,Júlia Seixas,1
+2651-T2,2651,Digital Transformation in Hospitality,T2,Fall,3.5,Bruno Horta Soares,1
+2652-S1,2652,Fundamentals on Environment and Sustainability,S1,Fall,7.0,Francisco Ferreira,1
+2652-S2,2652,Fundamentals on Environment and Sustainability,S2,Spring,7.0,Francisco Ferreira,0
+2656-T3,2656,Work & Family,T3,Spring,3.5,Jenny Hoobler,0
+2656-T4,2656,Work & Family,T4,Spring,3.5,Jenny Hoobler,0
+2657-T3,2657,Hospitality Operations Management,T3,Spring,3.5,TBD,0
+2659-T2,2659,Data Curation for Business Analytics,T2,Fall,3.5,Qinlu Hu,1
+2660-S2,2660,Applied Sports Projects,S2,Spring,3.5,Rui Biscaia,0
+2661-S2,2661,Better Marketing for Consumer Wellbeing,S2,Spring,7.0,Nicole Mead,0
+2663-T4,2663,AI Impact on Business,T4,Spring,3.5,"Junfei Lei, Rodrigo Belo",0
+2667-T3,2667,Service Excellence,T3,Spring,3.5,Sander Allegro,0
+2668-T3,2668,"Sustainability Evaluation of Policies, Plans and Projects",T3,Spring,3.5,"João Joanaz, Tomás Ramos",0
+2673-T4,2673,Decentralized Finance,T4,Spring,3.5,Gonçalo Correia,0
+2675-T4,2675,European Union: Governance and Crises,T4,Spring,3.5,António Vicente,0
+2676-T4,2676,Finance and the transition to net zero,T4,Spring,3.5,Fouad Hashem,0
+2685-T3,2685,Applied Quantitative Studies,T3,Spring,3.5,Guang Zeng,0
+2685-T4,2685,Applied Quantitative Studies,T4,Spring,3.5,Guang Zeng,0
+2687-T4,2687,Public Policy,T4,Spring,3.5,Alex Armand,0
+2688-T1,2688,Curricular Internship - Trimestral,T1,Fall,3.5,João Loureiro Rodrigues Open Area,0
+2688-T2,2688,Curricular Internship - Trimestral,T2,Fall,3.5,João Loureiro Rodrigues Open Area,0
+2688-T3,2688,Curricular Internship - Trimestral,T3,Spring,3.5,João Loureiro Rodrigues Open Area,0
+2688-T4,2688,Curricular Internship - Trimestral,T4,Spring,3.5,João Loureiro Rodrigues Open Area,0
+2689-T1,2689,Hospitality Trends,T1,Fall,3.5,Sérgio Guerreiro,1
+2690-T2,2690,Shopper Marketing Management,T2,Fall,3.5,Miguel Pinto Fernandes,1
+2690-T4,2690,Shopper Marketing Management,T4,Spring,3.5,Miguel Pinto Fernandes,0
+2691-T2,2691,Climate Finance,T2,Fall,3.5,Alexandre C. Köberle,1
+2691-T3,2691,Climate Finance,T3,Spring,3.5,Alexandre C. Köberle,0
+2693-T2,2693,Innovation for Impact,T2,Fall,3.5,"João Castro, Pedro Oliveira",1
+2694-T2,2694,Leading Transformation,T2,Fall,3.5,Marco Berti,1
+2695-S2,2695,Introduction to Machine Learning,S2,Spring,7.0,Sabina Zejnilovic,0
+2698-S1,2698,Management Consulting,S1,Fall,7.0,Marco Berti,1
+2698-S2,2698,Management Consulting,S2,Spring,7.0,Marco Berti,0
+2699-T3,2699,Sports Club Management,T3,Spring,3.5,Luís Vilar,0
+2708-T4,2708,Sports Marketing,T4,Spring,3.5,Luís Vilar,0
+2715-T3,2715,Sustainable Tourism,T3,Spring,3.5,Graham Miller,0
+2716-T4,2716,Regenerative Business,T4,Spring,3.5,Graham Miller,0
+2737-T4,2737,Private Sector Development,T4,Spring,3.5,Roberto Rocha,0
+2738-T2,2738,Development Economics I,T2,Fall,3.5,Pedro Vicente,1
+2740-T1,2740,International Relations and Organizations,T1,Fall,3.5,"Ana Grifo, Madalena Resende",1
+2741-T1,2741,Markets Incentives and Behavior,T1,Fall,3.5,Pedro Pires,1
+2743-T2,2743,Policy Appraisal,T2,Fall,3.5,Sónia Félix,1
+2745-T2,2745,Politics for Policy,T2,Fall,3.5,José Tavares,1
+2746-T2,2746,Public Policy I,T2,Fall,3.5,Ana Cláudia Gouveia,1
+2748-T1,2748,Statistics for Policy Action,T1,Fall,3.5,"Maria João Braga, Márcia Pereira",1
+2749-T4,2749,Management in the Public Sector,T4,Spring,3.5,Adolfo Mesquita Nunes,0
+2750-T1,2750,Management,T1,Fall,3.5,António Nogueira Leite,1
+2751-T2,2751,Sustainable Marketing,T2,Fall,3.5,Arnaud Monnier,1
+2751-T4,2751,Sustainable Marketing,T4,Spring,3.5,Arnaud Monnier,0
+2752-T3,2752,Team Dynamics in Organizations,T3,Spring,3.5,Sai Kalvapalle,0
+2752-T4,2752,Team Dynamics in Organizations,T4,Spring,3.5,Sai Kalvapalle,0
+2753-T4,2753,Tourism & Hospitality Consulting,T4,Spring,3.5,Miguel Bello,0
+2755-T4,2755,Advanced Financial Transactions in M&A,T4,Spring,3.5,Silvina Rubio,0
+2757-T4,2757,Hotel Asset Management,T4,Spring,3.5,Duarte Pimentel,0
+2758-T4,2758,Advanced Topics in Machine Learning,T4,Spring,3.5,Qiwei Han,0
+2762-T1,2762,Digital Strategy and Markets,T1,Fall,3.5,Rodrigo Belo,1
+2763-T2,2763,Entrepreneurial Mindset,T2,Fall,3.5,Miguel Alves Martins,1
+2766-T1,2766,Introduction to Python for Data Analysis,T1,Fall,3.5,Yufei Shen,1
+2768-T1,2768,Personal Finance,T1,Fall,3.5,Vinay Pranjivan,1
+2768-T3,2768,Personal Finance,T3,Spring,3.5,Vinay Pranjivan,0
+2768-T4,2768,Personal Finance,T4,Spring,3.5,Vinay Pranjivan,0
+2770-T3,2770,Power and Social Change,T3,Spring,3.5,Samantha Ortiz,0
+2770-T4,2770,Power and Social Change,T4,Spring,3.5,Samantha Ortiz,0
+2771-T1,2771,Research Methods for Business Analytics,T1,Fall,3.5,Patrícia Ramos,1
+2772-T1,2772,Research Methods for Finance,T1,Fall,3.5,Zeshu Xu,1
+2772-T4,2772,Research Methods for Finance,T4,Spring,3.5,Julio Crego,0
+2773-T2,2773,Optimization,T2,Fall,3.5,Sreyaa Guha,1
+2775-T4,2775,Investment Philosophies,T4,Spring,3.5,Firmino Morgado,0
+2776-T4,2776,Hotel Investment and Development,T4,Spring,3.5,Carlos Miró,0
+2778-T2,2778,Cybersecurity in Organizations,T2,Fall,3.5,Mário Monteiro Marques,1
+2778-T4,2778,Cybersecurity in Organizations,T4,Spring,3.5,Mário Monteiro Marques,0
+2779-T4,2779,Engineering of Data Analysis,T4,Spring,3.5,Nuno Preguiça,0
+2784-S1,2784,Curricular Internship - Semestral,S1,Fall,7.0,João Loureiro Rodrigues Open Area,0
+2784-S2,2784,Curricular Internship - Semestral,S2,Spring,7.0,João Loureiro Rodrigues Open Area,0
+2785-T2,2785,Product Management in Technology,T2,Fall,3.5,Sam Reha,1
+2786-T2,2786,Research Methods in Management,T2,Fall,3.5,"Filipa Rodrigues, Irene Consiglio",1
+2788-T4,2788,Aviation Management,T4,Spring,3.5,Jonathan Eccles,0
+2789-T1,2789,Firms and Markets,T1,Fall,3.5,Roberto Rocha,1
+2790-T1,2790,Financial Management for Entrepreneurs,T1,Fall,3.5,Fábio Santos,1
+2791-T2,2791,Advanced Product Design,T2,Fall,3.5,João Castro,1
+2792-T1,2792,AI in Organizations,T1,Fall,3.5,Milton de Sousa,1
+2793-T2,2793,Supply Chain Management,T2,Fall,3.5,Jiwen Ge,1
+2793-T3,2793,Supply Chain Management,T3,Spring,3.5,Jiwen Ge,0
+2795-T3,2795,Innovations in the Experience Economy,T3,Spring,3.5,Euclides Major,0
+2796-T2,2796,Economics of the European Union,T2,Fall,3.5,José Tavares,1
+2799-T1,2799,Extracurricular Internship - Trimestral,T1,Fall,0.0,João Loureiro Rodrigues Open Area,0
+2799-T2,2799,Extracurricular Internship - Trimestral,T2,Fall,0.0,João Loureiro Rodrigues Open Area,0
+2799-T3,2799,Extracurricular Internship - Trimestral,T3,Spring,0.0,João Loureiro Rodrigues Open Area,0
+2799-T4,2799,Extracurricular Internship - Trimestral,T4,Spring,0.0,João Loureiro Rodrigues Open Area,0
+2800-S1,2800,Extracurricular Internship - Semestral,S1,Fall,0.0,João Loureiro Rodrigues Open Area,0
+2800-S2,2800,Extracurricular Internship - Semestral,S2,Spring,0.0,João Loureiro Rodrigues Open Area,0
+2959-T4,2959,Private Equity and Financial Restructuring,T4,Spring,3.5,Stefano Sacchetto,0
+2960-T4,2960,Blue Finance,T4,Spring,3.5,Gonçalo Ribeiro,0
+2961-T4,2961,Economics of Immigration,T4,Spring,3.5,Cátia Batista,0
+2962-T4,2962,AI for Finance,T4,Spring,3.5,Ricardo Chaves,0
+2964-T3,2964,AI for Economics and Business,T3,Spring,3.5,João Brogueira de Sousa,0
+2966-T1,2966,Statistical Analysis,T1,Fall,3.5,Ana Amaro,1
+2966-T2,2966,Statistical Analysis,T2,Fall,3.5,Ana Amaro,1
+2967-S1,2967,Women in Leadership,S1,Fall,7.0,Jenny Hoobler,1
+2968-T4,2968,The Luxury Value Chain,T4,Spring,3.5,"Inês Risques, Michael Pinkhasov",0
+2969-T4,2969,E-Commerce: Strategy & Disruption,T4,Spring,3.5,David Bernardo,0
+2970-T3,2970,Services Marketing,T3,Spring,3.5,Carmen Lages,0
+2971-T1,2971,Investor Relations & Global Disclosure,T1,Fall,3.5,Mark Oberle,1
+2972-S2,2972,European Law,S2,Spring,7.0,Leonor Rossi SC,0
+9696-T2,9696,Stata,T2,Fall,0.5,Sónia Félix,1
