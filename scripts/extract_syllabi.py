@@ -11,6 +11,14 @@ import sys
 
 import pdfplumber
 
+def shorten(label, limit=60):
+    """A long label ends at a whole word, and says that it goes on."""
+    label = label.strip()
+    if len(label) <= limit:
+        return label
+    return label[:limit].rsplit(" ", 1)[0].rstrip(" ,;:-(") + "…"
+
+
 URL = "https://apps.novasbe.pt/SigesAutomations/controlador?modo=FUC&CD_LECTIVO=202627&CD_DISCIP={code}&CD_DURACAO={term}"
 FOOTER = re.compile(r"Nova SBE \| SYLLABUS.*|COURSE SYLLABUS|^\d{4} - .* ECTS$|^(Fall|Spring) Semester$|^\d{6}$", re.M)
 HEADS = ["COURSE INSTRUCTOR", "SHORT BIOGRAPHY", "INSTITUTIONAL EMAIL", "OFFICE HOURS", "COURSE SYNOPSIS",
@@ -54,7 +62,7 @@ def weights_in(assessment):
             continue
         label = clean(re.sub(r"\(?\d{1,3}\s*%\)?", " ", line))
         label = re.sub(r"^[\-–:,.\s]+|[\-–:,.\s]+$", "", label)
-        label = re.split(r":|, |\s[–-]\s", label)[0][:60].strip()
+        label = shorten(re.split(r":|, |\s[–-]\s", label)[0])
         if label:
             found.append({"label": label[0].upper() + label[1:], "percent": int(match.group(1))})
     total = sum(item["percent"] for item in found)
