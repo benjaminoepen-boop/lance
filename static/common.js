@@ -1,11 +1,15 @@
-/* What every page shares: talking to the server, the head card, small messages. */
+/* What every page shares: talking to the server, small messages, building elements. */
 const Lance = {
   state: null,
+
+  /* the addresses the scripts link to, in one place */
+  pages: { courses: "/", bids: "/bids", share: "/share", nova: "/nova", rules: "/rules" },
+  courseHref(id) { return `/#${id}`; },
 
   async send(path, body) {
     const response = await fetch(path, {
       method: "POST",
-      headers: {"Content-Type": "application/json"},
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body || {}),
     });
     const answer = await response.json();
@@ -22,44 +26,34 @@ const Lance = {
 
   listeners: [],
   onChange(listener) { Lance.listeners.push(listener); },
+  /* a redraw between pressing and releasing the mouse would swallow the click, so it waits for the release */
+  pressed: false,
+  redrawLater: false,
   update(state) {
     Lance.state = state;
-    Lance.renderHead(state);
+    if (Lance.pressed) { Lance.redrawLater = true; return; }
     Lance.listeners.forEach((listener) => listener(state));
   },
 
-  renderHead(state) {
-    /* the settings follow the saved plan, except the field someone is typing in */
-    const sync = (id, apply) => { const field = document.getElementById(id); if (field && field !== document.activeElement) apply(field); };
-    sync("set-programme", (field) => { field.value = state.plan.programme; });
-    sync("set-points", (field) => { field.value = state.plan.points; });
-    sync("set-bonus", (field) => { field.checked = Boolean(state.plan.has_bonus); });
-    document.querySelectorAll("[data-semester]").forEach((button) => button.classList.toggle("on", button.dataset.semester === state.plan.semester));
-    const set = (id, value, label, tone) => {
-      const kpi = document.getElementById(id);
-      if (!kpi) return;
-      kpi.querySelector("b").textContent = value;
-      if (label) kpi.querySelector("span").textContent = label;
-      kpi.classList.toggle("bad", tone === "bad");
-      kpi.classList.toggle("good", tone === "good");
-    };
-    const ects = state.ects;
-    set("kpi-ects", `${ects.total} / ${ects.recommended}`, ects.over ? `ECTS, max ${ects.maximum}` : "ECTS", ects.over ? "bad" : null);
-    set("kpi-points", `${state.reserved} / ${state.plan.points}`, "points bid", state.reserved > state.plan.points ? "bad" : null);
-    const hard = state.clashes.length;
-    set("kpi-clashes", String(hard), hard === 1 ? "clash" : "clashes", hard ? "bad" : (state.items.length ? "good" : null));
-    if (state.next_deadline) {
-      const days = state.next_deadline.days;
-      set("kpi-next", days === 0 ? "now" : `${days} days`, state.next_deadline.label.replace(" (bidding)", ""));
-    }
+  /* remembers small things for this visit, like the half of the semester on show; if the browser refuses, it simply forgets */
+  remember(key, value) {
+    try {
+      if (value === undefined) return sessionStorage.getItem(`lance-${key}`);
+      sessionStorage.setItem(`lance-${key}`, value);
+    } catch (error) { /* private window */ }
+    return value;
   },
 
-  toast(message) {
+  /* a short message; with an action it also offers one thing to do about it, like Undo */
+  toast(message, action) {
     const toast = document.getElementById("toast");
-    toast.textContent = message;
+    toast.replaceChildren(Lance.el("span", { text: message }));
+    if (action) {
+      toast.append(Lance.el("button", { type: "button", onclick: () => { toast.hidden = true; action.run(); } }, action.label));
+    }
     toast.hidden = false;
     clearTimeout(Lance.toastTimer);
-    Lance.toastTimer = setTimeout(() => { toast.hidden = true; }, 3500);
+    Lance.toastTimer = setTimeout(() => { toast.hidden = true; }, action ? 6000 : 3500);
   },
 
   async copy(text, done) {
@@ -88,26 +82,25 @@ const Lance = {
     }
     return node;
   },
+
+  /* the two signs a row can show */
+  icons: {
+    plus: '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M7 2v10M2 7h10"/></svg>',
+    tick: '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 7.5 5.5 10.5 11.5 3.5"/></svg>',
+    down: '<svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5"/></svg>',
+    back: '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.5 2.5 4 7l4.5 4.5"/></svg>',
+    close: '<svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M2 2l8 8M10 2l-8 8"/></svg>',
+    dots: '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="3" cy="8" r="1.4"/><circle cx="8" cy="8" r="1.4"/><circle cx="13" cy="8" r="1.4"/></svg>',
+  },
 };
 
-/* ---- the settings in the head card ---- */
-function wireSettings() {
-  const programme = document.getElementById("set-programme");
-  if (!programme) return;
-  const points = document.getElementById("set-points");
-  const bonus = document.getElementById("set-bonus");
-  programme.addEventListener("change", async () => {
-    await Lance.send("/api/settings", {programme: programme.value});
-    document.dispatchEvent(new Event("lance:catalogue"));
-  });
-  points.addEventListener("change", () => Lance.send("/api/settings", {points: points.value}));
-  bonus.addEventListener("change", () => Lance.send("/api/settings", {has_bonus: bonus.checked}));
-  document.querySelectorAll("[data-semester]").forEach((button) => {
-    button.addEventListener("click", async () => {
-      document.querySelectorAll("[data-semester]").forEach((other) => other.classList.toggle("on", other === button));
-      await Lance.send("/api/settings", {semester: button.dataset.semester});
-      document.dispatchEvent(new Event("lance:catalogue"));
-    });
-  });
-}
-wireSettings();
+document.addEventListener("pointerdown", () => { Lance.pressed = true; }, true);
+const released = () => {
+  Lance.pressed = false;
+  if (Lance.redrawLater) {
+    Lance.redrawLater = false;
+    setTimeout(() => Lance.update(Lance.state), 0);
+  }
+};
+document.addEventListener("pointerup", released, true);
+document.addEventListener("pointercancel", released, true);   /* a finger that starts scrolling */

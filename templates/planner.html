@@ -1,39 +1,46 @@
 {% extends "base.html" %}
-{% block title %}Lance · Planner{% endblock %}
-{% block head %}{% with page_title="Planner", action='<a class="btn primary" href="' ~ url_for('bids') ~ '">Set bids</a>' %}{% include "_head.html" %}{% endwith %}{% endblock %}
+{% block title %}Lance · Courses{% endblock %}
+{% block action %}<a class="btn primary" id="next" href="{{ url_for('bids') }}">Continue</a>{% endblock %}
 {% block content %}
-<div class="mobile-switch"><div class="seg" role="group" aria-label="View">
-  <button type="button" data-view="courses" class="on">Courses</button>
-  <button type="button" data-view="week">Week</button>
-</div></div>
-<div class="planner" id="planner" data-view="courses">
-  <section class="catalog" aria-label="Courses">
-    <div class="tools">
-      <input class="field" type="search" id="search" placeholder="Course, lecturer or code" aria-label="Search courses">
-      <div class="row" id="filter-kind" role="group" aria-label="How it counts">
-        <button type="button" class="chip on" data-kind="all">All</button>
-        <button type="button" class="chip" data-kind="mandatory">Mandatory</button>
-        <button type="button" class="chip" data-kind="elective">Elective</button>
-        <button type="button" class="chip" data-kind="outside">Outside</button>
-      </div>
-      <div class="row">
-        <div id="filter-term" class="row" role="group" aria-label="Term"></div>
-        <label class="check small" style="margin-left:auto"><input type="checkbox" id="fits"><span>Fits my week</span></label>
-      </div>
+<h1 class="sr">Choose your courses</h1>
+<div class="planner" id="planner" data-zone="courses" data-open="{{ open_course|default('') }}" data-saved="{{ saved|default('', true) }}">
+  <section class="chooser" aria-label="Choose">
+    <div class="scope">
+      <select class="quiet" id="set-programme" aria-label="Your programme">
+        {% if not plan.programme %}<option value="" selected disabled>Your programme</option>{% endif %}
+        {% for name in programmes %}<option value="{{ name }}" {{ 'selected' if name == plan.programme }}>{{ name }}</option>{% endfor %}
+      </select>
+      <select class="quiet" id="set-semester" aria-label="Semester">
+        {% for name, label in semesters %}<option value="{{ name }}" {{ 'selected' if plan.semester == name }}>{{ label }}</option>{% endfor %}
+      </select>
+      <div class="seg" id="half-tabs" role="group" aria-label="Part of the semester"></div>
     </div>
-    <div class="course-list" id="courses"></div>
+    <div class="list-view" id="list-view">
+      <div class="tools">
+        <label class="search"><span class="sr">Search courses</span>
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/></svg>
+          <input class="field" type="search" id="search" placeholder="Search all courses" autocomplete="off">
+        </label>
+        <button type="button" class="toggle" id="fits" aria-pressed="false" title="Only courses with a section that fits your week">Fits my week</button>
+      </div>
+      <div class="course-list" id="courses"></div>
+    </div>
+    <div class="course-view" id="course-view" hidden></div>
   </section>
-  <section class="week-area" aria-label="Your week">
-    <div class="card" id="week-card">
-      <div class="week-top">
-        <div class="seg" id="week-tabs" role="group" aria-label="Term"></div>
-        <a class="btn small" href="{{ url_for('calendar_download') }}" title="Every class and exam with its real date, including make-up days">Calendar file</a>
-      </div>
+
+  <section class="card result" id="result" aria-label="Your week">
+    <div class="week-wrap" id="week-wrap">
+      <div class="week-days" id="week-days"></div>
       <div class="week" id="week"></div>
+      <div class="week-empty" id="week-empty" hidden></div>
     </div>
-    <div class="stack" id="clashes"></div>
-    <div class="card" id="exams-card"><h2>Exams and midterms</h2><div class="exam-grid" id="exams"></div></div>
+    <div class="empty-plan" id="no-timetable" hidden>Nova has not published the spring timetable yet. Pick courses and plan your bids now; the week fills in once it is out.</div>
+    <div class="clash-lines" id="clashes"></div>
+    <p class="round-note" id="round-note" hidden></p>
   </section>
 </div>
 {% endblock %}
-{% block scripts %}<script src="{{ url_for('static', filename='planner.js') }}"></script>{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='week.js') }}"></script>
+<script src="{{ url_for('static', filename='planner.js') }}"></script>
+{% endblock %}

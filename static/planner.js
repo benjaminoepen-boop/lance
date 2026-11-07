@@ -1,86 +1,128 @@
-/* The planner page: the course list on the left, the week on the right.
-   Every rule lives on the server. This file only draws what logic.py answered. */
-const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"];
-const FIRST_HOUR = 8, LAST_HOUR = 22;
+/* Step 1: choose on the left, see the result on the right. Every rule lives on the server;
+   this file only draws what logic.py answered and sends what was clicked. */
 const { el } = Lance;
 
 const view = {
   catalogue: [],
-  kind: "all",
-  term: "all",
+  half: null,          /* which half of the semester both columns show */
   query: "",
   fits: false,
-  week: "T1",
-  ghost: null,   /* the section under the mouse, previewed in the week */
+  closed: { mine: true, outside: true },   /* list groups that are folded */
+  open: null,          /* the course open in the left column */
+  preview: null,       /* the course under the mouse in the list */
+  hot: null,           /* the section under the mouse */
+  fresh: null,         /* the section that was just added: it pops in */
+  backTo: "",          /* where the Back button of an open course leads: the list, or the week on a phone */
+  allClashes: false,
+  pausedUntil: 0,      /* a double click must not hit the row that has just moved under the mouse */
 };
+const HALVES = {
+  Fall: [["T1", "T1: until 12 Oct"], ["T2", "T2: from 22 Oct"]],
+  Spring: [["T3", "T3: from 1 Feb"], ["T4", "T4: from 5 Apr"]],
+};
+const TERMS_OF = { T1: ["S1", "T1"], T2: ["S1", "T2"], T3: ["S2", "T3"], T4: ["S2", "T4"] };
+const EXAM_WORD = { exam: "Exam", midterm: "Midterm", presentation: "Presentation" };
+const canHover = window.matchMedia("(hover: hover)").matches;
+const hasWeek = (state) => state.plan.semester === "Fall";   /* Nova has not published the spring timetable yet */
+const courseById = (id) => view.catalogue.find((course) => course.id === id);
+const entriesOf = (state, offeringId) => state.items.filter((item) => item.offering_id === offeringId).sort((a, b) => a.position - b.position);
+const compact = (time) => time.replace(/^0/, "");
+const meetingsText = (meetings) => meetings.map((m) => `${m.day} ${compact(m.start)}`).join(" · ");
 
-const minutes = (clock) => { const [h, m] = clock.split(":"); return Number(h) * 60 + Number(m); };
-const hourHeight = () => parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--hour")) || 44;
-const compactTime = (clock) => clock.replace(/^0/, "");
+/* ---- doing things ---- */
 
-/* ---- the course list ---- */
-
-function meetingText(section) {
-  return section.meetings.map((m) => `${m.day} ${compactTime(m.start)}`).join(" · ");
+function tooSoon() {
+  if (Date.now() < view.pausedUntil) return true;
+  view.pausedUntil = Date.now() + 400;
+  return false;
 }
 
-function sectionChip(course, section, state) {
-  const on = state.items.some((item) => item.section_id === section.id);
-  const warnings = state.section_warnings[section.id];
-  const title = warnings ? `Clashes with ${warnings.join(", ")}` : `${section.delivery}, ${section.meetings.map((m) => `${m.day} ${m.start}–${m.end} ${m.room}`).join("; ")}`;
-  return el("button", {
-    type: "button",
-    class: `chip sec${on ? " on" : ""}${warnings ? " warn" : ""}`,
-    title,
-    "aria-pressed": on ? "true" : "false",
-    onclick: () => toggleSection(section.id, course),
-    onmouseenter: () => showGhost(section, course),
-    onmouseleave: hideGhost,
-    onfocus: () => showGhost(section, course),
-    onblur: hideGhost,
-  }, `${section.section} ${meetingText(section)}`);
-}
-
-function courseCard(course, state) {
-  const planned = state.items.some((item) => item.offering_id === course.id);
-  const meta = el("div", { class: "course-meta" });
-  if (course.lecturers) meta.append(el("span", { text: course.lecturers }));
-  if (course.exam) meta.append(el("span", { text: `Exam ${course.exam}` }));
-  if (course.cutoff_low !== null) {
-    const low = Math.round(course.cutoff_low), high = Math.round(course.cutoff_high);
-    meta.append(el("span", { class: "num", title: "Rank value that just won a seat in the last known round", text: low === high ? `Cut-off ${low}` : `Cut-off ${low}–${high}` }));
-  }
-  const row = el("div", { class: "section-row" });
-  if (course.sections.length) {
-    course.sections.forEach((section) => row.append(sectionChip(course, section, state)));
+async function addCourse(course) {
+  bringForward(course);
+  const answer = await Lance.send("/api/add", { offering_id: course.id });
+  if (answer.error) return;
+  const entry = entriesOf(Lance.state, course.id)[0];
+  view.fresh = entry.section_id;
+  renderWeek(Lance.state);
+  if (course.sections.length > 1) {
+    Lance.toast(`Added ${course.name} ${entry.section}`, { label: "Switch", run: () => go(course.id) });
   } else {
-    const entry = state.items.find((item) => item.offering_id === course.id);
-    row.append(el("button", {
-      type: "button",
-      class: `chip${entry ? " on" : ""}`,
-      "aria-pressed": entry ? "true" : "false",
-      onclick: () => entry ? Lance.send("/api/remove", { item_id: entry.id }) : Lance.send("/api/add", { offering_id: course.id }),
-    }, entry ? "In your plan" : "Add"));
-    row.append(el("span", { class: "small faint", style: "align-self:center", text: "Timetable not published" }));
+    Lance.toast(`Added ${course.name}`);
   }
-  const warning = state.exam_warnings[course.id];
-  return el("article", { class: `course${planned ? " in-plan" : ""}` },
-    el("div", { class: "course-top" },
-      el("a", { class: "course-name", href: `/course/${course.id}`, text: course.name }),
-      el("span", { class: "tag num", text: `${course.term} · ${course.ects} ECTS` })),
-    meta,
-    warning ? el("div", { class: "small", style: "color:var(--red)", text: `Exam clash with ${warning.join(", ")}` }) : null,
-    row);
 }
+
+async function removeCourse(offeringId, name) {
+  const answer = await Lance.send("/api/remove", { offering_id: offeringId });
+  if (answer.error) return;
+  Lance.toast(`Removed ${name}`, { label: "Undo", run: () => Lance.send("/api/restore", { rows: answer.removed }) });
+}
+
+async function chooseSection(course, section) {
+  view.hot = null;
+  bringForward(course);
+  await Lance.send(entriesOf(Lance.state, course.id).length ? "/api/switch" : "/api/add", { section_id: section.id });
+}
+
+/* the week of a T1 or T2 course comes forward; an S1 course is in both */
+function bringForward(course) {
+  if (hasWeek(Lance.state) && TERMS_OF[course.term]) view.half = course.term;
+}
+
+/* ---- the address: nothing is the list, #week the week on a phone, anything else a course ---- */
+
+function go(target) {
+  location.hash = target;
+}
+
+function goBack() {
+  location.hash = view.backTo;
+}
+
+function route() {
+  const target = decodeURIComponent(location.hash.slice(1));
+  const planner = document.getElementById("planner");
+  const opening = target && target !== "week" ? target : null;
+  if (opening && !view.open) view.backTo = planner.dataset.zone === "week" ? "week" : "";
+  planner.dataset.zone = target === "week" ? "week" : "courses";
+  document.querySelectorAll("[data-tab=courses],[data-tab=week]").forEach((tab) => tab.classList.toggle("on", tab.dataset.tab === planner.dataset.zone));
+  if (opening === view.open) return;
+  view.open = opening;
+  view.preview = null;
+  showOpenCourse();
+}
+
+async function showOpenCourse() {
+  const list = document.getElementById("list-view");
+  const box = document.getElementById("course-view");
+  list.hidden = Boolean(view.open);
+  box.hidden = !view.open;
+  if (!view.open) { renderWeek(Lance.state); return; }
+  const wanted = view.open;
+  const course = courseById(wanted);
+  if (course) bringForward(course);
+  render(Lance.state);
+  /* the last course goes at once: its links must not be clickable while the next one loads */
+  box.replaceChildren(el("button", {
+    type: "button", class: "back", html: `${Lance.icons.back} Courses`, onclick: goBack,
+  }));
+  const response = await fetch(`/api/sheet/${encodeURIComponent(wanted)}`);
+  if (view.open !== wanted) return;
+  box.append(el("div", { style: "display:contents", html: response.ok ? await response.text() : '<p class="muted">This course does not exist.</p>' }));
+  box.scrollTop = 0;
+  renderSections(Lance.state);
+}
+
+/* ---- the list ---- */
 
 function matches(course, state) {
-  if (view.kind !== "all" && course.kind !== view.kind) return false;
-  if (view.term !== "all" && course.term !== view.term) return false;
   if (view.query) {
+    /* a search looks through everything, so that it never hides a course because of the half on show */
     const haystack = `${course.name} ${course.code} ${course.lecturers}`.toLowerCase();
     if (!view.query.toLowerCase().split(/\s+/).every((word) => haystack.includes(word))) return false;
+  } else if (TERMS_OF[view.half] && !TERMS_OF[view.half].includes(course.term)) {
+    return false;
   }
-  if (view.fits && !state.items.some((item) => item.offering_id === course.id)) {
+  if (view.fits && !entriesOf(state, course.id).length) {
     if (!course.sections.length) return false;
     if (state.exam_warnings[course.id]) return false;
     if (course.sections.every((section) => state.section_warnings[section.id])) return false;
@@ -88,299 +130,408 @@ function matches(course, state) {
   return true;
 }
 
-function renderCourses(state) {
+let previewTimer = null;
+function previewCourse(id) {
+  clearTimeout(previewTimer);
+  previewTimer = setTimeout(() => {
+    if (view.preview === id) return;
+    view.preview = id;
+    renderWeek(Lance.state);
+  }, id ? 180 : 0);
+}
+
+/* the one control of a row. Plus always adds. A tick means it is in; under the mouse it shows that a click takes it out. */
+function pickButton(course, planned) {
+  if (planned) {
+    return el("button", {
+      type: "button", class: "pick", "aria-pressed": "true", "aria-label": `Remove ${course.name}`, title: "Remove",
+      html: `<span class="is-in">${Lance.icons.tick}</span><span class="to-out">${Lance.icons.close}</span>`,
+      onclick: () => { if (!tooSoon()) removeCourse(course.id, course.name); },
+    });
+  }
+  return el("button", {
+    type: "button", class: "pick", "aria-pressed": "false", "aria-label": `Add ${course.name}`, title: "Add", html: Lance.icons.plus,
+    onclick: () => { if (!tooSoon()) addCourse(course); },
+  });
+}
+
+/* a mandatory course: Nova assigned the section, so the student simply says which one */
+function sectionMenu(course, state) {
+  const entry = entriesOf(state, course.id)[0];
+  return el("select", {
+    class: `section-pick${entry ? " on" : ""}`, "aria-label": `Your section of ${course.name}`,
+    onchange: async (event) => {
+      if (!event.target.value) { removeCourse(course.id, course.name); return; }
+      bringForward(course);
+      await Lance.send("/api/switch", { section_id: event.target.value });
+    },
+  },
+    el("option", { value: "" }, entry ? "None" : "Section"),
+    ...course.sections.map((section) => el("option", {
+      value: section.id, selected: entry && entry.section_id === section.id ? true : null,
+    }, `${section.section} ${meetingsText(section.meetings)}${state.section_warnings[section.id] ? " (clash)" : ""}`)));
+}
+
+/* what a row has to say about a clash, also once the course is in the plan */
+function clashNote(course, state) {
+  const entry = entriesOf(state, course.id)[0];
+  const sections = entry ? course.sections.filter((section) => section.id === entry.section_id) : course.sections;
+  if (!sections.length || !sections.every((section) => state.section_warnings[section.id])) return null;
+  return `clashes with ${state.section_warnings[sections[0].id][0]}`;
+}
+
+function courseRow(course, state) {
+  const planned = entriesOf(state, course.id).length > 0;
+  const clash = clashNote(course, state);
+  const assigned = course.kind === "mandatory" && course.sections.length > 0;
+  const price = course.cutoff_low === null ? "" : course.cutoff_low === course.cutoff_high ? ` · seat from ${Math.ceil(course.cutoff_low)}` : ` · seats from ${Math.ceil(course.cutoff_low)} to ${Math.ceil(course.cutoff_high)}`;
+  const twin = state.items.find((item) => item.code === course.code && item.offering_id !== course.id);
+  return el("article", {
+    class: `course${assigned ? " assigned" : ""}`,
+    onmouseenter: canHover ? () => previewCourse(course.id) : null,
+    onmouseleave: canHover ? () => previewCourse(null) : null,
+  },
+    el("button", { type: "button", class: "course-main", title: course.name, onclick: () => go(course.id) },
+      el("span", { class: "course-name", text: course.name }),
+      assigned ? null : el("span", { class: "course-sub" },
+        `${course.term} · ${course.ects} ECTS`,
+        course.sections.length === 1 ? el("span", { class: "time", text: ` · ${meetingsText(course.sections[0].meetings)}` }) : null,
+        price,
+        state.exam_warnings[course.id] ? el("span", { class: "bad", title: `Exam at the same time as ${state.exam_warnings[course.id].join(", ")}`, text: " · exam clash" }) : null,
+        clash ? el("span", { class: "warn", text: ` · ${clash}` }) : null,
+        twin ? el("span", { class: "warn", text: ` · in your plan in ${twin.term}` }) : null)),
+    assigned ? sectionMenu(course, state) : pickButton(course, planned));
+}
+
+/* my courses: the same list, on top. Everything in the plan, also without a timetable, with exams. */
+function mineRow(rows, state) {
+  const first = rows[0];
+  const clashWhen = new Set(state.clashes.filter((clash) => clash.kind !== "class").map((clash) => clash.when));
+  const exams = state.exams.filter((exam) => exam.offering_id === first.offering_id);
+  return el("article", { class: "course mine" },
+    el("button", { type: "button", class: "course-main", title: first.name, onclick: () => go(first.offering_id) },
+      el("span", { class: "course-name", text: first.name }),
+      el("span", { class: "course-sub" }, `${first.term} · `, first.section ? `${first.section} · ${meetingsText(first.meetings)}` : "Timetable not published",
+        first.list === "alternate" ? " · alternate, not counted" : ""),
+      first.conflicts.concat(state.clashes.filter((clash) => clash.items && clash.items.includes(first.id)).map(() => ({ level: "class", text: "Clashes, see under the week" })))
+        .slice(0, 1).map((note) => el("span", { class: `course-sub ${note.level === "exam" ? "bad" : "warn"}`, text: note.text }))[0] || null,
+      ...exams.map((exam) => el("span", {
+        class: `course-sub${clashWhen.has(`${exam.label}, ${exam.start}`) ? " bad" : ""}`,
+        text: `${EXAM_WORD[exam.kind] || exam.kind} ${exam.label}, ${exam.start}`,
+      }))),
+    pickButton({ id: first.offering_id, name: first.name }, true));
+}
+
+function mineBlock(state, list) {
+  const offerings = [...new Set(state.items.slice().sort((a, b) => a.position - b.position).map((item) => item.offering_id))];
+  if (!offerings.length) return;
+  const folded = view.closed.mine;
+  const above = state.ects.total > state.ects.recommended;
+  const alternates = offerings.filter((id) => entriesOf(state, id)[0].list === "alternate").length;
+  list.append(el("button", {
+    type: "button", class: "group", "aria-expanded": folded ? "false" : "true", html: Lance.icons.down,
+    onclick: () => { view.closed.mine = !view.closed.mine; renderList(Lance.state); },
+  }, el("span", {}, "My courses ",
+    el("span", { class: "count", text: `${offerings.length - alternates}${alternates ? ` + ${alternates} alternate` : ""} · ` }),
+    el("span", { class: `count ${state.ects.over ? "bad" : above ? "warn" : ""}`, id: "ects", text: `${state.ects.total} ECTS${state.ects.over ? `, maximum ${state.ects.maximum}` : above ? `, ${state.ects.recommended} recommended` : ""}` }))));
+  if (folded) return;
+  const order = { mandatory: 0, primary: 1, alternate: 2 };
+  offerings.slice().sort((a, b) => order[entriesOf(state, a)[0].list] - order[entriesOf(state, b)[0].list])
+    .forEach((id) => list.append(mineRow(entriesOf(state, id), state)));
+  list.append(el("button", {
+    type: "button", class: "link-btn small", style: "align-self:flex-start;margin:2px 2px 6px",
+    onclick: () => { if (window.confirm(`Remove every ${state.plan.semester} course from your plan?`)) Lance.send("/api/start-over", {}); },
+  }, "Start over"));
+}
+
+function renderList(state) {
   const list = document.getElementById("courses");
   const scroll = list.scrollTop;
   list.replaceChildren();
+  mineBlock(state, list);
   const shown = view.catalogue.filter((course) => matches(course, state));
   if (!shown.length) {
-    list.append(el("p", { class: "empty-note", text: view.fits ? "Nothing else fits your week." : "No course matches." }));
+    const other = state.plan.semester === "Fall" ? "Spring" : "Fall";
+    list.append(el("div", { class: "empty-note" },
+      el("p", { text: view.fits ? "Nothing else fits your week." : `No course matches in ${state.plan.semester}.` }),
+      view.fits ? null : el("button", { type: "button", class: "link-btn", onclick: () => changeSetting({ semester: other }) }, `Look in ${other}`)));
     return;
   }
-  let group = null;
-  const titles = { mandatory: "Mandatory: pick the ones Nova assigned you", elective: "Electives", outside: "Outside your programme" };
-  shown.forEach((course) => {
-    if (course.kind !== group) {
-      group = course.kind;
-      list.append(el("h2", { class: "group-title", text: titles[group] }));
-    }
-    list.append(courseCard(course, state));
+  const noProgramme = !state.plan.programme;
+  const titles = { mandatory: "Mandatory · enter the ones Nova assigned you", elective: "Electives", outside: noProgramme ? "All courses" : "Other programmes" };
+  Object.keys(titles).forEach((kind) => {
+    const courses = shown.filter((course) => course.kind === kind);
+    if (!courses.length) return;
+    const folded = !view.query && !noProgramme && view.closed[kind];
+    list.append(el("button", {
+      type: "button", class: "group", "aria-expanded": folded ? "false" : "true", html: Lance.icons.down,
+      onclick: () => { view.closed[kind] = !view.closed[kind]; renderList(Lance.state); },
+    }, titles[kind], el("span", { class: "count", text: String(courses.length) })));
+    if (!folded) courses.forEach((course) => list.append(courseRow(course, state)));
   });
   list.scrollTop = scroll;
 }
 
-function renderTermFilter() {
-  const terms = [...new Set(view.catalogue.map((course) => course.term))].sort();
-  const box = document.getElementById("filter-term");
-  box.replaceChildren(...["all", ...terms].map((term) => el("button", {
-    type: "button",
-    class: `chip${view.term === term ? " on" : ""}`,
-    onclick: () => { view.term = term; renderTermFilter(); if (Lance.state) renderCourses(Lance.state); },
-  }, term === "all" ? "All terms" : term)));
+/* ---- the sections of the open course: each row has one action ---- */
+
+function sectionRow(course, section, state, entries) {
+  const at = entries.findIndex((entry) => entry.section_id === section.id);
+  const clash = state.section_warnings[section.id];
+  const action = at === 0
+    ? el("button", {
+      type: "button", class: "btn small", "aria-label": `Remove ${course.name} ${section.section}`,
+      onclick: () => (entries.length === 1 ? removeCourse(course.id, course.name) : Lance.send("/api/remove", { item_id: entries[0].id })),
+    }, "Remove")
+    : entries.length
+      ? el("button", { type: "button", class: "btn small", onclick: () => chooseSection(course, section) }, "Switch")
+      : el("button", {
+        type: "button", class: "pick", "aria-pressed": "false", title: "Add", "aria-label": `Add ${course.name} ${section.section}`, html: Lance.icons.plus,
+        onclick: () => chooseSection(course, section),
+      });
+  return el("div", {
+    class: `section-row${at === 0 ? " chosen" : ""}${view.hot === section.id ? " hot" : ""}`,
+    onmouseenter: canHover ? () => { view.hot = section.id; renderWeek(Lance.state); } : null,
+    onmouseleave: canHover ? () => { view.hot = null; renderWeek(Lance.state); } : null,
+  },
+    el("div", { class: "what" },
+      el("div", {},
+        at === 0 ? el("span", { class: "chosen-mark", html: Lance.icons.tick }) : null,
+        el("b", { class: "strong", text: section.section }),
+        at > 0 ? el("span", { class: "small faint", text: "  also trying" }) : null,
+        at === 0 && entries[0].list === "alternate" ? el("span", { class: "small faint", text: "  on your alternate list" }) : null),
+      el("div", {
+        class: "small muted num",
+        title: section.delivery === "blended" ? "Blended: one class on campus per week, the rest online at your own pace" : null,
+        text: section.meetings.map((m) => `${m.day} ${compact(m.start)}–${compact(m.end)}, ${m.room}`).join(" · ") + (section.delivery === "blended" ? " · blended" : ""),
+      }),
+      section.cutoff !== null && section.cutoff !== undefined ? el("div", { class: "small faint num", text: `Seat from ${Math.ceil(section.cutoff)} · ${section.seats} seats · ${section.bids} bids` }) : null,
+      clash ? el("div", { class: "small warn", text: `Clashes with ${clash.join(", ")}` }) : null),
+    action);
 }
 
-async function toggleSection(sectionId, course) {
-  const entry = Lance.state.items.find((item) => item.section_id === sectionId);
-  hideGhost();
-  if (entry) {
-    await Lance.send("/api/remove", { item_id: entry.id });
-  } else {
-    /* a T2 course is planned on the T2 week: show it where it lands */
-    if (course.term === "T1" || course.term === "T2") view.week = course.term;
-    await Lance.send("/api/add", { section_id: sectionId });
+function renderSections(state) {
+  const box = document.getElementById("sheet-sections");
+  if (!box || !view.open || box.dataset.offering !== view.open) return;
+  const course = courseById(view.open);
+  const title = el("h2", { text: "Sections" });
+  if (!course) {
+    const other = state.plan.semester === "Fall" ? "Spring" : "Fall";
+    box.replaceChildren(title, el("p", { class: "muted small" }, `This course runs in ${other}. `,
+      el("button", { type: "button", class: "link-btn", onclick: async () => { await changeSetting({ semester: other }); renderSections(Lance.state); } }, `Plan for ${other.toLowerCase()}`)));
+    return;
   }
+  const entries = entriesOf(state, course.id);
+  if (!course.sections.length) {
+    box.replaceChildren(title,
+      el("div", { class: "section-row" },
+        el("div", { class: "what small muted", text: "Nova has not published the timetable yet." }),
+        entries.length
+          ? el("button", { type: "button", class: "btn small", onclick: () => removeCourse(course.id, course.name) }, "Remove")
+          : el("button", { type: "button", class: "pick", "aria-pressed": "false", "aria-label": `Add ${course.name}`, title: "Add", html: Lance.icons.plus, onclick: () => Lance.send("/api/add", { offering_id: course.id }) })));
+    return;
+  }
+  box.replaceChildren(...[
+    course.kind === "mandatory" ? el("h2", { text: "Sections · pick the one Nova assigned you" }) : title,
+    state.exam_warnings[course.id] ? el("p", { class: "small bad", text: `Exam at the same time as ${state.exam_warnings[course.id].join(", ")}` }) : null,
+    ...course.sections.map((section) => sectionRow(course, section, state, entries)),
+  ].filter(Boolean));
 }
 
 /* ---- the week ---- */
 
-function termsInView() {
-  /* S1 runs through both halves of the semester, T1 and T2 only through their own. */
-  return view.week === "T1" ? ["S1", "T1"] : view.week === "T2" ? ["S1", "T2"] : view.week === "T3" ? ["S2", "T3"] : ["S2", "T4"];
-}
-
-function clashingItemIds(state) {
+function clashingItems(state) {
   const ids = new Set();
   state.clashes.forEach((clash) => {
-    if (clash.weeks && clash.weeks.includes(view.week)) clash.items.forEach((id) => ids.add(id));
+    if (clash.items && clash.weeks.includes(view.half)) clash.items.forEach((id) => ids.add(id));
   });
   return ids;
 }
 
-/* side by side when blocks overlap: each block gets a column inside its group */
-function layOut(blocks) {
-  blocks.sort((a, b) => minutes(a.start) - minutes(b.start) || minutes(b.end) - minutes(a.end));
-  const groups = [];
-  blocks.forEach((block) => {
-    const group = groups.find((g) => minutes(block.start) < g.end);
-    if (group) {
-      group.items.push(block);
-      group.end = Math.max(group.end, minutes(block.end));
-    } else {
-      groups.push({ items: [block], end: minutes(block.end) });
-    }
-  });
-  groups.forEach((group) => {
-    const columns = [];
-    group.items.forEach((block) => {
-      let column = columns.findIndex((end) => end <= minutes(block.start));
-      if (column === -1) { columns.push(0); column = columns.length - 1; }
-      columns[column] = minutes(block.end);
-      block.column = column;
+function ghostBlocks(state) {
+  const course = courseById(view.open || view.preview);
+  if (!course || !TERMS_OF[view.half] || !TERMS_OF[view.half].includes(course.term)) return [];
+  const chosen = entriesOf(state, course.id)[0];
+  const blocks = [];
+  course.sections.forEach((section) => {
+    if (chosen && chosen.section_id === section.id) return;
+    const clash = state.section_warnings[section.id];
+    section.meetings.forEach((m) => {
+      blocks.push({
+        day: m.day, start: m.start, end: m.end,
+        name: section.section, section: clash ? "clashes" : m.room,
+        class: `ghost${clash ? " bad" : ""}${view.hot === section.id ? " hot" : ""}`,
+        title: `${course.name} ${section.section}, ${m.day} ${compact(m.start)}–${compact(m.end)}, ${m.room}${clash ? `. Clashes with ${clash.join(", ")}` : ""}`,
+        onclick: () => chooseSection(course, section),
+        onmouseenter: () => { view.hot = section.id; renderSections(Lance.state); },
+        onmouseleave: () => { view.hot = null; renderSections(Lance.state); },
+      });
     });
-    group.items.forEach((block) => { block.columns = columns.length; });
   });
   return blocks;
 }
 
-function colourIndex(state) {
-  const order = [...new Set(state.items.map((item) => item.offering_id))];
-  return (offeringId) => order.indexOf(offeringId) % 10;
-}
-
-function blockNode(block, state, colourOf, height) {
-  const top = (minutes(block.start) - FIRST_HOUR * 60) / 60 * height;
-  const tall = (minutes(block.end) - minutes(block.start)) / 60 * height - 2;
-  const width = 100 / block.columns;
-  const style = `top:${top}px;height:${tall}px;left:calc(${block.column * width}% + 1px);width:calc(${width}% - 2px)`;
-  if (block.ghost) {
-    return el("div", { class: `block ghost${block.bad ? " bad" : ""}`, style },
-      el("b", { text: block.name }), el("span", { text: block.detail }));
-  }
-  const link = el("a", {
-    class: `block c${colourOf(block.offering_id)}${block.clash ? " clash" : ""}${block.alt ? " alt" : ""}`,
-    style, href: `/course/${block.offering_id}`, title: `${block.name} ${block.section}, ${block.start}–${block.end}, ${block.room}`,
-  }, el("b", { text: block.name }), el("span", { text: `${block.section} · ${block.room}` }));
-  link.append(el("button", {
-    type: "button", class: "x", title: "Remove", "aria-label": `Remove ${block.name} ${block.section}`,
-    html: '<svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M2 2l8 8M10 2l-8 8"/></svg>',
-    onclick: (event) => { event.preventDefault(); event.stopPropagation(); Lance.send("/api/remove", { item_id: block.item_id }); },
-  }));
-  return link;
-}
-
 function renderWeek(state) {
-  const box = document.getElementById("week");
-  const height = hourHeight();
-  const clashing = clashingItemIds(state);
-  const colourOf = colourIndex(state);
-  box.replaceChildren(el("div", {}));
-  DAYS.forEach((day) => box.append(el("div", { class: "week-head", text: day })));
-  const hours = el("div", { class: "hours", style: `height:${(LAST_HOUR - FIRST_HOUR) * height}px` });
-  for (let hour = FIRST_HOUR; hour < LAST_HOUR; hour += 1) {
-    if (hour === FIRST_HOUR) continue;
-    hours.append(el("span", { class: "hour-label", style: `top:${(hour - FIRST_HOUR) * height}px`, text: `${hour}:00` }));
-  }
-  box.append(hours);
-  const visible = termsInView();
-  const firstSection = {};
+  if (!state) return;
+  const onWeek = hasWeek(state);
+  document.getElementById("week-wrap").hidden = !onWeek;
+  document.getElementById("no-timetable").hidden = onWeek;
+  if (!onWeek) return;
+  const clashing = clashingItems(state);
+  const blocks = [];
   state.items.forEach((item) => {
-    if (!item.section_id) return;
-    const key = `${item.list}-${item.offering_id}`;
-    if (!(key in firstSection)) firstSection[key] = item.id;
-  });
-  DAYS.forEach((day) => {
-    const blocks = [];
-    state.items.forEach((item) => {
-      if (!visible.includes(item.term)) return;
-      item.meetings.filter((m) => m.day === day).forEach((m) => {
-        blocks.push({
-          item_id: item.id, offering_id: item.offering_id, name: item.name, section: item.section, start: m.start, end: m.end, room: m.room,
-          clash: clashing.has(item.id), alt: firstSection[`${item.list}-${item.offering_id}`] !== item.id,
-        });
+    if (!item.in_week || !TERMS_OF[view.half].includes(item.term)) return;
+    item.meetings.forEach((m) => {
+      blocks.push({
+        day: m.day, start: m.start, end: m.end,
+        name: item.name, section: item.section, room: m.room,
+        clashing: clashing.has(item.id),
+        class: [view.open === item.offering_id && "open", view.fresh === item.section_id && "fresh"].filter(Boolean).join(" "),
+        title: `${item.name} ${item.section}, ${m.day} ${compact(m.start)}–${compact(m.end)}, ${m.room}`,
+        onclick: () => go(item.offering_id),
       });
     });
-    if (view.ghost && visible.includes(view.ghost.term)) {
-      view.ghost.meetings.filter((m) => m.day === day).forEach((m) => {
-        blocks.push({ ghost: true, bad: view.ghost.bad, name: view.ghost.name, detail: `${view.ghost.section} · ${m.room}`, start: m.start, end: m.end });
-      });
-    }
-    const column = el("div", { class: "day", style: `height:${(LAST_HOUR - FIRST_HOUR) * height}px` });
-    layOut(blocks).forEach((block) => column.append(blockNode(block, state, colourOf, height)));
-    box.append(column);
   });
+  view.fresh = null;
+  const ghosts = ghostBlocks(state);
+  Week.draw(document.getElementById("week-days"), document.getElementById("week"), blocks, ghosts, view.half);
+  const empty = document.getElementById("week-empty");
+  empty.hidden = state.items.length > 0 || ghosts.length > 0;
+  empty.replaceChildren(el("span", { text: state.plan.programme ? "Pick your mandatory sections, then press + on an elective." : "Choose your programme, then press + on a course." }),
+    el("button", { type: "button", class: "btn small", onclick: tryExample }, "Try an example"));
 }
 
-function renderWeekTabs(state) {
-  const fall = state.plan.semester === "Fall";
-  const tabs = fall ? [["T1", "T1 · until 12 Oct"], ["T2", "T2 · from 22 Oct"]] : [["T3", "T3 · 1 Feb – 16 Mar"], ["T4", "T4 · 5 Apr – 14 May"]];
-  if (!tabs.some(([key]) => key === view.week)) view.week = tabs[0][0];
-  document.getElementById("week-tabs").replaceChildren(...tabs.map(([key, label]) => el("button", {
-    type: "button", class: view.week === key ? "on" : "",
-    onclick: () => { view.week = key; renderWeekTabs(state); renderWeek(Lance.state); },
-  }, label)));
+async function tryExample() {
+  await Lance.send("/api/example", {});
+  await loadCatalogue();
+  render(Lance.state);
+  Lance.toast("An example: a real Management plan from Fall 2026.", { label: "Start over", run: () => Lance.send("/api/start-over", {}) });
 }
 
-function showGhost(section, course) {
-  const already = Lance.state.items.some((item) => item.section_id === section.id);
-  if (already) return;
-  view.ghost = {
-    name: course.name, section: section.section, term: course.term, meetings: section.meetings,
-    bad: Boolean(Lance.state.section_warnings[section.id]),
-  };
-  /* T1 and T2 live on different weeks: bring the right one forward while looking at a course */
-  if ((course.term === "T1" || course.term === "T2") && course.term !== view.week) {
-    view.week = course.term;
-    renderWeekTabs(Lance.state);
+/* ---- above the list, and the lines about clashes ---- */
+
+function renderTabs(state) {
+  const halves = HALVES[state.plan.semester];
+  if (!TERMS_OF[view.half] || !halves.some(([key]) => key === view.half)) view.half = halves[0][0];
+  Lance.remember("half", view.half);
+  if (!hasWeek(state)) view.closed.mine = false;
+  document.getElementById("half-tabs").replaceChildren(...halves.map(([key, when]) => el("button", {
+    type: "button", class: view.half === key ? "on" : "", title: when, onclick: () => { view.half = key; render(Lance.state); },
+  }, key)));
+  const note = document.getElementById("round-note");
+  note.hidden = !state.round || state.round.status !== "closed";
+  if (!note.hidden) {
+    const next = state.next_deadline;
+    note.replaceChildren(`The ${state.plan.semester} round closed on ${state.round.last_day}: this is practice. ${next ? `Next: ${next.range.split(" – ")[0].split(" ").slice(1).join(" ")}. ` : ""}`,
+      state.plan.semester === "Fall" ? el("button", { type: "button", class: "link-btn", onclick: () => changeSetting({ semester: "Spring" }) }, "Plan for spring") : null);
   }
-  renderWeek(Lance.state);
+  document.getElementById("fits").hidden = !hasWeek(state) || !state.items.some((item) => item.in_week);
+  document.getElementById("next").classList.toggle("primary", state.items.length > 0);
 }
 
-function hideGhost() {
-  if (!view.ghost) return;
-  view.ghost = null;
-  renderWeek(Lance.state);
+/* the way out of a clash: another section that fits, or take the elective out */
+function clashActions(clash, state) {
+  const offerings = clash.offerings.map((id) => entriesOf(state, id)[0]).filter(Boolean);
+  const target = offerings.slice().reverse().find((entry) => entry.list !== "mandatory") || offerings[offerings.length - 1];
+  if (!target) return [];
+  const course = courseById(target.offering_id);
+  const other = course && clash.kind === "class" ? course.sections.find((section) => section.id !== target.section_id && !state.section_warnings[section.id]) : null;
+  return [
+    clash.weeks && !clash.weeks.includes(view.half) ? el("button", { type: "button", class: "btn small", onclick: () => { view.half = clash.weeks[0]; render(Lance.state); } }, `Show ${clash.weeks[0]}`) : null,
+    other ? el("button", { type: "button", class: "btn small", title: `Switch ${target.name} to ${other.section}`, onclick: () => chooseSection(course, other) }, `Switch to ${other.section}`) : null,
+    el("button", { type: "button", class: "btn small", title: `Remove ${target.name}`, onclick: () => removeCourse(target.offering_id, target.name) }, `Remove ${target.name}`),
+  ];
 }
 
-/* ---- clashes and exams ---- */
+function clashText(clash) {
+  if (clash.kind === "class") {
+    const count = clash.times === clash.of ? `all ${clash.of} classes` : `${clash.times} of ${clash.of} classes`;
+    return [`${clash.weeks.join(", ")}: `, `${clash.first} × ${clash.second}`, `, ${clash.when}, ${count}. You can't attend both.`];
+  }
+  if (clash.kind === "exam") return ["Exams: ", `${clash.first} × ${clash.second}`, `, ${clash.when}. Nova blocks this.`];
+  return ["Midterm: ", `${clash.first} × ${clash.second}`, `, ${clash.when}. Nova does not check this.`];
+}
 
 function renderClashes(state) {
+  const shown = state.clashes.slice(0, view.allClashes ? undefined : 2);
   const box = document.getElementById("clashes");
-  box.replaceChildren(...state.clashes.map((clash) => {
-    const detail = clash.kind === "class"
-      ? `${clash.when}, ${clash.times === clash.of ? "every class" : `${clash.times} of ${clash.of} classes`}`
-      : clash.kind === "exam"
-        ? `${clash.when}. The platform blocks overlapping exams.`
-        : `${clash.when}. The platform does not check midterms.`;
-    return el("div", { class: `note-card ${clash.severity === "midterm" ? "midterm" : "clash"}` },
-      el("div", {},
-        el("div", { class: "strong", text: `${clash.first} × ${clash.second}` }),
-        el("div", { class: "when", text: detail })));
+  box.replaceChildren(...shown.map((clash) => {
+    const [before, pair, after] = clashText(clash);
+    return el("div", { class: `clash-line ${clash.severity}` },
+      el("div", { class: "grow" }, before, el("b", { text: pair }), after),
+      ...clashActions(clash, state).filter(Boolean));
   }));
-}
-
-function renderExams(state) {
-  const card = document.getElementById("exams-card");
-  const box = document.getElementById("exams");
-  card.hidden = !state.exams.length;
-  const clashing = new Set();
-  state.clashes.filter((clash) => clash.kind !== "class").forEach((clash) => clashing.add(clash.when));
-  box.replaceChildren(...state.exams.map((exam) => {
-    const bad = clashing.has(`${exam.label}, ${exam.start}`);
-    const kind = exam.kind === "exam" ? "" : ` · ${exam.kind}`;
-    return el("div", { class: `exam${bad ? " bad" : ""}` },
-      el("b", { text: exam.name }),
-      el("span", { class: "small muted num", text: `${exam.label}, ${exam.start}${kind}` }));
-  }));
-}
-
-function renderStart(state) {
-  const card = document.getElementById("week-card");
-  let start = card.querySelector(".start-note");
-  const empty = !state.items.length && state.plan.semester === "Fall";
-  if (empty && !start) {
-    start = el("div", { class: "start-note", style: "display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:12px" },
-      el("span", { class: "muted", text: "Pick a section on the left, or start from a real plan." }),
-      el("button", { type: "button", class: "btn small", onclick: async () => { await Lance.send("/api/example", {}); document.dispatchEvent(new Event("lance:catalogue")); } }, "Load an example"));
-    card.insertBefore(start, card.querySelector(".week"));
+  if (state.clashes.length > 2 && !view.allClashes) {
+    box.append(el("button", { type: "button", class: "link-btn small", style: "align-self:flex-start", onclick: () => { view.allClashes = true; renderClashes(Lance.state); } }, `${state.clashes.length - 2} more`));
   }
-  if (!empty && start) start.remove();
-}
-
-function renderSpringNote(state) {
-  const card = document.getElementById("week-card");
-  const spring = state.plan.semester === "Spring";
-  card.querySelector(".week").hidden = spring;
-  let note = card.querySelector(".spring-note");
-  if (spring && !note) {
-    note = el("p", { class: "spring-note muted", style: "padding:18px 4px", text: "Nova has not published the spring timetable yet. Courses, bids and past prices already work; the week fills in once the schedule is out." });
-    card.append(note);
-  }
-  if (!spring && note) note.remove();
 }
 
 /* ---- wiring ---- */
 
+function render(state) {
+  renderTabs(state);
+  renderList(state);
+  renderSections(state);
+  renderWeek(state);
+  renderClashes(state);
+  const programme = document.getElementById("set-programme");
+  const semester = document.getElementById("set-semester");
+  programme.value = state.plan.programme;
+  semester.value = state.plan.semester;
+  fitToValue(programme);
+  fitToValue(semester);
+  document.querySelectorAll(".section-pick").forEach(fitToValue);
+}
+
+/* a menu is only as wide as what it shows, so that everything stays on one line (browsers make it as wide as its longest option) */
+function fitToValue(select) {
+  const context = fitToValue.canvas.getContext("2d");
+  context.font = getComputedStyle(select).font;
+  select.style.width = `${Math.ceil(context.measureText(select.selectedOptions[0].text).width) + 36}px`;
+}
+fitToValue.canvas = document.createElement("canvas");
+
 async function loadCatalogue() {
   const response = await fetch("/api/catalogue");
   view.catalogue = await response.json();
-  view.term = "all";
-  renderTermFilter();
 }
 
-function render(state) {
-  renderWeekTabs(state);
-  renderCourses(state);
-  renderStart(state);
-  renderSpringNote(state);
-  renderWeek(state);
-  renderClashes(state);
-  renderExams(state);
+async function changeSetting(body) {
+  await Lance.send("/api/settings", body);
+  await loadCatalogue();
+  view.half = null;
+  view.fits = false;
+  document.getElementById("fits").setAttribute("aria-pressed", "false");
+  render(Lance.state);
 }
 
-/* Filters can be touched while the page is still loading: the list then simply draws them on arrival. */
-const redrawCourses = () => { if (Lance.state) renderCourses(Lance.state); };
 document.getElementById("search").addEventListener("input", (event) => {
   view.query = event.target.value.trim();
-  redrawCourses();
+  Lance.remember("query", view.query);
+  if (Lance.state) renderList(Lance.state);
 });
-document.getElementById("fits").addEventListener("change", (event) => {
-  view.fits = event.target.checked;
-  redrawCourses();
+document.getElementById("fits").addEventListener("click", (event) => {
+  view.fits = !view.fits;
+  event.currentTarget.setAttribute("aria-pressed", view.fits ? "true" : "false");
+  if (Lance.state) renderList(Lance.state);
 });
-document.getElementById("filter-kind").addEventListener("click", (event) => {
-  const button = event.target.closest("[data-kind]");
-  if (!button) return;
-  view.kind = button.dataset.kind;
-  document.querySelectorAll("#filter-kind .chip").forEach((chip) => chip.classList.toggle("on", chip === button));
-  redrawCourses();
-});
-document.querySelectorAll("[data-view]").forEach((button) => {
-  button.addEventListener("click", () => {
-    document.getElementById("planner").dataset.view = button.dataset.view;
-    document.querySelectorAll("[data-view]").forEach((other) => other.classList.toggle("on", other === button));
-    if (Lance.state) render(Lance.state);
-  });
-});
-document.addEventListener("lance:catalogue", async () => {
-  await loadCatalogue();
-  render(Lance.state);
-});
+document.getElementById("set-programme").addEventListener("change", (event) => changeSetting({ programme: event.target.value }));
+document.getElementById("set-semester").addEventListener("change", (event) => changeSetting({ semester: event.target.value }));
+document.addEventListener("keydown", (event) => { if (event.key === "Escape" && view.open) goBack(); });
+window.addEventListener("hashchange", route);
+/* on a phone the Courses tab only changes the surface; there is no need to load the page again */
+document.querySelector("[data-tab=courses]").addEventListener("click", (event) => { event.preventDefault(); location.hash = ""; });
 
 (async function start() {
+  view.half = Lance.remember("half") || null;
+  view.query = Lance.remember("query") || "";
+  document.getElementById("search").value = view.query;
   await loadCatalogue();
   Lance.onChange(render);
   await Lance.load();
-  /* the list sits next to the week and scrolls on its own; its height depends on the head card */
-  const head = document.getElementById("head").offsetHeight;
-  document.documentElement.style.setProperty("--head", `${head}px`);
+  const planner = document.getElementById("planner");
+  /* a link to a course opens the same page with that course open */
+  if (planner.dataset.open) history.replaceState(null, "", Lance.courseHref(planner.dataset.open));
+  if (planner.dataset.saved === "yes") Lance.toast("Thanks, your answers are in.");
+  if (planner.dataset.saved === "error") Lance.toast("Please answer every question.");
+  route();
 })();

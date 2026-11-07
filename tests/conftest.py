@@ -29,7 +29,10 @@ def plan():
 def client():
     import app as lance
     lance.app.config.update(TESTING=True)
-    return lance.app.test_client()
+    client = lance.app.test_client()
+    # A new visitor starts without programme and points. Most tests are about what happens after that.
+    client.post("/api/settings", json={"programme": "Management", "points": 165})
+    return client
 
 
 def add_all(plan, *section_ids):

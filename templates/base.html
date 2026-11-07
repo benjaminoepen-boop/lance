@@ -4,37 +4,37 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>{% block title %}Lance{% endblock %}</title>
-<meta name="description" content="Plan your Nova SBE course bidding: timetable clashes, past prices and what a bid will really cost.">
-<meta name="theme-color" content="#f5f5f7">
+<meta name="description" content="Plan your Nova SBE course bidding: your week, what a seat cost last round, and what a bid will really cost.">
+<meta name="theme-color" content="#ffffff">
 <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
 <link rel="icon" href="{{ url_for('static', filename='icon.svg') }}" type="image/svg+xml">
 <link rel="apple-touch-icon" href="{{ url_for('static', filename='icon.svg') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
 </head>
 <body data-page="{{ active }}">
-{% set icons = {
- 'planner': '<svg width="15" height="15" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="13" height="12" rx="2"/><path d="M2 7h13M6 1.5v3M11 1.5v3"/></svg>',
- 'bids': '<svg width="15" height="15" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 14h11M5 14V8M8.5 14V4M12 14v-4"/></svg>',
- 'rules': '<svg width="15" height="15" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 2.5h8l3 3v9H3z"/><path d="M6 8h5M6 11h5"/></svg>',
- 'share': '<svg width="15" height="15" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.5 11V2.5M5 6l3.5-3.5L12 6M3 11v3.5h11V11"/></svg>'
-} %}
-{% set nav = [('planner','Planner','t1',url_for('planner')),('bids','Bids','t2',url_for('bids')),('rules','Rules','t3',url_for('rules')),('share','Share prices','t4',url_for('share'))] %}
-<div class="shell">
-  <aside class="side">
-    <a class="brand" href="{{ url_for('planner') }}"><i><svg width="14" height="14" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 14 14 3M9.5 3H14v4.5"/></svg></i>Lance</a>
-    {% for key, label, tile, href in nav %}
-    <a class="nav-item {{ 'on' if active == key }}" href="{{ href }}"><span class="tile {{ tile }}">{{ icons[key]|safe }}</span>{{ label }}</a>
-    {% endfor %}
-    <p class="side-note">Student project in Introduction to Programming. Not an official Nova SBE system. Bids are placed on Nova's platform only.</p>
-  </aside>
-  <main class="main" id="main">
-    {% block head %}{% endblock %}
-    {% block content %}{% endblock %}
-  </main>
-</div>
-<nav class="tabbar" aria-label="Sections">
-  {% for key, label, tile, href in nav %}
-  <a class="{{ 'on' if active == key }}" href="{{ href }}">{{ icons[key]|safe }}<span>{{ label.split(' ')[0] }}</span></a>
+{% set steps = [('planner','Courses',url_for('planner')),('bids','Bids',url_for('bids')),('nova','Finish on Nova',url_for('nova'))] %}
+<header class="topbar">
+  <a class="brand" href="{{ url_for('planner') }}"><i><svg width="14" height="14" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 14 14 3M9.5 3H14v4.5"/></svg></i>Lance <small>Student project</small></a>
+  <nav class="seg steps" aria-label="Steps">
+    {% for key, label, href in steps %}<a class="{{ 'on' if active == key }}" href="{{ href }}" {% if active == key %}aria-current="page"{% endif %}>{{ label }}</a>{% endfor %}
+  </nav>
+  <div class="top-right">
+    <a class="top-link" href="{{ url_for('rules') }}" title="How Nova's bidding works">Rules</a>
+    {% block action %}{% endblock %}
+  </div>
+</header>
+<main class="main" id="main">
+  {% block content %}{% endblock %}
+</main>
+<nav class="tabbar" aria-label="Steps">
+  {% set icons = {
+    'courses': '<path d="M3 4.5h11M3 8.5h11M3 12.5h7"/>',
+    'week': '<rect x="2" y="3" width="13" height="12" rx="2"/><path d="M2 7h13M6 1.5v3M11 1.5v3"/>',
+    'bids': '<path d="M3 14h11M5 14V8M8.5 14V4M12 14v-4"/>',
+    'nova': '<path d="M3 8.5h10M9 4.5l4 4-4 4"/>'
+  } %}
+  {% for key, label, href, on in [('courses','Courses',url_for('planner'),active == 'planner'),('week','Week',url_for('planner') ~ '#week',False),('bids','Bids',url_for('bids'),active == 'bids'),('nova','Finish',url_for('nova'),active == 'nova')] %}
+  <a class="{{ 'on' if on }}" data-tab="{{ key }}" href="{{ href }}"><svg width="18" height="18" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{{ icons[key]|safe }}</svg><span>{{ label }}</span></a>
   {% endfor %}
 </nav>
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>

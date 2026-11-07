@@ -11,7 +11,7 @@ uv sync
 uv run flask --app app run --port 8770
 ```
 
-Open http://127.0.0.1:8770 and press *Load an example*, or pick sections on the left.
+Open http://127.0.0.1:8770 and press *Try an example*, or choose your programme and press plus on a course.
 
 ## Test it
 
@@ -20,6 +20,8 @@ uv run pytest
 ```
 
 The tests run on a throwaway database built from the real data. `tests/test_real_accounts.py` checks the money against two real bidding accounts from Fall 2026.
+
+`tests/browser/flow.cjs` clicks the whole way through in real browsers: a laptop, a small laptop, an iPhone and an Android phone. `scripts/measure.cjs` counts the controls and words a student sees on each screen. Both need Playwright; how to start them is in their first lines.
 
 ## How it is built
 
@@ -33,6 +35,9 @@ The tests run on a throwaway database built from the real data. `tests/test_real
 | `scripts/` | How the content is made from Nova's PDFs (`docs/data.md`) |
 | `tests/` | One test file per group of rules |
 | `docs/product-brief.md` | Requirements, rules and acceptance scenarios |
+| `docs/walkthrough.md` | Six clicks from the button to the database |
+| `docs/demo.md` | The five minutes of the live demonstration |
+| `docs/usability.md` | Who used it without help, and what changed because of it |
 
 Content and progress are separate: `seed/` is rebuilt into the database whenever it changes; plans, ratings and shared prices are never touched by that.
 

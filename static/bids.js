@@ -1,8 +1,126 @@
-/* The bids page. The server does all the arithmetic in logic.py; this file draws what it answers. */
+/* Step 2: how much for each course. The server does all the arithmetic in logic.py; this file draws what it answers. */
 const { el } = Lance;
-const PRIORITIES = [["must", "Must have", "last cut-off + 25 %"], ["want", "Want", "last cut-off + 10 %"], ["nice", "Nice", "exactly last cut-off"]];
+const QUICK = [["exact", "Just enough", "Exactly what the last seat cost last round"], ["plus10", "+10 %", "Last round's price plus 10 %"], ["plus25", "+25 %", "Last round's price plus 25 %"]];
+const view = { catalogue: [], open: new Set(), adding: null, picking: false, query: "", menu: null };
+const compact = (time) => time.replace(/^0/, "");
+const whole = (value) => String(Math.round(value * 10) / 10);
+const meetingsText = (meetings) => meetings.map((m) => `${m.day} ${compact(m.start)}`).join(" · ");
+const courseOf = (id) => view.catalogue.find((course) => course.id === id);
 
-/* A small picture of last round: one bar per 20 points, dark where the bid won a seat. */
+/* ---- the numbers on top ---- */
+
+function renderBudget(state) {
+  const box = document.getElementById("budget");
+  let field = document.getElementById("set-points");
+  if (!field) {
+    let timer = null;
+    field = el("input", {
+      class: "field", id: "set-points", type: "number", min: 0, max: 2000, step: 1, inputmode: "numeric", placeholder: "?", "aria-label": "Your points, the Balance on Nova's platform",
+      oninput: (event) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => Lance.send("/api/settings", { points: event.target.value || 0 }), 350);
+      },
+      onchange: (event) => {
+        clearTimeout(timer);
+        Lance.send("/api/settings", { points: event.target.value || 0 });
+      },
+    });
+    box.append(
+      el("label", { class: "budget-figure", title: "Your Balance on Nova's platform" }, field, el("span", { text: "Your points" })),
+      el("div", { class: "budget-figure" }, el("b", { id: "points-left" }), el("span", { text: "Left" })),
+      el("div", { class: "budget-note", id: "budget-note" }));
+  }
+  const points = state.plan.points;
+  if (field !== document.activeElement) field.value = points || "";
+  const left = points - state.reserved;
+  const leftNode = document.getElementById("points-left");
+  leftNode.textContent = points ? String(left) : "–";
+  leftNode.classList.toggle("bad", Boolean(points) && left < 0);
+  const note = document.getElementById("budget-note");
+  note.replaceChildren();
+  const f = state.forecast;
+  const known = f.rows.filter((row) => row.status === "seat" || row.status === "no seat");
+  const unknown = f.rows.filter((row) => row.status === "no data").length;
+  if (!points) {
+    note.append("Enter your points: the Balance on Nova's platform.");
+  } else if (left < 0) {
+    note.append(el("span", { class: "bad", text: `Your bids hold ${state.reserved} points, you have ${points}.` }));
+  } else if (f.rows.some((row) => row.status === "seat")) {
+    if (unknown) {
+      note.append(`If last round repeats: about ${whole(f.expected)} for the ${known.length === 1 ? "course" : `${known.length} courses`} we know. ${unknown} without a past price.`);
+    } else {
+      note.append(`If last round repeats: you pay ${whole(f.expected)}, and ${whole(f.left)} come back for the alternate list and add/drop. `);
+      note.append(el("a", { href: Lance.pages.rules, text: "Why less?" }));
+    }
+  }
+  if (state.items.some((item) => item.analysis && item.analysis.known)) {
+    const open = document.getElementById("rank-bonus");
+    note.append(el("details", { class: "more", id: "rank-bonus", open: open && open.open ? true : null },
+      el("summary", { text: state.plan.has_bonus ? "Rank bonus: on" : "Rank bonus?" }),
+      el("label", { class: "check small", style: "text-align:left;display:flex;align-items:flex-start" },
+        el("input", { type: "checkbox", checked: state.plan.has_bonus ? true : null, onchange: (event) => Lance.send("/api/settings", { has_bonus: event.target.checked }) }),
+        el("span", { text: "My rank list shows my bid × 1.1. Part of the students with 45 or more ECTS passed rank like this. Not sure: leave it off." }))));
+  }
+}
+
+/* ---- the answer for one course ---- */
+
+function answerOf(rows, state) {
+  const first = rows[0];
+  const a = first.analysis;
+  const bid = rows.some((item) => item.bid !== null) ? Math.max(...rows.map((item) => item.bid || 0)) : null;
+  const span = (cls, text, title) => el("span", { class: cls, title, text });
+  const known = state.known_prices;
+  const anchor = known ? `No past price yet. Known sections went for ${known.low} to ${known.high}.` : "No past price yet.";
+  if (bid === null) {
+    const price = a.known && a.cutoff !== null && a.cutoff !== undefined && a.exact ? ` Last round: seat from ${Math.ceil(a.cutoff)}.` : a.known ? "" : ` ${anchor}`;
+    return [span("warn", "No bid: Nova reads this as not interested."), price];
+  }
+  if (!a.known) return [span("faint", anchor)];
+  if (!a.exact || !first.section) {
+    /* the price comes from another term or does not know the section: only a rough hint, so no verdict */
+    const high = a.cutoff_high !== undefined && a.cutoff_high !== null && a.cutoff_high !== a.cutoff ? ` to ${Math.ceil(a.cutoff_high)}` : "";
+    return [span("muted", `${a.round}: seats from ${Math.ceil(a.cutoff)}${high}. No price for this term yet.`)];
+  }
+  if (first.list === "alternate") {
+    if (a.cutoff === null || a.cutoff === undefined) return [span("muted", `Last round: ${a.seats} seats for ${a.bids} bids on the alternate list.`)];
+    return [span("muted", `Last round: seats from ${Math.ceil(a.cutoff)}.`)];
+  }
+  const outcome = state.forecast.rows.find((row) => row.offering_id === first.offering_id);
+  if (outcome && outcome.status === "seat") {
+    const formula = `(your bid + ${Math.min(a.lowest_in_course, bid)}, the lowest winning bid in the course) / 2`;
+    if (outcome.section !== first.section) return [span("", `Not enough for ${first.section}, enough for ${outcome.section} last round · you'd pay about ${whole(outcome.price)}`, formula)];
+    return [span("", `Enough last round · you'd pay about ${whole(outcome.price)}`, formula)];
+  }
+  const lows = rows.map((item) => item.analysis.cutoff).filter((value) => value !== null && value !== undefined);
+  return [span("bad", `Too low last round · seat from ${Math.ceil(Math.min(...lows))}`)];
+}
+
+/* a course that clashes in the week says so here too: bidding on it would be wasted */
+function weekNotes(first, state) {
+  return state.clashes.filter((clash) => clash.offerings.includes(first.offering_id) && (first.in_week || clash.kind !== "class")).map((clash) => {
+    const other = clash.offerings.find((id) => id !== first.offering_id);
+    const name = (state.items.find((item) => item.offering_id === other) || {}).name || "";
+    if (clash.kind === "exam") return { level: "exam", text: `Exam at the same time as ${name}. Nova will not enroll you in both.` };
+    if (clash.kind === "midterm") return { level: "midterm", text: `Midterm clash with ${name}. Nova does not check this.` };
+    return { level: "class", text: `Clashes with ${name}. You can't attend both.` };
+  });
+}
+
+let pending = null;
+function saveLater(body) {
+  clearTimeout(pending && pending.timer);
+  pending = { body, timer: setTimeout(() => { pending = null; Lance.send("/api/bid", body); }, 350) };
+}
+const courseBid = (offeringId, value) => saveLater({ offering_id: offeringId, bid: value });
+const sectionBid = (itemId, value) => saveLater({ item_id: itemId, bid: value });
+/* a bid typed just before leaving the page still arrives */
+window.addEventListener("pagehide", () => {
+  if (pending) fetch("/api/bid", { method: "POST", keepalive: true, headers: { "Content-Type": "application/json" }, body: JSON.stringify(pending.body) });
+});
+
+/* ---- the picture of last round: one bar per 20 points, blue where the bid won a seat ---- */
+
 function histogram(analysis, bid) {
   const bars = analysis.histogram || [];
   if (!bars.length) return null;
@@ -37,134 +155,203 @@ function histogram(analysis, bid) {
   return svg;
 }
 
-function outcomeText(item, plan) {
+/* ---- details: each section with its own numbers, and its own bid if someone wants that ---- */
+
+function detailRow(item, rows, plan) {
   const a = item.analysis;
-  if (!a.known) return el("span", { class: "small faint" }, "No past price yet");
-  const lines = [];
-  if (a.cutoff !== null && a.cutoff !== undefined) {
-    lines.push(el("div", { class: "small muted num", text: `Cut-off ${a.cutoff}${a.exact ? "" : ` (${a.round}, other term)`}${item.list === "alternate" ? ", alternate list" : ""}` }));
-  }
-  if (item.bid !== null && a.would_win !== undefined) {
-    lines.push(el("div", { class: "small", style: `color:var(${a.would_win ? "--green" : "--red"});font-weight:600` },
-      a.would_win ? "Seat last round" : "No seat last round"));
-  }
-  if (item.bid !== null && a.price !== undefined && a.would_win && item.list === "primary") {
-    lines.push(el("div", { class: "small num", title: `(your bid + lowest winning bid in the course) / 2 = (${item.bid} + ${Math.min(a.lowest_in_course, item.bid)}) / 2` }, `Pays about `, el("b", { text: String(Math.round(a.price * 10) / 10) })));
-  }
-  if (item.bid !== null && item.list === "alternate" && a.would_win !== false) {
-    lines.push(el("div", { class: "small muted num", text: "Pays its bid, at most what is left" }));
-  }
-  return el("div", { class: "outcome" }, ...lines);
+  const numbers = a.known ? [a.cutoff !== null && a.cutoff !== undefined ? `Seat from ${Math.ceil(a.cutoff)}` : null, a.seats !== null ? `${a.seats} seats` : null, a.bids !== null ? `${a.bids} bids` : null, a.top !== null ? `highest ${a.top}` : null, a.round].filter(Boolean).join(" · ") : "No past price yet";
+  return el("div", { class: "detail-row" },
+    el("div", { class: "detail-head" },
+      el("b", { class: "strong", text: item.section || "Any" }),
+      el("span", { class: "muted num", text: meetingsText(item.meetings) }),
+      rows.length > 1 ? el("input", {
+        class: "field num", type: "number", min: 0, max: plan.points, step: 1, inputmode: "numeric", placeholder: "no bid",
+        value: item.bid === null ? "" : item.bid, "data-item": item.id, "aria-label": `Bid on ${item.name} ${item.section || ""} only`,
+        oninput: (event) => sectionBid(item.id, event.target.value),
+      }) : null,
+      el("span", { class: "faint num", text: numbers })),
+    histogram(a, item.bid),
+    a.lowest_in_course !== null && a.lowest_in_course !== undefined && a.exact && item.list === "primary" ? el("div", { class: "faint", style: "margin-top:4px", text: `You pay the middle of your bid and ${a.lowest_in_course}, the lowest winning bid in the whole course.` }) : null);
 }
 
-let timers = {};
-function saveBid(itemId, value) {
-  clearTimeout(timers[itemId]);
-  timers[itemId] = setTimeout(() => Lance.send("/api/bid", { item_id: itemId, bid: value }), 350);
-}
+/* ---- one course ---- */
 
-function bidRow(item, plan) {
-  const a = item.analysis;
-  const input = el("input", {
-    class: "field num", type: "number", min: 0, max: plan.points, step: 1, inputmode: "numeric", placeholder: "no bid",
-    value: item.bid === null ? "" : item.bid, "data-item": item.id, "aria-label": `Bid on ${item.name} ${item.section || ""}`,
-    oninput: (event) => saveBid(item.id, event.target.value),
-  });
-  const suggestions = el("div", { class: "suggest" });
-  PRIORITIES.forEach(([key, label, hint]) => {
-    const value = a.suggestions[key];
-    if (value === null || value === undefined) return;
-    suggestions.append(el("button", {
-      type: "button", title: `${label}: ${hint}`,
-      onclick: () => Lance.send("/api/bid", { item_id: item.id, bid: Math.min(value, plan.points) }),
-    }, `${label} ${value}`));
-  });
-  const spark = histogram(a, item.bid);
-  return el("div", { class: "bid-row" },
-    el("div", { class: "strong", text: item.section || "Any" }),
-    input,
-    el("div", { class: "spark-cell" }, spark, spark ? null : (a.known ? null : el("a", { class: "small", href: "/share", text: "Share your rank list" })), suggestions),
-    outcomeText(item, plan));
-}
-
-function courseCard(rows, plan, listName, index, total) {
-  const first = rows[0];
-  const moveButton = (direction, label, path) => el("button", {
-    type: "button", class: "icon-btn", title: label, "aria-label": `${label}: ${first.name}`, disabled: (direction === "up" && index === 0) || (direction === "down" && index === total - 1) ? true : null,
-    html: `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${path}"/></svg>`,
-    onclick: () => Lance.send("/api/move", { item_id: first.id, direction }),
-  });
+function menu(first, listName, index, total) {
+  const button = (label, action, disabled) => el("button", { type: "button", disabled: disabled ? true : null, onclick: action }, label);
   const other = listName === "primary" ? "alternate" : "primary";
-  return el("article", { class: "card bid-course" },
-    el("div", { class: "bid-course-top" },
-      el("span", { class: "tag num", text: String(index + 1) }),
-      el("a", { class: "course-name grow", href: `/course/${first.offering_id}`, text: first.name }),
-      el("span", { class: "tag num", text: `${first.term} · ${first.ects} ECTS` }),
-      moveButton("up", "Higher priority", "M8 13V3M3.5 7.5 8 3l4.5 4.5"),
-      moveButton("down", "Lower priority", "M8 3v10M3.5 8.5 8 13l4.5-4.5"),
-      el("button", { type: "button", class: "btn small", onclick: () => Lance.send("/api/move", { item_id: first.id, list: other }) }, `To ${other}`)),
-    ...rows.map((item) => bidRow(item, plan)));
+  return el("details", {
+    class: "menu", open: view.menu === first.offering_id ? true : null,
+    ontoggle: (event) => {
+      if (event.target.open) view.menu = first.offering_id;
+      else if (view.menu === first.offering_id) view.menu = null;
+    },
+  },
+    el("summary", { "aria-label": `More for ${first.name}`, title: "More", html: Lance.icons.dots }),
+    el("div", { class: "menu-items" },
+      listName === "primary" ? button("Move up", () => Lance.send("/api/move", { item_id: first.id, direction: "up" }), index === 0) : null,
+      listName === "primary" ? button("Move down", () => Lance.send("/api/move", { item_id: first.id, direction: "down" }), index === total - 1) : null,
+      button(`To ${other} list`, () => Lance.send("/api/move", { item_id: first.id, list: other })),
+      button("Remove", async () => {
+        const answer = await Lance.send("/api/remove", { offering_id: first.offering_id });
+        if (!answer.error) Lance.toast(`Removed ${first.name}`, { label: "Undo", run: () => Lance.send("/api/restore", { rows: answer.removed }) });
+      })));
 }
 
-function listBlock(title, listName, state) {
-  const items = state.items.filter((item) => item.list === listName);
-  const order = [];
-  items.slice().sort((a, b) => a.position - b.position).forEach((item) => {
-    if (!order.includes(item.offering_id)) order.push(item.offering_id);
+/* "If TXB is full": other sections of the same course. Nova tries them in this order. */
+function otherSections(rows, state) {
+  const first = rows[0];
+  const course = courseOf(first.offering_id);
+  if (!course || !first.section) return [];
+  const backups = rows.slice(1);
+  const free = course.sections.filter((section) => !rows.some((row) => row.section_id === section.id));
+  if (!backups.length && !free.length) return [];
+  const nodes = [el("span", { text: `If ${first.section} is full:` })];
+  backups.forEach((item) => {
+    const tooLow = item.bid !== null && item.analysis.would_win === false;
+    const warning = item.conflicts.length ? item.conflicts.map((note) => note.text).join(" ") : tooLow ? `Your bid was below the ${Math.ceil(item.analysis.cutoff)} this section took last round.` : null;
+    nodes.push(el("span", { class: `tryalso${warning ? " warn" : ""}`, title: warning },
+      `${item.section}${item.conflicts.length ? " · clashes" : tooLow ? " · too low" : ""}`,
+      el("button", { type: "button", class: "x", title: `Do not try ${item.section}`, "aria-label": `Do not try ${item.section}`, html: Lance.icons.close, onclick: () => Lance.send("/api/remove", { item_id: item.id }) })));
   });
-  const block = el("section", { class: "stack", style: "gap:10px" }, el("h2", { text: title }));
-  if (!order.length) {
-    block.append(el("div", { class: "card muted" }, listName === "primary"
-      ? el("span", {}, "Nothing to bid on yet. ", el("a", { href: "/", text: "Pick courses in the planner." }))
-      : el("span", { text: "Courses you would take if the primary list falls short. Nova strongly recommends filling this list." })));
+  if (view.adding === first.offering_id) {
+    free.forEach((section) => {
+      const warning = state.section_warnings[section.id];
+      nodes.push(el("button", {
+        type: "button", class: `backup-add${warning ? " warn" : ""}`, title: warning ? `Clashes with ${warning.join(", ")}` : null,
+        onclick: () => { view.adding = null; Lance.send("/api/add", { section_id: section.id }); },
+      }, `${section.section} ${meetingsText(section.meetings)}`));
+    });
+  } else if (free.length) {
+    nodes.push(el("button", { type: "button", class: "link-btn small", onclick: () => { view.adding = first.offering_id; render(Lance.state); } }, "+ try another"));
   }
+  return nodes;
+}
+
+function courseCard(rows, state, listName, index, total) {
+  const first = rows[0];
+  const a = first.analysis;
+  const bid = rows.some((item) => item.bid !== null) ? Math.max(...rows.map((item) => item.bid || 0)) : null;
+  const differs = new Set(rows.map((item) => item.bid)).size > 1;
+  const showQuick = listName === "primary" && a.exact && first.section;
+  const quick = showQuick ? QUICK.filter(([key]) => a.suggestions[key] !== null && a.suggestions[key] !== undefined).map(([key, label, hint]) => el("button", {
+    type: "button", title: hint, onclick: () => Lance.send("/api/bid", { offering_id: first.offering_id, bid: Math.min(a.suggestions[key], state.plan.points) }),
+  }, `${label} ${a.suggestions[key]}`)) : [];
+  const others = listName === "primary" ? otherSections(rows, state) : [];
+  const canOpen = rows.length > 1 || (a.known && a.histogram && a.histogram.length);
+  const isOpen = view.open.has(first.offering_id);
+  return el("article", { class: `card bid-course${bid === null ? "" : " has-bid"}` },
+    el("div", { class: "bid-course-top" },
+      el("a", { class: "name", href: Lance.courseHref(first.offering_id), text: first.name }),
+      el("span", { class: "small faint num", text: `${first.term} · ${first.ects} ECTS${first.section ? ` · ${first.section} ${meetingsText(first.meetings)}` : ""}` }),
+      menu(first, listName, index, total)),
+    el("div", { class: "bid-main" },
+      el("input", {
+        class: "field num", type: "number", min: 0, max: state.plan.points, step: 1, inputmode: "numeric", placeholder: "no bid",
+        value: bid === null ? "" : bid, "data-course": first.offering_id, "aria-label": `Bid on ${first.name}`,
+        oninput: (event) => courseBid(first.offering_id, event.target.value),
+      }),
+      el("div", { class: "answer" }, ...answerOf(rows, state), differs ? el("span", { class: "faint", text: " · highest of different bids" }) : null),
+      quick.length ? el("span", { class: "quick" }, ...quick) : null,
+      canOpen ? el("button", {
+        type: "button", class: "link-btn small", "aria-expanded": isOpen ? "true" : "false",
+        onclick: () => { if (isOpen) view.open.delete(first.offering_id); else view.open.add(first.offering_id); render(Lance.state); },
+      }, isOpen ? "Hide details" : "Details") : null),
+    ...first.conflicts.concat(weekNotes(first, state)).map((note) => el("div", { class: `note-line ${note.level === "exam" ? "bad" : "warn"}`, text: note.text })),
+    others.length ? el("div", { class: "bid-line" }, ...others) : null,
+    isOpen ? el("div", { class: "bid-details" }, ...rows.map((item) => detailRow(item, rows, state.plan))) : null);
+}
+
+/* ---- the alternate list has its own way in ---- */
+
+function alternatePicker(state) {
+  const box = el("div", { class: "picker" });
+  if (!view.picking) {
+    box.append(el("button", { type: "button", class: "btn small", style: "align-self:flex-start", onclick: () => { view.picking = true; render(Lance.state); } }, "+ Alternate course"));
+    return box;
+  }
+  const results = el("div", { class: "picker" });
+  const draw = () => {
+    const words = view.query.toLowerCase().split(/\s+/).filter(Boolean);
+    const planned = new Set(state.items.map((item) => item.offering_id));
+    const hits = view.catalogue.filter((course) => course.kind !== "mandatory" && !planned.has(course.id))
+      .filter((course) => words.every((word) => `${course.name} ${course.code} ${course.lecturers}`.toLowerCase().includes(word))).slice(0, 6);
+    results.replaceChildren(...hits.map((course) => {
+      const clash = course.sections.length > 0 && course.sections.every((section) => state.section_warnings[section.id]);
+      return el("article", { class: "course" },
+        el("div", { class: "course-main" }, el("span", { class: "course-name", text: course.name }),
+          el("span", { class: "course-sub" }, `${course.term} · ${course.ects} ECTS`, clash ? el("span", { class: "warn", text: " · clashes" }) : null)),
+        el("button", {
+          type: "button", class: "pick", "aria-pressed": "false", "aria-label": `Add ${course.name} to the alternate list`, title: "Add", html: Lance.icons.plus,
+          onclick: () => { view.picking = false; view.query = ""; Lance.send("/api/add", { offering_id: course.id, list: "alternate" }); },
+        }));
+    }));
+  };
+  draw();
+  const field = el("input", {
+    class: "field", type: "search", placeholder: "Search all courses", "aria-label": "Search a course for the alternate list", value: view.query, "data-picker": "1",
+    oninput: (event) => { view.query = event.target.value; draw(); },
+  });
+  box.append(field, results);
+  setTimeout(() => { field.focus(); box.scrollIntoView({ block: "nearest" }); }, 0);
+  return box;
+}
+
+function listBlock(title, subtitle, listName, state) {
+  const items = state.items.filter((item) => item.list === listName).sort((a, b) => a.position - b.position);
+  const order = [...new Set(items.map((item) => item.offering_id))];
+  const block = el("section", { class: "stack", style: "gap:10px" },
+    el("div", { class: "list-title" }, el("h2", { text: title }), subtitle ? el("span", { text: subtitle }) : null));
   order.forEach((offeringId, index) => {
-    const rows = items.filter((item) => item.offering_id === offeringId).sort((a, b) => a.position - b.position);
-    block.append(courseCard(rows, state.plan, listName, index, order.length));
+    block.append(courseCard(items.filter((item) => item.offering_id === offeringId), state, listName, index, order.length));
   });
   return block;
 }
 
-function pointsCard(state) {
-  const f = state.forecast;
-  const figure = (label, value, cls) => el("div", { class: `figure ${cls || ""}` }, el("span", { class: "muted", text: label }), el("b", { text: value }));
-  const box = document.getElementById("points-card");
-  const seats = f.rows.filter((row) => row.status === "seat").length;
-  box.replaceChildren(
-    el("h2", { text: "If last round repeats" }),
-    figure("Your points", String(state.plan.points)),
-    figure("Taken while bidding", String(state.reserved)),
-    figure(`Charged for ${seats} ${seats === 1 ? "seat" : "seats"}`, `${Math.round(f.expected * 10) / 10}`),
-    figure("Left afterwards", `${Math.round(f.left * 10) / 10}`, "total"),
-    f.left > 0 && f.rows.length ? el("p", { class: "small faint", style: "margin-top:6px", text: "Points do not carry over to the next semester. A higher bid on a course you must have costs only half of what you add." }) : null,
-    ...f.rows.filter((row) => row.status !== "seat").map((row) => el("p", { class: "small", style: "margin-top:6px" }, el("b", { text: row.name }),
-      el("span", { class: "muted", text: row.status === "no seat" ? ": no seat at this bid last round" : row.status === "no bid" ? ": no bid yet" : ": no past price yet" }))));
-}
-
-function warnings(state) {
-  document.getElementById("bid-warnings").replaceChildren(...state.warnings.map((warning) => el("div", { class: `note-card ${warning.level}` }, el("span", { text: warning.text }))));
-}
-
 function render(state) {
   const focused = document.activeElement;
-  const focusItem = focused && focused.dataset ? focused.dataset.item : null;
-  const start = focusItem ? focused.value.length : 0;
+  const focusKey = focused && focused.dataset ? (focused.dataset.course ? `[data-course="${focused.dataset.course}"]` : focused.dataset.item ? `[data-item="${focused.dataset.item}"]` : focused.dataset.picker ? "[data-picker]" : null) : null;
   const box = document.getElementById("bid-lists");
-  box.replaceChildren(listBlock("Primary list", "primary", state), listBlock("Alternate list", "alternate", state));
-  pointsCard(state);
-  warnings(state);
-  if (focusItem) {
-    const again = box.querySelector(`input[data-item="${focusItem}"]`);
-    if (again) { again.focus(); again.type = "text"; again.setSelectionRange(start, start); again.type = "number"; }
+  renderBudget(state);
+  const hasElectives = state.items.some((item) => item.list !== "mandatory");
+  const nextButton = document.getElementById("next");
+  nextButton.classList.toggle("primary", hasElectives);
+  if (!hasElectives) {
+    box.replaceChildren(el("section", { class: "card muted", style: "text-align:center;padding:36px 16px" },
+      el("p", { text: state.items.length ? "Mandatory courses need no bid. Add an elective to bid on." : "Nothing to bid on yet." }),
+      el("a", { class: "btn small", style: "margin-top:10px", href: Lance.pages.courses, text: "Pick courses" })));
+    return;
   }
-  document.getElementById("platform-list").value = state.platform_list;
+  const known = state.known_prices;
+  const mandatory = new Set(state.items.filter((item) => item.list === "mandatory").map((item) => item.offering_id)).size;
+  const alternate = listBlock("Alternate list", "Other courses, tried if a primary course gets no seat. Holds no points now; if used, it pays its bid, at most what is left.", "alternate", state);
+  alternate.append(alternatePicker(state));
+  box.replaceChildren(...[
+    el("p", { class: "small faint" }, "Only a plan: nothing goes to Nova from here.", known ? ` Past prices so far for ${known.sections} of ${known.total} sections. ` : " ", el("a", { href: Lance.pages.share, text: "Share yours" })),
+    listBlock("Primary list", "Higher up goes first. The highest bid per course is held.", "primary", state),
+    alternate,
+    mandatory ? el("p", { class: "small faint", text: `${mandatory} mandatory ${mandatory === 1 ? "course needs" : "courses need"} no bid.` }) : null,
+  ].filter(Boolean));
+  if (focusKey) {
+    const again = box.querySelector(`input${focusKey}`);
+    if (again) {
+      const end = focused.value.length;
+      again.focus();
+      if (again.type === "number") { again.type = "text"; again.setSelectionRange(end, end); again.type = "number"; }
+    }
+  }
 }
 
-document.getElementById("copy-list").addEventListener("click", () => {
-  Lance.copy(document.getElementById("platform-list").value, "Copied. Type it into the platform: only there it counts.");
+/* a menu closes when the click lands anywhere else */
+document.addEventListener("click", (event) => {
+  document.querySelectorAll("details.menu[open]").forEach((menuNode) => { if (!menuNode.contains(event.target)) menuNode.open = false; });
 });
-document.getElementById("copy-link").addEventListener("click", (event) => {
-  Lance.copy(event.target.dataset.link, "Link copied. Open it on your phone to continue there.");
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") document.querySelectorAll("details.menu[open]").forEach((menuNode) => { menuNode.open = false; });
 });
-Lance.onChange(render);
-Lance.load();
+
+(async function start() {
+  const response = await fetch("/api/catalogue");
+  view.catalogue = await response.json();
+  Lance.onChange(render);
+  await Lance.load();
+})();

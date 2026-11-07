@@ -9,4 +9,4 @@ COPY static ./static
 COPY seed ./seed
 ENV LANCE_DB=/data/lance.db
 EXPOSE 8000
-CMD ["uv", "run", "--no-dev", "gunicorn", "app:app", "--bind", "0.0.0.0:8000", "--workers", "2"]
+CMD ["uv", "run", "--no-dev", "gunicorn", "app:app", "--bind", "0.0.0.0:8000", "--workers", "2", "--preload"]

@@ -1,6 +1,6 @@
 # Lance: business requirements
 
-Version 0.1, 7 November 2026. Written in the format of the course's product briefs.
+Version 0.2, 7 November 2026. Written in the format of the course's product briefs.
 
 ## The opportunity
 
@@ -12,21 +12,21 @@ One semester with its real timetable (Fall 2026/27) and the catalogue of the nex
 
 ## The user journey
 
-A student chooses their programme and enters their points. They search the courses, see each section's times, and see before adding it what it would clash with. They build their week, then move to the bids: last round's cut-off, a suggested bid, what the bid would cost. They take the list to Nova's platform and the classes to their calendar. After the round they share their rank lists, so that the next students know the prices.
+Three steps. **Courses:** a student chooses their programme, says which sections Nova assigned them, and presses plus on electives; the week fills up, and anything that would clash says so before the click. **Bids:** they enter their points and one bid per course, next to an answer in words: was that enough last round, and what would it cost? **Finish on Nova:** nothing has been sent; they take the list to Nova's platform and the classes to their calendar. After the round they share their rank lists, so that the next students know the prices.
 
 ## Required capabilities
 
 | Id | Capability | Behaviour |
 |---|---|---|
-| LN01 | Find a course | Search by name, code or lecturer. Filter by term and by how the course counts for the programme. |
-| LN02 | Build the week | Add and remove sections. One week per half semester. Several sections of a course can be listed, the first counts as first choice. |
-| LN03 | See clashes first | Each section shows what it would clash with before it is added, and a preview in the week on hover. |
-| LN04 | Plan the points | A bid per section. Show what bidding takes, what a repeat of last round would charge, and what is left. |
+| LN01 | Find a course | Search by name, code or lecturer, through all terms. The list shows the half of the semester on show, in groups by how the course counts for the programme. |
+| LN02 | Build the week | Add and remove courses, switch sections. One week per half semester. |
+| LN03 | See clashes first | Each section shows what it would clash with before it is added. An open course shows its sections in the week; resting on a row previews them. |
+| LN04 | Plan the points | One bid per course, a separate bid per section on request. Other sections of the course in order. Show what is left, what a repeat of last round would charge, and what stays after it. |
 | LN05 | Read past prices | Cut-off, seats, number of bids and the distribution of bids per section. |
 | LN06 | Course sheet | Lecturers, sections, exams, past prices, what counts for the grade, Nova's own sheet, similar courses. |
 | LN07 | Rate a course | Fixed questions only. Results appear in aggregate. |
 | LN08 | Share rank lists | A bookmarklet reads the student's own rank lists on the platform, without the personal columns. Pasted into Lance, they become totals per section. |
-| LN09 | Rules and dates | The rules in plain language next to Nova's wording, the calendar, a checklist. |
+| LN09 | Rules and dates | The rules as short questions, Nova's wording one click deeper, the calendar. The last step says what is missing and has a checklist. |
 | LN10 | Take it along | A calendar file with every class on its real date; the list to type into the platform. |
 | LN11 | Come back | The plan is saved without an account. A private link continues it on another device. |
 
@@ -44,6 +44,11 @@ A student chooses their programme and enters their points. They search the cours
 | LN R8 | At most 31.5 ECTS in mandatory and elective courses; 28 recommended. A course counts once. The alternate list does not count. | Bidding Rules |
 | LN R9 | Privacy: student numbers and other students' ECTS are never read, sent or stored. A rank list with such a column is refused whole. Only totals per section are kept. Ratings show from 3 answers, grades from 10. No free text about lecturers. | Team decision; CNPD guideline 1/2018 |
 | LN R10 | An empty bid means not interested; 0 is a bid. A bid is a whole number from 0 to the balance. A refused bid leaves the saved bid unchanged. | Bidding Rules |
+| LN R11 | Adding an elective without naming a section takes its first section that clashes with nothing in the week, otherwise its first. A course without a timetable stays without a section. A mandatory course is refused: Nova assigned the section, so the student names it. | Team decision |
+| LN R12 | Switching gives another section the first place, with its bid, list and position. If it was a backup, the two change places and the bids stay with the places: TXB 164, TXA 100 becomes TXA 164, TXB 100. | Team decision |
+| LN R13 | The week is the first section of each course on the mandatory and primary lists. Only the week counts for clashes, for "fits my week" and for LN R11. A backup is checked against the week, an alternate against the mandatory and primary lists, each in its own row. An alternate whose exam meets the week says that Nova will not enroll you in both. | Bidding Rules; team decision |
+| LN R14 | A further section of a course starts with the bid of the first. Only the highest is held anyway (LN R6). | Team decision |
+| LN R15 | Removing a course removes all its sections and can be undone, including bids and place. Start over empties the plan and keeps the settings. | Team decision |
 
 ## What the product must remember
 
@@ -61,6 +66,7 @@ Content: courses, sections, weekly meetings, every class with its date, exams, t
 | A6 | **Take it along.** The calendar file has every class on its real date. The list keeps the order. | `test_app.py` |
 | A7 | **Ratings.** Hidden below 3, grades hidden below 10, one answer per visitor, no free text. | `test_app.py` |
 | A8 | **Shared data.** A list becomes totals. A personal column refuses the whole list. A shorter list never replaces a longer one. | `test_app.py` |
+| A9 | **The simple flow.** Plus takes the first section that fits. A switch keeps the bid. The real plan has no clash in its week. A backup and an alternate report in their own row. Remove and undo restore bids and place. One bid goes to all sections of a course. | `test_simple_flow.py`, `tests/browser/flow.cjs` |
 
 ## Scope boundaries
 

@@ -1,0 +1,21 @@
+# The five minutes
+
+For the live demonstration at the deployed address. Press the buttons in this order; every number below is checked by `tests/` and `tests/browser/flow.cjs`.
+
+| Time | Do | Say |
+|---|---|---|
+| 0:00 | Open the empty address | "A student's week, empty. One sentence says what to do." |
+| 0:20 | *Try an example* | "A real plan from Fall 2026: one of us, with the real bids." |
+| 0:40 | Search *Asian Brands*. The row says *clashes with Statistical Analysis TXC*. Press plus | "Before the click it says what it meets. It does not stop you. The platform would not have told you." |
+| 1:00 | Under the week: *You can't attend both*. Press *Remove*, then *Undo*, then *Remove* | "A way out right there, and undo instead of are-you-sure." |
+| 1:20 | Search *Econometrics*, plus | "Now an exam clash: red, because Nova blocks that one, and the classes in orange. Date by date, not by weekly pattern." Remove it. |
+| 1:50 | Open *Introduction to Programming* | "All three sections wait in the week, with last round's numbers. *See all bids*: 298 bids for 72 seats." Click ghost TXC. "The bid stays." Switch back. |
+| 2:30 | *Continue* | "165 points, 33 left after the round. If last round repeats you pay 132: that is what the platform really charged this account. (164 + 100) / 2." |
+| 3:00 | *Details* under Programming | "Every bid of last round, blue where it won. The rank lists come from students, without names." |
+| 3:30 | *Continue* | "Nothing has been sent. Only Nova's platform counts. Copy list, calendar file with every class on its real date." |
+| 4:00 | *the fall lists are out*: paste a real export, the counter rises. Paste one with a student column | "Refused whole. Only totals are kept." |
+| 4:40 | Phone: *Link to this plan* | "The same plan on the phone, without an account." |
+
+Keep a browser window with this plan open as a spare. Do not show the static preview: it is not the deployed app.
+
+Before the day: real rank lists from classmates (Laurin's card), at least three real answers on a few T1 courses, entered on the deployed database. No invented rows.

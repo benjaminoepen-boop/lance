@@ -1,0 +1,114 @@
+{#- The course, as it opens in the left column. The sections are drawn by planner.js, because they change with the plan. -#}
+{% set o = sheet.offering %}
+{% macro bars(rows, cutoff) %}
+{% set top = (rows|map(attribute='bucket_to')|max) if rows else 1 %}
+{% set tallest = (rows|map(attribute='bids')|max) if rows else 1 %}
+<svg class="spark" viewBox="0 0 240 44" preserveAspectRatio="none" role="img" aria-label="All bids of last round, blue where the bid won a seat">
+  {% for r in rows %}
+  {% set x = 240 * r.bucket_from / top %}{% set w = 240 * 20 / top - 1 %}
+  {% set h = 40 * r.bids / tallest %}{% set won = 40 * r.allocated / tallest %}
+  <rect x="{{ x }}" y="{{ 42 - h }}" width="{{ w }}" height="{{ h }}" fill="#d2d2d7"/>
+  {% if r.allocated %}<rect x="{{ x }}" y="{{ 42 - won }}" width="{{ w }}" height="{{ won }}" fill="#6d8bff"/>{% endif %}
+  {% endfor %}
+  {% if cutoff is not none %}<rect x="{{ 240 * cutoff / top - 0.5 }}" y="0" width="1" height="42" fill="#1d1d1f"/>{% endif %}
+  <rect x="0" y="42" width="240" height="1" fill="#d2d2d7"/>
+</svg>
+{% endmacro %}
+<div class="sheet-title">
+  <h1 id="sheet-name">{{ o.name }}</h1>
+  <p class="small muted">{{ o.lecturers }}</p>
+  <p class="small faint num">{{ o.term }} · {{ '%g' % o.ects }} ECTS{% if sheet.other_terms %} · also in {% for other in sheet.other_terms %}<a href="{{ url_for('planner') }}#{{ other.id }}">{{ other.term }}</a>{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}</p>
+</div>
+
+<section class="sheet-block" id="sheet-sections" data-offering="{{ o.id }}" data-kind="{{ sheet.kind }}"></section>
+
+{% if sheet.prices %}
+<details class="more">
+  <summary>{% if not sheet.prices_exact %}Last round in another term: a rough hint{% elif sheet.prices_list == 'alternate' %}All bids on the alternate list{% else %}See all bids{% endif %}</summary>
+  <div class="tight">
+  {% for p in sheet.prices %}
+    <div class="price-row">
+      <div class="figure"><b class="strong">{{ p.section }}</b><span class="small faint num">Seat from {{ (p.min_rank_value|round(0, 'ceil'))|int if p.min_rank_value is not none else '?' }} · {{ p.seats }} seats · {{ p.bids }} bids</span></div>
+      {{ bars(p.histogram, p.min_rank_value) }}
+      <p class="small faint num" style="margin-top:4px">Lowest winning bid {{ '%g' % p.min_bid if p.min_bid is not none else '?' }} · highest {{ '%g' % p.max_rank_value if p.max_rank_value is not none else '?' }} · {{ p.zero_bids }} people bid 0 · {{ p.round }}</p>
+    </div>
+  {% endfor %}
+  {% if sheet.prices_list == 'primary' and sheet.lowest_in_course is not none %}
+  <p class="small faint">Grey: all bids. Blue: those that won a seat. The line: the last seat. It is a rank, and some students rank with bid × 1.1, so a plain bid can be lower. You pay the middle of your bid and {{ '%g' % sheet.lowest_in_course }}, the lowest winning bid in the whole course.</p>
+  {% endif %}
+  </div>
+</details>
+{% else %}
+<p class="small faint">No past prices yet. <a href="{{ url_for('share') }}">Share yours</a></p>
+{% endif %}
+
+<section class="sheet-block">
+  <h2>Exams</h2>
+  {% if sheet.exams %}
+    {% for e in sheet.exams %}
+    <div class="figure"><span>{{ {'exam':'Exam','midterm':'Midterm','makeup':'Make-up exam','presentation':'Presentation'}.get(e.kind, e.kind) }}</span><b>{{ e.label }}, {{ e.start }}</b></div>
+    {% endfor %}
+  {% elif sheet.no_exam %}<p class="muted">No exam.</p>
+  {% else %}<p class="muted">Not published yet.</p>{% endif %}
+</section>
+
+<section class="sheet-block" id="rate">
+  <h2>What students say</h2>
+  {% set r = sheet.ratings %}
+  {% if r.show %}
+    <div class="stat-grid">
+      <div class="stat"><b>{{ r.overall }}</b><span>overall, of 5</span></div>
+      <div class="stat"><b>{{ r.workload_hours }}</b><span>hours a week</span></div>
+      <div class="stat"><b>{{ r.again_percent }}&nbsp;%</b><span>would retake</span></div>
+    </div>
+    <p class="small faint">{{ r.count }} students</p>
+  {% else %}
+    <p class="muted small">{{ r.count }} of {{ r.needed }} answers so far. Results show from {{ r.needed }}, so nobody can be recognised.</p>
+  {% endif %}
+  <details class="more"><summary>Rate this course</summary>
+    <form class="rate-form" method="post" action="{{ url_for('rate', offering_id=o.id) }}">
+      {% for key, label in [('overall','Overall'),('fairness','Fair grading'),('organisation','Organisation')] %}
+      <div class="rate-q"><span>{{ label }}</span><div class="scale" role="radiogroup" aria-label="{{ label }}">
+        {% for n in range(1, 6) %}<label><input type="radio" name="{{ key }}" value="{{ n }}" required><span>{{ n }}</span></label>{% endfor %}
+      </div></div>
+      {% endfor %}
+      <div class="rate-q"><span>Hours per week</span><input class="field num" style="width:76px;text-align:right" type="number" name="workload_hours" min="0" max="60" required></div>
+      <div class="rate-q"><span>Would take it again</span><div class="scale" role="radiogroup" aria-label="Would take it again">
+        <label><input type="radio" name="again" value="1" required><span>Yes</span></label>
+        <label><input type="radio" name="again" value="0"><span>No</span></label>
+      </div></div>
+      <div class="rate-q"><span>Your grade <span class="faint">(optional)</span></span><input class="field num" style="width:76px;text-align:right" type="number" name="grade" min="0" max="20" step="0.1"></div>
+      <button class="btn" type="submit" style="align-self:flex-start">Save</button>
+    </form>
+  </details>
+</section>
+
+{% if sheet.syllabus and (sheet.syllabus.weights or sheet.syllabus.assessment) %}
+<section class="sheet-block">
+  <h2>What counts for the grade</h2>
+  {% if sheet.syllabus.weights %}
+    <div class="weights" aria-hidden="true">{% for w in sheet.syllabus.weights %}<i style="width:{{ w.percent }}%;--o:{{ 1 - loop.index0 * 0.18 }}"></i>{% endfor %}</div>
+    {% for w in sheet.syllabus.weights %}<div class="figure"><span>{{ w.label }}</span><b>{{ w.percent }}&nbsp;%</b></div>{% endfor %}
+  {% else %}
+    <p class="muted small">{{ sheet.syllabus.assessment }}</p>
+  {% endif %}
+</section>
+{% endif %}
+
+{% if sheet.syllabus and sheet.syllabus.synopsis %}
+<section class="sheet-block">
+  <h2>About</h2>
+  <details class="about"><summary><span class="clamp muted">{{ sheet.syllabus.synopsis }}</span></summary>
+    <p class="muted">{{ sheet.syllabus.synopsis }}</p>
+  </details>
+</section>
+{% endif %}
+
+{% if sheet.similar %}
+<section class="sheet-block">
+  <h2>Similar</h2>
+  {% for c in sheet.similar %}<a href="{{ url_for('planner') }}#{{ c.id }}">{{ c.name }} <span class="faint small">{{ c.term }}</span></a>{% endfor %}
+</section>
+{% endif %}
+
+<a class="small" href="{{ sheet.syllabus_url }}" target="_blank" rel="noopener">Nova's course sheet ↗</a>

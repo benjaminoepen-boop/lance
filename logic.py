@@ -5,6 +5,7 @@ the solo project Festival Architect: a stage became a student's week, an artist 
 a fee became a bid and the festival budget became the points balance.
 """
 import math
+import sqlite3
 from collections import defaultdict
 from datetime import date, datetime, timezone
 from functools import lru_cache
@@ -16,7 +17,7 @@ RECOMMENDED_ECTS = 28.0
 BONUS = 1.1                # LN R7: rank value of part of the students with 45 or more ECTS passed
 MIN_RATINGS_TO_SHOW = 3    # LN R9
 MIN_GRADES_TO_SHOW = 10    # LN R9
-PRIORITY_MARGIN = {"must": 1.25, "want": 1.10, "nice": 1.00}
+BID_MARGIN = {"exact": 1.00, "plus10": 1.10, "plus25": 1.25}   # on top of last round's cut-off
 WEEKDAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
 
@@ -50,7 +51,7 @@ def day_label(iso_date):
 def all_meetings():
     """{section id: its weekly meetings}."""
     grouped = defaultdict(list)
-    for meeting in db.load_meetings():
+    for meeting in sorted(db.load_meetings(), key=lambda row: (WEEKDAY_NAMES.index(row["day"]), row["start"])):
         grouped[meeting["section_id"]].append(meeting)
     return dict(grouped)
 
@@ -139,6 +140,52 @@ def chosen_sections(items):
     return [item for item in items if item["section_id"]]
 
 
+def week_items(items):
+    """LN R13: what the student would really sit in: the first section of each course on the mandatory and primary lists.
+
+    Backup sections and the alternate list only matter if something else falls through.
+    """
+    first = {}
+    for item in sorted(items, key=lambda entry: entry["position"]):
+        if item["list"] in ("mandatory", "primary") and item["offering_id"] not in first:
+            first[item["offering_id"]] = item
+    return list(first.values())
+
+
+def conflicts_with_week(item, items, week):
+    """LN R13: what a backup or an alternate runs into. It is said in its own row and is not a clash of the week.
+
+    An alternate is checked against everything on the mandatory and primary lists, a backup against the week.
+    Nova: "the system will not allow enrollments in courses that have overlapping exams. The same happens with
+    the courses placed on the Alternate List."
+    """
+    in_week = {entry["id"] for entry in week}
+    others = [entry for entry in items if entry["offering_id"] != item["offering_id"] and entry["list"] in ("mandatory", "primary")]
+    if item["list"] != "alternate":
+        others = [entry for entry in others if entry["id"] in in_week]
+    found = []
+    if item["section_id"]:
+        for entry in chosen_sections(others):
+            if clashing_dates(item["section_id"], entry["section_id"]):
+                suffix = "" if entry["id"] in in_week else " (if you land there)"
+                found.append({"level": "class", "text": "Clashes with " + label_of(entry["offering_id"], entry["section_id"]) + suffix})
+    firm = [entry for entry in week if entry["offering_id"] != item["offering_id"]]
+    if item["list"] == "alternate":
+        for clash in exam_clashes(firm + [item]):
+            if item["offering_id"] in clash["offerings"]:
+                other = next(oid for oid in clash["offerings"] if oid != item["offering_id"])
+                name = all_offerings()[other]["name"]
+                if clash["kind"] == "exam":
+                    found.append({"level": "exam", "text": "Exam at the same time as " + name + ". Nova will not enroll you in both."})
+                else:
+                    found.append({"level": "midterm", "text": "Midterm clash with " + name + ". Nova does not check this."})
+    else:
+        for clash in midterm_class_clashes(firm + [item]):
+            if clash["second"] == label_of(item["offering_id"], item["section_id"]) and item["section_id"]:
+                found.append({"level": "midterm", "text": "Meets during the midterm of " + clash["first"].replace(" (midterm)", "") + "."})
+    return found
+
+
 def class_clashes(items):
     """LN R1: every pair of different courses in the plan that meet at the same time.
 
@@ -157,6 +204,7 @@ def class_clashes(items):
                     "kind": "class",
                     "severity": "class",
                     "items": [first["id"], second["id"]],
+                    "offerings": [first["offering_id"], second["offering_id"]],
                     "first": label_of(first["offering_id"], first["section_id"]),
                     "second": label_of(second["offering_id"], second["section_id"]),
                     "times": len(dates),
@@ -187,6 +235,7 @@ def exam_clashes(items):
                         clashes.append({
                             "kind": "exam" if both_exams else "midterm",
                             "severity": "exam" if both_exams else "midterm",
+                            "offerings": [first["id"], second["id"]],
                             "first": first["name"] + " (" + exam_a["kind"] + ")",
                             "second": second["name"] + " (" + exam_b["kind"] + ")",
                             "when": day_label(exam_a["date"]) + ", " + exam_a["start"],
@@ -212,6 +261,7 @@ def midterm_class_clashes(items):
                         clashes.append({
                             "kind": "midterm",
                             "severity": "midterm",
+                            "offerings": [offering_id, entry["offering_id"]],
                             "first": offering["name"] + " (midterm)",
                             "second": label_of(entry["offering_id"], entry["section_id"]),
                             "when": day_label(exam["date"]) + ", " + exam["start"],
@@ -224,10 +274,12 @@ def section_warnings(items, semester):
 
     Returns {section id: ['Advanced Strategy TXC', ...]} and {offering id: ['Exam clash with ...', ...]}.
     """
-    entries = chosen_sections(items)
+    week = week_items(items)
+    entries = chosen_sections(week)
     per_section = {}
     per_offering = {}
     planned = {item["offering_id"] for item in items}
+    in_week = {item["offering_id"] for item in week}
     for section_id, section in all_sections().items():
         offering = all_offerings()[section["offering_id"]]
         if offering["semester"] != semester:
@@ -236,15 +288,18 @@ def section_warnings(items, semester):
         for entry in entries:
             if entry["offering_id"] == section["offering_id"]:
                 continue
-            if clashing_dates(section_id, entry["section_id"]):
-                names.append(label_of(entry["offering_id"], entry["section_id"]))
+            dates = clashing_dates(section_id, entry["section_id"])
+            if dates:
+                halves = sorted({week_of(date_[0]) for date_ in dates})
+                only = " (" + halves[0] + ")" if len(halves) == 1 and offering["term"] in ("S1", "S2") else ""
+                names.append(label_of(entry["offering_id"], entry["section_id"]) + only)
         if names:
             per_section[section_id] = names
     for offering_id, offering in all_offerings().items():
         if offering["semester"] != semester or offering_id in planned:
             continue
         notes = []
-        for other_id in planned:
+        for other_id in in_week:
             other = all_offerings()[other_id]
             for exam_a in regular_exams(offering):
                 for exam_b in regular_exams(other):
@@ -315,12 +370,12 @@ def cutoff_for(code, term, section):
     return None
 
 
-def suggest_bid(cutoff, has_bonus, priority):
+def suggest_bid(cutoff, has_bonus, margin):
     """A bid that would have beaten last round's cut-off with a margin for how much the course matters."""
     if cutoff is None:
         return None
     needed = cutoff / (BONUS if has_bonus else 1)
-    return math.ceil(needed * PRIORITY_MARGIN[priority])
+    return math.ceil(needed * BID_MARGIN[margin])
 
 
 def bid_analysis(item, plan):
@@ -352,17 +407,19 @@ def bid_analysis(item, plan):
                                if h["term"] == row["term"] and h["section"] == section and h["list"] == row["list"] and h["round"] == row["round"]]
     if not section and rows:
         result["cutoff"] = min((r["min_rank_value"] for r in rows if r["min_rank_value"] is not None), default=None)
+        result["cutoff_high"] = max((r["min_rank_value"] for r in rows if r["min_rank_value"] is not None), default=None)
         result["top"] = max((r["max_rank_value"] for r in rows if r["max_rank_value"] is not None), default=None)
-    for priority in PRIORITY_MARGIN:
-        result["suggestions"][priority] = suggest_bid(result["cutoff"], has_bonus, priority)
+    for margin in BID_MARGIN:
+        result["suggestions"][margin] = suggest_bid(result["cutoff"], has_bonus, margin)
     bid = item["bid"]
     if bid is not None:
         result["rank_value"] = rank_value(bid, has_bonus)
         if result["cutoff"] is not None:
             result["would_win"] = result["rank_value"] >= result["cutoff"]
-        if lowest is not None:
-            lowest_used = min(lowest, bid)
-            result["price"] = price_primary(bid, lowest_used)
+        if list_name == "alternate":
+            result["price"] = price_alternate(bid, plan["points"])     # LN R4
+        elif lowest is not None:
+            result["price"] = price_primary(bid, min(lowest, bid))     # LN R3
     return result
 
 
@@ -412,14 +469,16 @@ def ects_summary(items):
     seen = {}
     for item in items:
         if item["list"] in ("mandatory", "primary"):
-            seen[item["offering_id"]] = all_offerings()[item["offering_id"]]["ects"]
+            offering = all_offerings()[item["offering_id"]]
+            seen[offering["code"]] = offering["ects"]
     total = sum(seen.values())
     return {"total": total, "recommended": RECOMMENDED_ECTS, "maximum": MAX_ECTS, "over": total > MAX_ECTS}
 
 
 # ---------- the plan ----------
 
-def default_plan_id(programme="Management", semester="Fall", points=165):
+def default_plan_id(programme="", semester="Fall", points=0):
+    """A new plan: no programme and no points yet, because those are the student's own. Fall has the only timetable so far."""
     return db.create_plan(programme, semester, points)
 
 
@@ -432,8 +491,24 @@ def kind_for(plan, offering_id):
     return db.load_programme_kinds(plan["programme"]).get(offering_id, "outside")
 
 
+def first_fitting_section(items, offering_id):
+    """LN R11: the first section of a course that clashes with nothing in the week, otherwise simply its first.
+
+    Only for electives. Nova assigned the section of a mandatory course, so Lance does not guess it.
+    """
+    sections = sorted((section for section in all_sections().values() if section["offering_id"] == offering_id),
+                      key=lambda section: section["section"])
+    if not sections:
+        return None
+    week = [entry for entry in chosen_sections(week_items(items)) if entry["offering_id"] != offering_id]
+    for section in sections:
+        if not any(clashing_dates(section["id"], entry["section_id"]) for entry in week):
+            return section["id"]
+    return sections[0]["id"]
+
+
 def add_to_plan(plan, section_id=None, offering_id=None, list_name=None):
-    """Add a section, or a whole course while its timetable is not published. Returns an error text or None."""
+    """Add a section, or a whole course: then LN R11 picks the section. Returns an error text or None."""
     items = db.load_items(plan["id"])
     if section_id:
         section = all_sections().get(section_id)
@@ -445,17 +520,96 @@ def add_to_plan(plan, section_id=None, offering_id=None, list_name=None):
         return "Unknown course."
     if offering["semester"] != plan["semester"]:
         return "This course is not offered in the semester of your plan."
-    if any(item["offering_id"] == offering_id and item["section_id"] == section_id for item in items):
+    if list_name not in (None, "mandatory", "primary", "alternate"):
+        return "Unknown list."
+    same_course = sorted((item for item in items if item["offering_id"] == offering_id), key=lambda item: item["position"])
+    if not section_id:
+        if same_course:
+            return "Already in your plan."
+        section_id = first_fitting_section(items, offering_id)
+        if section_id and kind_for(plan, offering_id) == "mandatory":
+            return "Pick the section Nova assigned you."
+    if any(item["section_id"] == section_id for item in same_course):
         return "Already in your plan."
     if list_name is None:
-        same_course = [item for item in items if item["offering_id"] == offering_id]
         if same_course:
             list_name = same_course[0]["list"]
         elif kind_for(plan, offering_id) == "mandatory":
             list_name = "mandatory"
         else:
             list_name = "primary"
-    db.insert_item(plan["id"], offering_id, section_id, list_name, next_position(items, list_name))
+    bid = same_course[0]["bid"] if same_course else None   # LN R14: only the highest is held anyway (LN R6)
+    try:
+        db.insert_item(plan["id"], offering_id, section_id, list_name, next_position(items, list_name), bid)
+    except sqlite3.IntegrityError:     # the same click twice, faster than the check above
+        return "Already in your plan."
+    return None
+
+
+def switch_section(plan, section_id):
+    """LN R12: another section takes over the first place with its bid, the list and the position.
+
+    If it was a backup, the two change places and the bids stay with the places: TXB 164, TXA 100 becomes TXA 164, TXB 100.
+    """
+    section = all_sections().get(section_id)
+    if section is None:
+        return "Unknown section."
+    same_course = sorted((item for item in db.load_items(plan["id"]) if item["offering_id"] == section["offering_id"]),
+                         key=lambda item: item["position"])
+    if not same_course:
+        return add_to_plan(plan, section_id=section_id)
+    first = same_course[0]
+    backup = next((item for item in same_course if item["section_id"] == section_id), None)
+    if backup is None:
+        db.update_item(first["id"], section_id=section_id)
+    elif backup["id"] != first["id"]:
+        db.update_item(first["id"], position=backup["position"], bid=backup["bid"])
+        db.update_item(backup["id"], position=first["position"], bid=first["bid"])
+    return None
+
+
+def remove_course(plan, offering_id):
+    """LN R15: take a whole course out. Returns what undo needs to put it back, and an error text or None."""
+    rows = [item for item in db.load_items(plan["id"]) if item["offering_id"] == offering_id]
+    if not rows:
+        return [], "This course is not in your plan."
+    for row in rows:
+        db.delete_item(row["id"])
+    return [{name: row[name] for name in ("offering_id", "section_id", "list", "position", "bid")} for row in rows], None
+
+
+def restore_items(plan, rows):
+    """LN R15: put back what remove_course took out. The rows come from the browser, so each one is checked first."""
+    if not isinstance(rows, list) or not rows:
+        return "Nothing to put back."
+    items = db.load_items(plan["id"])
+    for row in rows:
+        if not isinstance(row, dict):
+            return "Nothing to put back."
+        offering = all_offerings().get(row.get("offering_id"))
+        section = all_sections().get(row.get("section_id")) if row.get("section_id") else None
+        if offering is None or offering["semester"] != plan["semester"]:
+            return "Unknown course."
+        if row.get("section_id") and (section is None or section["offering_id"] != offering["id"]):
+            return "Unknown section."
+        if row.get("list") not in ("mandatory", "primary", "alternate"):
+            return "Unknown list."
+        if not isinstance(row.get("position"), int):
+            return "Unknown place."
+        bid = row.get("bid")
+        if bid is not None and (not isinstance(bid, int) or bid < 0 or bid > plan["points"]):
+            return "A bid cannot exceed your " + str(plan["points"]) + " points."
+        if any(item["offering_id"] == offering["id"] for item in items):
+            return "Already in your plan."
+    for row in rows:
+        db.insert_item(plan["id"], row["offering_id"], row.get("section_id"), row["list"], row["position"], row.get("bid"))
+    return None
+
+
+def start_over(plan):
+    """LN R15: empty the semester on show. The programme, the points and the plan for the other semester stay."""
+    for item in plan_items(plan):
+        db.delete_item(item["id"])
     return None
 
 
@@ -467,27 +621,51 @@ def remove_from_plan(plan, item_id):
     return None
 
 
-def set_bid(plan, item_id, bid):
+def checked_bid(plan, bid):
     """LN R10: empty means no bid, zero is a real bid. A bid is a whole number from 0 up to the balance."""
+    if bid in ("", None):
+        return None, None
+    if isinstance(bid, float) and not bid.is_integer():
+        return None, "A bid is a whole number."
+    try:
+        value = int(bid)
+    except (TypeError, ValueError):
+        return None, "A bid is a whole number."
+    if value < 0:
+        return None, "A bid cannot be negative."
+    if value > 0 and plan["points"] == 0:
+        return None, "Enter your points first."
+    if value > plan["points"]:
+        return None, "A bid cannot exceed your " + str(plan["points"]) + " points."
+    return value, None
+
+
+def set_bid(plan, item_id, bid):
+    """The bid of one section."""
     item = db.load_item(item_id)
     if item is None or item["plan_id"] != plan["id"]:
         return "This entry is not in your plan."
     if item["list"] == "mandatory":
         return "Mandatory courses need no bid."
-    if bid in ("", None):
-        db.update_item(item_id, bid=None)
-        return None
-    if isinstance(bid, float) and not bid.is_integer():
-        return "A bid is a whole number."
-    try:
-        value = int(bid)
-    except (TypeError, ValueError):
-        return "A bid is a whole number."
-    if value < 0:
-        return "A bid cannot be negative."
-    if value > plan["points"]:
-        return "A bid cannot exceed your " + str(plan["points"]) + " points."
+    value, error = checked_bid(plan, bid)
+    if error:
+        return error
     db.update_item(item_id, bid=value)
+    return None
+
+
+def set_course_bid(plan, offering_id, bid):
+    """One bid for all sections of a course: only the highest counts anyway (LN R6), so this is the normal case."""
+    rows = [item for item in db.load_items(plan["id"]) if item["offering_id"] == offering_id]
+    if not rows:
+        return "This course is not in your plan."
+    if rows[0]["list"] == "mandatory":
+        return "Mandatory courses need no bid."
+    value, error = checked_bid(plan, bid)
+    if error:
+        return error
+    for row in rows:
+        db.update_item(row["id"], bid=value)
     return None
 
 
@@ -528,7 +706,7 @@ def move_item(plan, item_id, list_name=None, direction=None):
 
 def update_settings(plan, programme, semester, points, has_bonus):
     """Save the plan's settings. Entries of another semester stay saved but do not show."""
-    if programme not in db.load_programmes():
+    if programme and programme not in db.load_programmes():
         return "Unknown programme."
     if semester not in ("Fall", "Spring"):
         return "Unknown semester."
@@ -539,7 +717,19 @@ def update_settings(plan, programme, semester, points, has_bonus):
     if value < 0 or value > 2000:
         return "Points must be between 0 and 2000."
     db.update_plan(plan["id"], programme, semester, value, has_bonus)
+    if programme != plan["programme"]:
+        relist_for_programme(db.load_plan(plan["id"]))
     return None
+
+
+def relist_for_programme(plan):
+    """What is mandatory depends on the programme: a course follows its new status. An alternate stays an alternate."""
+    for item in db.load_items(plan["id"]):
+        mandatory = kind_for(plan, item["offering_id"]) == "mandatory"
+        if item["list"] == "mandatory" and not mandatory:
+            move_item(plan, item["id"], list_name="primary")
+        elif item["list"] == "primary" and mandatory:
+            move_item(plan, item["id"], list_name="mandatory")
 
 
 def plan_items(plan):
@@ -548,20 +738,22 @@ def plan_items(plan):
 
 
 def warnings_for(plan, items):
-    """Things to fix before bidding. Each one names what is wrong; none of them blocks the plan."""
+    """Things to fix before going to Nova. Each one names what is wrong and where to fix it; none of them blocks the plan."""
     found = []
     reserved = reserved_points(items)
-    if reserved > plan["points"]:
-        found.append({"level": "stop", "text": f"Your primary bids take {reserved} points, you have {plan['points']}."})
     electives = [item for item in items if item["list"] == "primary"]
+    if electives and plan["points"] == 0:
+        found.append({"level": "stop", "where": "bids", "text": "Enter your points: they are the Balance on Nova's platform."})
+    elif reserved > plan["points"]:
+        found.append({"level": "stop", "where": "bids", "text": f"Your primary bids hold {reserved} points, you have {plan['points']}."})
     no_bid = sorted({all_offerings()[item["offering_id"]]["name"] for item in electives if item["bid"] is None})
     if no_bid:
-        found.append({"level": "note", "text": "No bid yet: " + ", ".join(no_bid) + ". An empty field means not interested; 0 means interested without points."})
+        found.append({"level": "note", "where": "bids", "text": "No bid yet: " + ", ".join(no_bid) + ". Nova reads an empty field as not interested."})
     if electives and not any(item["list"] == "alternate" for item in items):
-        found.append({"level": "note", "text": "Your alternate list is empty. Nova strongly recommends filling it."})
+        found.append({"level": "note", "where": "bids", "text": "Your alternate list is empty. Nova strongly recommends filling it."})
     summary = ects_summary(items)
     if summary["over"]:
-        found.append({"level": "stop", "text": f"{summary['total']:g} ECTS is above the maximum of {MAX_ECTS:g}."})
+        found.append({"level": "stop", "where": "courses", "text": f"{summary['total']:g} ECTS is above the maximum of {MAX_ECTS:g}."})
     return found
 
 
@@ -590,6 +782,8 @@ def load_example(plan):
 def state_of(plan):
     """Everything the planner and the bids page show, as one dict."""
     items = plan_items(plan)
+    week = week_items(items)
+    week_ids = {item["id"] for item in week}
     enriched = []
     for item in items:
         offering = all_offerings()[item["offering_id"]]
@@ -601,14 +795,16 @@ def state_of(plan):
         row["section"] = all_sections()[item["section_id"]]["section"] if item["section_id"] else None
         row["meetings"] = all_meetings().get(item["section_id"], []) if item["section_id"] else []
         row["analysis"] = bid_analysis(item, plan) if item["list"] != "mandatory" else None
+        row["in_week"] = item["id"] in week_ids
+        row["conflicts"] = [] if row["in_week"] else conflicts_with_week(item, items, week)
         enriched.append(row)
-    clashes = class_clashes(items) + exam_clashes(items)
+    clashes = sorted(class_clashes(week) + exam_clashes(week), key=lambda clash: ["exam", "class", "midterm"].index(clash["kind"]))
     per_section, per_offering = section_warnings(items, plan["semester"])
     exams = []
     for offering_id in sorted({item["offering_id"] for item in items}):
         offering = all_offerings()[offering_id]
         for exam in regular_exams(offering):
-            exams.append({"name": offering["name"], "kind": exam["kind"], "date": exam["date"], "start": exam["start"],
+            exams.append({"offering_id": offering_id, "name": offering["name"], "kind": exam["kind"], "date": exam["date"], "start": exam["start"],
                           "end": exam["end"], "label": day_label(exam["date"]), "note": exam["note"]})
     exams.sort(key=lambda exam: (exam["date"], exam["start"]))
     return {
@@ -623,6 +819,8 @@ def state_of(plan):
         "exams": exams,
         "warnings": warnings_for(plan, items),
         "next_deadline": next_deadline(),
+        "round": round_of(plan["semester"]),
+        "known_prices": known_prices(plan["semester"]),
         "platform_list": platform_list(plan),
     }
 
@@ -638,6 +836,39 @@ def next_deadline(today=None):
     days = (date.fromisoformat(row["first_day"]) - date.fromisoformat(today)).days
     return {"label": row["label"], "first_day": row["first_day"], "last_day": row["last_day"], "days": max(days, 0),
             "range": day_label(row["first_day"]) + " – " + day_label(row["last_day"])}
+
+
+def round_of(semester, today=None):
+    """The bidding round of a semester: when it is, and whether it is over, running or still to come."""
+    today = today or date.today().isoformat()
+    row = next((row for row in db.load_calendar() if row["key"] == semester.lower() + "-bidding"), None)
+    if row is None:
+        return None
+    status = "closed" if today > row["last_day"] else "open" if today >= row["first_day"] else "upcoming"
+    return {"label": row["label"], "range": day_label(row["first_day"]) + " – " + day_label(row["last_day"]),
+            "first_day": day_label(row["first_day"]).split(" ", 1)[1], "last_day": day_label(row["last_day"]), "status": status,
+            "days": max((date.fromisoformat(row["first_day"]) - date.fromisoformat(today)).days, 0)}
+
+
+def known_prices(semester="Fall"):
+    """What we know so far, as an anchor for sections without a past price."""
+    prices = [row["min_rank_value"] for row in db.load_cutoffs() if row["list"] == "primary" and row["min_rank_value"] is not None]
+    if not prices:
+        return None
+    return {"sections": len(prices), "total": coverage("Fall")["total"], "low": math.floor(min(prices)), "high": math.ceil(max(prices))}
+
+
+def semester_label(semester, today=None):
+    """What the semester menu says: which round it is, and whether it can still be bid on."""
+    round_ = round_of(semester, today)
+    name = semester
+    if round_ is None:
+        return name
+    if round_["status"] == "closed":
+        return name + " · closed"
+    if round_["status"] == "open":
+        return name + " · open now"
+    return name + " · opens " + round_["first_day"]
 
 
 def catalogue(plan):
@@ -656,8 +887,11 @@ def catalogue(plan):
             continue
         sections = []
         for section in sorted(sections_by_offering[offering["id"]], key=lambda s: s["section"]):
+            price = next((r for r in cut_rows[offering["code"]] if r["term"] == offering["term"] and r["section"] == section["section"]), None)
             sections.append({"id": section["id"], "section": section["section"], "delivery": section["delivery"],
-                             "meetings": all_meetings().get(section["id"], [])})
+                             "meetings": all_meetings().get(section["id"], []),
+                             "cutoff": price["min_rank_value"] if price else None, "seats": price["seats"] if price else None,
+                             "bids": price["bids"] if price else None})
         exam = next((e for e in regular_exams(offering) if e["kind"] == "exam"), None)
         prices = [r["min_rank_value"] for r in cut_rows[offering["code"]] if r["min_rank_value"] is not None]
         rows.append({
@@ -856,9 +1090,13 @@ def course_page(offering_id, plan):
         meetings = all_meetings().get(section["id"], [])
         sections.append(dict(section, meetings=meetings, sessions=len(all_sessions().get(section["id"], []))))
     rows, exact = past_prices(offering["code"], offering["term"])
+    prices_list = "primary"
+    if not rows:
+        rows, exact = past_prices(offering["code"], offering["term"], "alternate")
+        prices_list = "alternate"
     histograms = defaultdict(list)
     for row in db.load_histograms(offering["code"]):
-        if row["list"] == "primary":
+        if row["list"] == prices_list:
             histograms[(row["term"], row["section"])].append(row)
     prices = []
     for row in rows:
@@ -868,7 +1106,8 @@ def course_page(offering_id, plan):
     other_terms = [row for row in db.load_offerings_by_code(offering["code"]) if row["id"] != offering_id]
     items = plan_items(plan)
     return {
-        "offering": offering, "sections": sections, "prices": prices, "prices_exact": exact, "exams": exams, "no_exam": no_exam,
+        "offering": offering, "sections": sections, "prices": prices, "prices_exact": exact, "prices_list": prices_list,
+        "lowest_in_course": lowest_bid_in_course(offering["code"], offering["term"]), "exams": exams, "no_exam": no_exam,
         "syllabus": db.load_syllabus(offering["code"], offering["term"]),
         "syllabus_url": syllabus_url(offering["code"], offering["term"]),
         "ratings": rating_summary(offering["code"]), "similar": similar_courses(offering), "other_terms": other_terms,
@@ -889,8 +1128,8 @@ def ics_escape(text):
 
 
 def calendar_file(plan):
-    """Every class and exam of the plan as a calendar file, with make-up days on their real dates."""
-    items = plan_items(plan)
+    """Every class and exam of the week as a calendar file, with make-up days on their real dates (LN R13)."""
+    items = week_items(plan_items(plan))
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Lance//Nova bidding planner//EN", "CALSCALE:GREGORIAN",
              "X-WR-CALNAME:Lance plan", "X-WR-TIMEZONE:Europe/Lisbon"]

@@ -31,6 +31,12 @@ PLANS = {
     "clashes": {"setup": {"programme": "Finance", "semester": "Fall", "points": 300, "has_bonus": 1},
                 "add": [["2459-S1-TXC", 10], ["2175-S1-TXA", 400], ["2229-S1-TXG", 0], ["2229-S1-TXH", 50], ["2337-T1-TXA", 20], ["2352-T1-TXA", None], ["2337-T2-TXA", 5]],
                 "alternate": []},
+    "changes": {"setup": {"programme": "Management", "semester": "Fall", "points": 200, "has_bonus": 0},
+                "add": [["2459-S1-TXB", None], ["2477-S1-TXC", 90], ["2477-S1-TXA", None], ["2277-T2-TXB", 12], ["2652-S1-TXA", 5]],
+                "add_offering": [["2416-T1", 3], ["2229-S1", 20]],
+                "alternate": ["2652-S1-TXA"], "switch": ["2477-S1-TXB", "2277-T2-TXA"], "remove_course": ["2229-S1"], "course_bid": [["2477-S1", 70]], "programme": "Finance"},
+    "alternate_exam": {"setup": {"programme": "Management", "semester": "Fall", "points": 218, "has_bonus": 0},
+                       "add": [["2329-T2-TXA", 20], ["2388-T2-TXA", 15], ["2277-T2-TXA", 88], ["2329-T1-TXA", None]], "alternate": ["2388-T2-TXA", "2277-T2-TXA"]},
     "spring": {"setup": {"programme": "Economics", "semester": "Spring", "points": 200, "has_bonus": 0},
                "add_offering": [["2477-S2", 100], ["2277-T3", 30], ["2206-S2", None]], "add": [], "alternate": []},
 }
@@ -54,6 +60,15 @@ def python_side():
         for section_id in spec["alternate"]:
             item = [i for i in db.load_items(plan["id"]) if i["section_id"] == section_id][0]
             logic.move_item(plan, item["id"], list_name="alternate")
+        for section_id in spec.get("switch", []):
+            logic.switch_section(plan, section_id)
+        for offering_id in spec.get("remove_course", []):
+            removed, _ = logic.remove_course(plan, offering_id)
+            logic.restore_items(plan, removed)
+        for offering_id, bid in spec.get("course_bid", []):
+            logic.set_course_bid(plan, offering_id, bid)
+        if spec.get("programme"):
+            logic.update_settings(plan, spec["programme"], setup["semester"], setup["points"], bool(setup["has_bonus"]))
         plan = db.load_plan(plan["id"])
         out[name] = {"state": logic.state_of(plan), "catalogue": logic.catalogue(plan)}
     return out
@@ -91,6 +106,13 @@ eval(fs.readFileSync(sourcePath, 'utf8'));
       const item = store.items.find((i) => i.section_id === sectionId);
       L.move(store, item.id, 'alternate');
     }
+    for (const sectionId of (spec.switch || [])) L.switchSection(store, sectionId);
+    for (const offeringId of (spec.remove_course || [])) {
+      const [removed] = L.removeCourse(store, offeringId);
+      L.restoreItems(store, removed);
+    }
+    for (const [offeringId, bid] of (spec.course_bid || [])) L.setCourseBid(store, offeringId, bid);
+    if (spec.programme) L.settings(store, { programme: spec.programme });
     out[name] = { state: L.stateOf(store, spec.today), catalogue: L.catalogue(store) };
   }
   process.stdout.write(JSON.stringify(out));

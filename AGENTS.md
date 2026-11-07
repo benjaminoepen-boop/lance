@@ -6,6 +6,8 @@ Course bidding planner, team project for Introduction to Programming at Nova SBE
 
 - Run: `uv run flask --app app run --port 8770`
 - Test: `uv run pytest`
+- Click through in real browsers: `tests/browser/flow.cjs` (how to start it is in its first lines)
+- Count what a student sees: `scripts/measure.cjs`
 - Rebuild the content after new PDFs: see `docs/data.md`
 
 ## Structure

@@ -39,7 +39,8 @@ def remember(response, plan):
 def page(template, plan, is_new, **values):
     """Render a page and keep the plan cookie alive."""
     state = logic.state_of(plan)
-    response = make_response(render_template(template, plan=plan, state=state, programmes=db.load_programmes(), **values))
+    semesters = [(name, logic.semester_label(name)) for name in ("Fall", "Spring")]
+    response = make_response(render_template(template, plan=plan, state=state, programmes=db.load_programmes(), semesters=semesters, **values))
     return remember(response, plan)
 
 
@@ -70,11 +71,17 @@ def bids():
 
 @app.route("/course/<offering_id>")
 def course(offering_id):
+    """A link to a course: the planner with that course already open."""
     plan, is_new = current_plan()
-    sheet = logic.course_page(offering_id, plan)
-    if sheet is None:
+    if logic.course_page(offering_id, plan) is None:
         abort(404)
-    return page("course.html", plan, is_new, active="planner", sheet=sheet, saved=request.args.get("saved"))
+    return page("planner.html", plan, is_new, active="planner", open_course=offering_id, saved=request.args.get("saved"))
+
+
+@app.route("/nova")
+def nova():
+    plan, is_new = current_plan()
+    return page("nova.html", plan, is_new, active="nova", platform_list=logic.platform_list(plan))
 
 
 @app.route("/course/<offering_id>/rate", methods=["POST"])
@@ -85,10 +92,10 @@ def rate(offering_id):
         abort(404)
     rating, error = logic.validate_rating(request.form)
     if error:
-        return remember(redirect(url_for("course", offering_id=offering_id, saved="error") + "#rate"), plan)
+        return remember(redirect(url_for("course", offering_id=offering_id, saved="error")), plan)
     db.save_rating(plan["id"], offering["code"], rating["overall"], rating["workload_hours"], rating["fairness"],
                    rating["organisation"], rating["again"], rating["grade"])
-    return remember(redirect(url_for("course", offering_id=offering_id, saved="yes") + "#rate"), plan)
+    return remember(redirect(url_for("course", offering_id=offering_id, saved="yes")), plan)
 
 
 @app.route("/rules")
@@ -165,23 +172,57 @@ def api_catalogue():
 def api_add():
     plan, _ = current_plan()
     data = payload()
-    error = logic.add_to_plan(plan, section_id=data.get("section_id"), offering_id=data.get("offering_id"))
+    error = logic.add_to_plan(plan, section_id=data.get("section_id"), offering_id=data.get("offering_id"), list_name=data.get("list"))
     return answer(plan, error)
 
 
 @app.route("/api/remove", methods=["POST"])
 def api_remove():
+    """One section by its entry, or a whole course. A whole course answers with what undo needs."""
     plan, _ = current_plan()
-    error = logic.remove_from_plan(plan, payload().get("item_id"))
-    return answer(plan, error)
+    data = payload()
+    if data.get("offering_id"):
+        removed, error = logic.remove_course(plan, data["offering_id"])
+        body = {"error": error, "removed": removed, "state": logic.state_of(plan)}
+        return remember(jsonify(body), plan)
+    return answer(plan, logic.remove_from_plan(plan, data.get("item_id")))
+
+
+@app.route("/api/restore", methods=["POST"])
+def api_restore():
+    plan, _ = current_plan()
+    return answer(plan, logic.restore_items(plan, payload().get("rows")))
+
+
+@app.route("/api/switch", methods=["POST"])
+def api_switch():
+    plan, _ = current_plan()
+    return answer(plan, logic.switch_section(plan, payload().get("section_id")))
+
+
+@app.route("/api/start-over", methods=["POST"])
+def api_start_over():
+    plan, _ = current_plan()
+    return answer(plan, logic.start_over(plan))
+
+
+@app.route("/api/sheet/<offering_id>")
+def api_sheet(offering_id):
+    """The left column when a course is open: rendered here, so that it needs no JavaScript of its own."""
+    plan, _ = current_plan()
+    sheet = logic.course_page(offering_id, plan)
+    if sheet is None:
+        abort(404)
+    return render_template("_sheet.html", sheet=sheet, plan=plan)
 
 
 @app.route("/api/bid", methods=["POST"])
 def api_bid():
     plan, _ = current_plan()
     data = payload()
-    error = logic.set_bid(plan, data.get("item_id"), data.get("bid"))
-    return answer(plan, error)
+    if data.get("offering_id"):
+        return answer(plan, logic.set_course_bid(plan, data["offering_id"], data.get("bid")))
+    return answer(plan, logic.set_bid(plan, data.get("item_id"), data.get("bid")))
 
 
 @app.route("/api/move", methods=["POST"])
@@ -208,12 +249,6 @@ def api_example():
     return answer(db.load_plan(plan["id"]), error)
 
 
-@app.route("/api/histogram/<code>/<term>/<section>")
-def api_histogram(code, term, section):
-    rows = [row for row in db.load_histograms(code) if row["term"] == term and row["section"] == section and row["list"] == "primary"]
-    return jsonify(rows)
-
-
 @app.route("/api/share", methods=["POST"])
 def api_share():
     """A rank-list export. The rules keep totals only; the rows themselves are never written anywhere."""
@@ -223,7 +258,7 @@ def api_share():
     except ValueError:
         export = None
     if export is None:
-        return jsonify({"error": "This is not an export from the bookmarklet.", "stored": 0}), 400
+        return jsonify({"error": "This does not look like what the button copies.", "stored": 0}), 400
     stored, error = logic.share_rank_lists(export)
     if error:
         return jsonify({"error": error, "stored": 0}), 400
@@ -232,4 +267,4 @@ def api_share():
 
 @app.errorhandler(404)
 def not_found(_):
-    return "Not found", 404
+    return '<p style="font-family:sans-serif;margin:40px">This page does not exist. <a href="/">Back to Lance</a></p>', 404

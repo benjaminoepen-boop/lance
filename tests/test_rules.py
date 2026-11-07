@@ -56,11 +56,11 @@ def test_rank_value_with_and_without_bonus():
 
 
 def test_suggested_bid_beats_the_cutoff_by_the_chosen_margin():
-    assert logic.suggest_bid(115.5, False, "nice") == 116
-    assert logic.suggest_bid(115.5, False, "want") == 128
-    assert logic.suggest_bid(115.5, False, "must") == 145
-    assert logic.suggest_bid(115.5, True, "nice") == 105
-    assert logic.suggest_bid(None, False, "want") is None
+    assert logic.suggest_bid(115.5, False, "exact") == 116
+    assert logic.suggest_bid(115.5, False, "plus10") == 128
+    assert logic.suggest_bid(115.5, False, "plus25") == 145
+    assert logic.suggest_bid(115.5, True, "exact") == 105
+    assert logic.suggest_bid(None, False, "plus10") is None
 
 
 # ---------- LN R10: empty is not zero, and a refused bid changes nothing ----------

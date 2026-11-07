@@ -1,21 +1,11 @@
 {% extends "base.html" %}
 {% block title %}Lance · Bids{% endblock %}
-{% block head %}{% with page_title="Bids", action='<button type="button" class="btn primary" id="copy-list">Copy list</button>' %}{% include "_head.html" %}{% endwith %}{% endblock %}
+{% block action %}<a class="btn primary" id="next" href="{{ url_for('nova') }}">Continue</a>{% endblock %}
 {% block content %}
-<div class="bids-layout">
-  <div class="stack" id="bid-lists" style="gap:14px"></div>
-  <aside class="bid-side">
-    <div class="card" id="points-card"></div>
-    <div class="stack" id="bid-warnings"></div>
-    <div class="card">
-      <h2>Take it with you</h2>
-      <textarea class="field copy-box" id="platform-list" readonly aria-label="Your lists to type into the platform">{{ platform_list }}</textarea>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <a class="btn small" href="{{ url_for('calendar_download') }}">Calendar file</a>
-        <button type="button" class="btn small" id="copy-link" data-link="{{ url_for('open_plan', plan_id=plan.id, _external=True) }}">Link to this plan</button>
-      </div>
-    </div>
-  </aside>
+<h1 class="sr">Set your bids</h1>
+<div class="narrow">
+  <section class="card budget" id="budget" aria-label="Your points"></section>
+  <div class="stack" id="bid-lists"></div>
 </div>
 {% endblock %}
 {% block scripts %}<script src="{{ url_for('static', filename='bids.js') }}"></script>{% endblock %}
