@@ -13,6 +13,6 @@ Each member is asked about code they did not write. Six clicks, from the button 
 
 What answers a click: every change returns the whole state (`answer` in `app.py`, `state_of` in `logic.py`), and `Lance.update` in `static/common.js` redraws from it. The page never works anything out for itself.
 
-How the week knows what to draw: `week_items` in `logic.py` (LN R13) decides what is in the week, `renderWeek` in `static/planner.js` turns that into blocks, `Week.draw` in `static/week.js` puts them on the grid. Ghosts are laid out separately, so that a preview never changes the size of a real block.
+How the week knows what to draw: `week_items` in `logic.py` (LN R13) decides what is in the week, `renderWeek` in `static/planner.js` turns that into blocks, `Week.draw` in `static/week.js` puts them on the grid. Ghosts are laid out together with the real blocks, the real ones on the left, so that a ghost never hides the course it clashes with.
 
 What the address does: `location.hash` holds the open course, `route` in `static/planner.js` reads it. Back, Esc and the back button all go through there.

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Lance · Courses{% endblock %}
-{% block action %}<a class="btn primary" id="next" href="{{ url_for('bids') }}">Continue</a>{% endblock %}
+{% block action %}<a class="btn primary" id="next" href="{{ url_for('bids') }}">Continue <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.5 2.5 10 7l-4.5 4.5"/></svg></a>{% endblock %}
 {% block content %}
 <h1 class="sr">Choose your courses</h1>
 <div class="planner" id="planner" data-zone="courses" data-open="{{ open_course|default('') }}" data-saved="{{ saved|default('', true) }}">

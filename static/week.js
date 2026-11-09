@@ -9,11 +9,13 @@ const Week = (() => {
   const minutes = (clock) => { const [h, m] = clock.split(":"); return Number(h) * 60 + Number(m); };
   const clock = (total) => `${Math.floor(total / 60)}:${String(total % 60).padStart(2, "0")}`;
 
-  /* blocks that overlap stand side by side: each gets a column inside its group */
+  const overlap = (a, b) => minutes(a.start) < minutes(b.end) && minutes(b.start) < minutes(a.end);
+
+  /* blocks that overlap stand side by side: each gets a column inside its group.
+     Real blocks take the left columns, ghosts go beside them, so a ghost never hides what it clashes with. */
   function layOut(blocks) {
-    blocks.sort((a, b) => minutes(a.start) - minutes(b.start) || minutes(b.end) - minutes(a.end));
     const groups = [];
-    blocks.forEach((block) => {
+    blocks.slice().sort((a, b) => minutes(a.start) - minutes(b.start) || minutes(b.end) - minutes(a.end)).forEach((block) => {
       const group = groups.find((g) => minutes(block.start) < g.end);
       if (group) {
         group.items.push(block);
@@ -24,13 +26,16 @@ const Week = (() => {
     });
     groups.forEach((group) => {
       const columns = [];
-      group.items.forEach((block) => {
-        let column = columns.findIndex((end) => end <= minutes(block.start));
-        if (column === -1) { columns.push(0); column = columns.length - 1; }
-        columns[column] = minutes(block.end);
+      group.items.slice().sort((a, b) => Number(Boolean(a.ghost)) - Number(Boolean(b.ghost))).forEach((block) => {
+        let column = columns.findIndex((taken) => taken.every((other) => !overlap(other, block)));
+        if (column === -1) { columns.push([]); column = columns.length - 1; }
+        columns[column].push(block);
         block.column = column;
       });
-      group.items.forEach((block) => { block.columns = columns.length; });
+      group.items.forEach((block) => {
+        block.columns = columns.length;
+        block.beside = !block.ghost && group.items.some((other) => other !== block && !other.ghost && overlap(block, other));
+      });
     });
     return blocks;
   }
@@ -40,8 +45,9 @@ const Week = (() => {
     /* of a clashing course, only the block that really has another one next to it */
     return el("button", {
       type: "button",
-      class: `block ${block.class}${block.clashing && block.columns > 1 ? " clash" : ""}`,
+      class: `block ${block.class}${block.clashing && block.beside ? " clash" : ""}`,
       title: block.title,
+      "data-section": block.sectionId,
       style: `top:${percent(minutes(block.start))}%;height:calc(${percent(minutes(block.end)) - percent(minutes(block.start))}% - 2px);left:calc(${block.column * width}% + 1px);width:calc(${width}% - 2px)`,
       onclick: block.onclick,
       onmouseenter: block.onmouseenter,
@@ -49,8 +55,7 @@ const Week = (() => {
     }, el("b", { text: block.name }), block.section ? el("span", {}, block.section, block.room ? el("span", { class: "room", style: "display:inline", text: ` · ${block.room}` }) : null) : null);
   }
 
-  /* blocks and ghosts: [{ day, start, end, title, name, section, room, class, clashing, onclick, onmouseenter, onmouseleave }]
-     Ghosts are laid out on their own, so that the real blocks keep their size while something is previewed. */
+  /* blocks and ghosts: [{ day, start, end, title, name, section, room, sectionId, class, clashing, onclick, onmouseenter, onmouseleave }] */
   function draw(days, grid, blocks, ghosts, half) {
     const end = Math.max(USUAL_END, ...blocks.concat(ghosts).map((block) => minutes(block.end)));
     const last = FIRST + Math.ceil((end - FIRST) / SLOT) * SLOT;
@@ -64,11 +69,11 @@ const Week = (() => {
     grid.replaceChildren(hours);
     DAYS.forEach((day) => {
       const column = el("div", { class: "day" });
-      for (let at = FIRST, odd = false; at < last; at += SLOT, odd = !odd) {
-        column.append(el("div", { class: `band ${odd ? "b" : "a"}`, style: `top:${percent(at)}%;height:${(SLOT / (last - FIRST)) * 100}%` }));
+      for (let at = FIRST; at <= last; at += SLOT) {
+        column.append(el("div", { class: "slot-line", style: `top:${percent(at)}%` }));
       }
-      layOut(blocks.filter((block) => block.day === day)).forEach((block) => column.append(blockNode(block, percent)));
-      layOut(ghosts.filter((block) => block.day === day)).forEach((block) => column.append(blockNode(block, percent)));
+      const today = blocks.filter((block) => block.day === day).concat(ghosts.filter((block) => block.day === day).map((block) => ({ ...block, ghost: true })));
+      layOut(today).forEach((block) => column.append(blockNode(block, percent)));
       grid.append(column);
     });
   }
