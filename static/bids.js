@@ -305,10 +305,13 @@ const Bids = (() => {
         onclick: (event) => { if (!event.target.closest(".num-field")) toggle(first.offering_id); },
       },
         listName === "primary" ? el("span", { class: "rank", text: String(index + 1), title: "Place on your primary list" }) : null,
+        /* the dot in the colour of the course, as before its name in the list and on its block in the week */
         el("button", { type: "button", class: "bid-name", "aria-expanded": open ? "true" : "false", "data-key": `bid-${first.offering_id}` },
-          el("span", { class: "course-name", text: first.name, title: first.name }),
-          el("span", { class: "course-sub", text: sub }),
-          notes.length ? noteStatus(notes.find((note) => note.level === "exam") || notes[0], "course-note") : null),
+          Lance.dot(state, first.offering_id),
+          el("span", { class: "course-text" },
+            el("span", { class: "course-name", text: first.name, title: first.name }),
+            el("span", { class: "course-sub", text: sub }),
+            notes.length ? noteStatus(notes.find((note) => note.level === "exam") || notes[0], "course-note") : null)),
         el("div", { class: "bid-answer" },
           numberField({
             class: "field num bid-input", max: state.plan.points, value: bid === null ? "" : bid, "data-course": first.offering_id, "aria-label": `Bid on ${first.name}`,
@@ -333,18 +336,18 @@ const Bids = (() => {
       const planned = new Set(state.items.map((item) => item.offering_id));
       const hits = catalogue().filter((course) => course.kind !== "mandatory" && !planned.has(course.id))
         .filter((course) => words.every((word) => `${course.name} ${course.code} ${course.lecturers}`.toLowerCase().includes(word))).slice(0, 6);
-      /* the same row as in the list on the left: the add control first, then name and facts */
+      /* the same row as in the list on the left: name and facts, the plus at the right edge */
       results.replaceChildren(...hits.map((course) => {
         const clash = course.sections.length > 0 && course.sections.every((section) => state.section_warnings[section.id]);
         return el("div", { class: "hit" },
-          el("button", {
-            type: "button", class: "pick", "aria-pressed": "false", "aria-label": `Add ${course.name} to the alternate list`, title: "Add", html: Lance.icons.plus,
-            onclick: () => { view.picking = false; view.query = ""; Lance.send("/api/add", { offering_id: course.id, list: "alternate" }); },
-          }),
           el("span", { class: "course-text" },
             el("span", { class: "course-name", text: course.name }),
             el("span", { class: "course-sub", text: `${course.term} · ${course.ects} ECTS` }),
-            clash ? Lance.status("warn", "Clashes with your week", { cls: "course-note" }) : null));
+            clash ? Lance.status("warn", "Clashes with your week", { cls: "course-note" }) : null),
+          el("span", { class: "control" }, el("button", {
+            type: "button", class: "pick", "aria-pressed": "false", "aria-label": `Add ${course.name} to the alternate list`, title: "Add", html: Lance.icons.plus,
+            onclick: () => { view.picking = false; view.query = ""; Lance.send("/api/add", { offering_id: course.id, list: "alternate" }); },
+          })));
       }));
     };
     draw();

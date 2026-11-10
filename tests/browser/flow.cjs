@@ -55,6 +55,15 @@ async function run(browserType, label, options) {
   await page.waitForFunction(() => document.querySelector("#courses") && document.querySelector("#courses").textContent.includes("Mandatory"));
   const subs = await page.locator("#courses .course-sub").allTextContents();
   check(n("T1 shows only T1 and S1 courses"), subs.length > 5 && subs.every((text) => /^(S1|T1)/.test(text)), subs.slice(0, 4));
+  /* every row: name, chevron, then its control (Pick or +) at the right edge, all controls ending on one line */
+  const edges = await page.locator("#courses .course").evaluateAll((rows) => rows.slice(0, 10).map((course) => {
+    const box = course.getBoundingClientRect();
+    const control = course.querySelector(".course-head > .control > button").getBoundingClientRect();
+    const chevron = course.querySelector(".course-main > .i").getBoundingClientRect();
+    const name = course.querySelector(".course-name").getBoundingClientRect();
+    return { gap: Math.round(box.right - control.right), right: Math.round(control.right), order: name.right <= chevron.left + 1 && chevron.right <= control.left };
+  }));
+  check(n("the control sits at the right edge of the row"), edges.length === 10 && edges.every((edge) => edge.gap >= 0 && edge.gap <= 12 && edge.order) && new Set(edges.map((edge) => edge.right)).size === 1, JSON.stringify(edges.slice(0, 3)));
 
   /* ---- search looks through all terms ---- */
   await page.fill("#search", "impact investments");
@@ -80,9 +89,11 @@ async function run(browserType, label, options) {
   if (phone) check(n("the list shows the figures of your plan"), (await page.locator("#list-figures").isVisible()) && (await page.locator("#list-figures").textContent()).startsWith("7 ECTS"), await page.locator("#list-figures").textContent());
 
   /* ---- a mandatory course: Nova assigned the section, the student picks it right in the list.
-     The add control is the same square, but it asks for the section instead of adding one ---- */
+     Its control says Pick instead of a plus, and asks for the section instead of adding one ---- */
   const strategy = page.locator("#courses .course", { hasText: "Advanced Strategy" }).first();
   check(n("a mandatory course asks for its section and does not add one"), (await strategy.getByRole("button", { name: /Pick your section/ }).count()) === 1 && (await strategy.getByRole("button", { name: /^Add / }).count()) === 0 && (await strategy.locator(".pick[aria-pressed]").count()) === 0);
+  const pickText = (await strategy.getByRole("button", { name: /Pick your section/ }).textContent()).trim();
+  check(n("a mandatory course without a section shows Pick"), pickText === "Pick" && (await strategy.locator(".pick").count()) === 0, pickText);
   await strategy.getByRole("button", { name: /Pick your section/ }).click();
   await page.waitForTimeout(phone ? 700 : 150);
   check(n("Pick folds the row open with all ten sections"), (await strategy.locator(".tile").count()) === 10);
@@ -356,8 +367,19 @@ async function run(browserType, label, options) {
     && (await page.locator("#plan-table tfoot").textContent()).includes("ECTS · 28 recommended"), `${await page.locator("#ects").textContent()} / ${await page.locator("#plan-table tfoot").textContent()}`);
   await toWeek();
   check(n("the real plan has no clash"), (await page.locator("#clashes .clash-line").count()) === 0);
+  /* a course keeps one colour: its block in the week, the dot before its name in the list and in its bid card */
+  const colourIn = (node, property) => node.evaluate((element, name) => getComputedStyle(element)[name], property);
+  const inWeek = await colourIn(page.locator("#week .block", { hasText: "Introduction to Programming" }).first(), "borderLeftColor");
+  await toCourses();
+  await page.fill("#search", "programming");
+  await page.waitForTimeout(150);
+  const inList = await colourIn(row("Introduction to Programming").locator(".course-main > .dot"), "backgroundColor");
+  await page.fill("#search", "");
+  await page.waitForTimeout(120);
   await page.goto(url("/bids"));
   await page.waitForSelector("#bid-lists input");
+  const inBids = await colourIn(bidCard("Introduction to Programming").locator(".bid-name > .dot"), "backgroundColor");
+  check(n("a course has the same colour in the list, the week and its bid card"), inList === inWeek && inList === inBids && !["rgba(0, 0, 0, 0)", "rgb(14, 69, 253)"].includes(inList), `${inList} / ${inWeek} / ${inBids}`);
   check(n("the real plan comes out at 132 and 33"), (await page.locator("#summary").textContent()).includes("you pay about 132") && (await page.locator("#summary").textContent()).includes("33 back afterwards"), await page.locator("#summary").textContent());
   check(n("the example has all its points in bids"), (await page.locator("#budget-use").textContent()) === "165 of 165 in bids · 0 left", await page.locator("#budget-use").textContent());
   /* the (?) answers the question it raises: the price rule on the rules page, not its top */

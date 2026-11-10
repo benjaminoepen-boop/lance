@@ -11,15 +11,28 @@
   --ink: #1d1d1f; --ink-2: #515154; --ink-3: #6b6b70;
   --line: #e4e4e9; --line-2: #d2d2d7; --line-3: #a1a1a6;   /* line-3: the border of a field under the mouse */
   /* blue: what can be clicked, what is selected, the focus ring */
-  --blue: #0e45fd; --blue-deep: #0b37ca; --blue-soft: #ecf0ff; --blue-line: #d3ddff; --blue-on-dark: #a9bcff;
+  --blue: #0e45fd; --blue-deep: #0b37ca; --blue-soft: #ecf0ff; --blue-on-dark: #a9bcff;
   /* status only, never clickable */
   --red: #c4000f; --red-soft: #ffebe9; --orange: #a85400; --orange-soft: #fff1df; --orange-line: #dd9a4e; --orange-ink: #87561f; --green: #17762f;
-  /* the week */
-  --grid: #ececf0; --block: #edf1ff; --block-hover: #b4c4ff; --block-ink: #46557e; --ghost-line: #7d97ff;
+  /* the lines of the week */
+  --grid: #ececf0;
+  /* the course colours, after NUSMods: every course in your plan keeps one, Lance.colourOf in common.js picks it.
+     Eight calm hues, none red, orange or yellow (they say how things stand) and none near the blue (it means "click").
+     Each has three shades: strong for the dot and the edge of a block, soft for the fill of a block, line for its border.
+     Ink on every soft shade is above 15 : 1, the grey of the second line above 7 : 1 */
+  --olive: #677643;  --olive-soft: #f1f6e7;  --olive-line: #cfd9bc;
+  --plum: #6c466a;   --plum-soft: #fceffb;   --plum-line: #e3cbe2;
+  --teal: #3b7b7b;   --teal-soft: #e4f8f8;   --teal-line: #b7dddd;
+  --violet: #9379af; --violet-soft: #f7f0ff; --violet-line: #dbceea;
+  --forest: #346440; --forest-soft: #eaf8ec; --forest-line: #c3dcc7;
+  --mauve: #8f6277;  --mauve-soft: #ffeef5;  --mauve-line: #eacad8;
+  --jade: #639585;   --jade-soft: #e6f8f2;   --jade-line: #bbddd1;
+  --petrol: #156273; --petrol-soft: #e7f7fb; --petrol-line: #b8dbe5;
   /* bars and charts are grey, because they cannot be clicked: a light bar, and a darker fill for what is taken or won */
   --bar: #dcdce1; --bar-fill: #8e8e93;
   /* three control heights, two radii (rows take 10, pills are round); a phone makes every control finger-sized */
   --h-sm: 30px; --h: 36px; --h-icon: 32px;
+  --control: 48px;   /* the column at the right edge of a course row that holds its plus, tick or Pick */
   --r-card: 12px; --r-row: 10px; --r-ctl: 8px;
   --gap: 14px;
   --top: 56px;   /* height of the top bar */
@@ -133,12 +146,28 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 .badge.bad { background: var(--red-soft); color: var(--red); }
 .warn { color: var(--orange); } .bad { color: var(--red); }
 
-/* ---- the add control: one square for one job. A plus when the course is out, a tick on pale blue when it is in ---- */
+/* ---- the control of a course row: one square for one job. A plus when the course is out, a tick on pale blue when it is in ---- */
 .pick { flex: none; display: inline-grid; place-items: center; width: var(--h-icon); height: var(--h-icon); padding: 0; border: 1px solid var(--line-2); border-radius: var(--r-ctl); background: var(--card); color: var(--ink-2); }
 @media (hover: hover) { .pick:hover { border-color: var(--blue); color: var(--blue); } }
 .pick[aria-pressed=true] { background: var(--blue-soft); border-color: var(--blue); color: var(--blue); }
 .pick .to-out { display: none; }
 @media (hover: hover) { .pick[aria-pressed=true]:hover .is-in { display: none; } .pick[aria-pressed=true]:hover .to-out { display: inline; } }
+/* it stands in one column of one width at the right edge of the row, so every plus, tick and Pick ends on the same line.
+   "Pick", on a mandatory course, is a small secondary button as high as the square */
+.control { flex: none; width: var(--control); display: flex; justify-content: flex-end; }
+.control > .btn { min-height: var(--h-icon); }
+
+/* ---- course colours: a class hands the three shades of one colour to everything that shows that course ---- */
+.colour-olive  { --course: var(--olive);  --course-soft: var(--olive-soft);  --course-line: var(--olive-line); }
+.colour-plum   { --course: var(--plum);   --course-soft: var(--plum-soft);   --course-line: var(--plum-line); }
+.colour-teal   { --course: var(--teal);   --course-soft: var(--teal-soft);   --course-line: var(--teal-line); }
+.colour-violet { --course: var(--violet); --course-soft: var(--violet-soft); --course-line: var(--violet-line); }
+.colour-forest { --course: var(--forest); --course-soft: var(--forest-soft); --course-line: var(--forest-line); }
+.colour-mauve  { --course: var(--mauve);  --course-soft: var(--mauve-soft);  --course-line: var(--mauve-line); }
+.colour-jade   { --course: var(--jade);   --course-soft: var(--jade-soft);   --course-line: var(--jade-line); }
+.colour-petrol { --course: var(--petrol); --course-soft: var(--petrol-soft); --course-line: var(--petrol-line); }
+/* the dot before a course name: 8 px, on the middle of the first line. Without a colour it only keeps the place */
+.dot { flex: none; align-self: flex-start; width: 8px; height: 8px; margin-top: calc((1.3em - 8px) / 2); border-radius: 50%; background: var(--course, transparent); }
 
 /* ---- other controls ---- */
 .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 16px; min-width: 0; }
@@ -176,21 +205,22 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 .course-list { flex: 1; min-height: 0; overflow-y: auto; overflow-anchor: none; display: flex; flex-direction: column; gap: 2px; margin: 0 -8px; padding: 0 8px 12px; }
 /* the figures of your plan above the list: only on a phone, where your plan is not beside the list */
 .figures.list-figures { display: none; }
-/* a group heading folds its courses: the chevron at the right edge like every row */
-.group { display: flex; align-items: center; gap: 8px; width: 100%; min-height: var(--h); margin-top: 6px; padding: 0 12px 0 10px; border: 0; border-radius: var(--r-row); background: none; text-align: left; }
+/* a group heading folds its courses: its chevron stands in the column of the rows' chevrons, left of their controls */
+.group { display: flex; align-items: center; gap: 8px; width: 100%; min-height: var(--h); margin-top: 6px; padding: 0 calc(var(--control) + 18px) 0 12px; border: 0; border-radius: var(--r-row); background: none; text-align: left; }
 .group:first-child { margin-top: 0; }
 @media (hover: hover) { .group:hover { background: var(--hover); } }
 @media (hover: hover) { .group:hover .i-chev { color: var(--ink); } }
 .group-name { font-size: 13px; font-weight: 600; color: var(--ink-2); }
 .group .count, h3 .count { font-size: 13px; font-weight: 400; color: var(--ink-3); font-variant-numeric: tabular-nums; }
 .group .i-chev { margin-left: auto; }
-/* a course row: the add control in a fixed column on the left, the rest of the row opens it.
-   White at rest, paper under the mouse; open, it is a paper surface holding white section tiles. */
+/* a course row: the place of the dot, name and facts, the chevron, then the control in a fixed column at the right edge.
+   Everything but the control opens the row. White at rest, paper under the mouse; open, a paper surface holding white section tiles. */
 .course { border-radius: var(--r-row); transition: background-color .15s; }
 .course.open { background: var(--paper); }
 @media (hover: hover) { .course:hover { background: var(--paper); } }
-.course-head { display: flex; align-items: center; gap: 12px; padding: 6px 12px 6px 8px; }
-.course-main { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; padding: 2px 0; border: 0; background: none; color: inherit; text-align: left; }
+.course-head { display: flex; align-items: center; gap: 4px; padding-right: 8px; }
+.course-main { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; padding: 8px 6px 8px 12px; border: 0; border-radius: var(--r-row); background: none; color: inherit; text-align: left; }
+.course-main > .i { margin-left: 4px; }
 @media (hover: hover) { .course-main:hover .i-chev, .course-main:hover .i-next, .bid-head:hover .i-chev { color: var(--ink); } }
 .course-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
 .course-name { display: block; min-width: 0; font-weight: 500; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -198,7 +228,7 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 .course-note { max-width: 100%; }
 .course-note > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .time { display: none; }
-.course-more { --hover: var(--chip); display: flex; flex-direction: column; gap: 10px; padding: 2px 12px 12px 52px; animation: unfold .16s ease-out; }
+.course-more { --hover: var(--chip); display: flex; flex-direction: column; gap: 10px; padding: 2px 12px 12px 28px; animation: unfold .16s ease-out; }   /* under the name */
 .hint { font-size: 13px; color: var(--ink-3); }
 /* the sections of a course: a white tile each, the same on the open row and in the course; one click picks */
 .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(98px, 1fr)); gap: 6px; }
@@ -290,21 +320,22 @@ details.about[open] > summary { display: none; }
 .hour-label { position: absolute; right: 8px; font-size: 11px; color: var(--ink-3); transform: translateY(-50%); font-variant-numeric: tabular-nums; }
 .day { position: relative; border-left: 1px solid var(--grid); }
 .slot-line { position: absolute; left: 0; right: 0; border-top: 1px solid var(--grid); }
-.block { position: absolute; border-radius: var(--r-ctl); padding: 4px 7px; font-size: 12px; line-height: 1.25; overflow: hidden; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; text-align: left; color: var(--ink); border: 1px solid var(--blue-line); background: var(--block); transition: border-color .12s, box-shadow .12s; }
-@media (hover: hover) { .block:hover { border-color: var(--block-hover); } }
+/* a block of a course: its soft shade, its strong shade as the left edge, the text in ink. A click opens the course */
+.block { position: absolute; border-radius: var(--r-ctl); padding: 4px 7px 4px 5px; font-size: 12px; line-height: 1.25; overflow: hidden; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; text-align: left; color: var(--ink); border: 1px solid var(--course-line); border-left: 3px solid var(--course); background: var(--course-soft); transition: border-color .12s, box-shadow .12s; }
+@media (hover: hover) { .block:hover { border-color: var(--course); } }
 .block.hot { box-shadow: 0 0 0 2px var(--blue); z-index: 3; }
 .block b { font-weight: 600; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow-wrap: anywhere; hyphens: auto; }
-.block span { display: block; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--block-ink); }
-.block.clash { border: 1.5px solid var(--orange-line); padding: 3px 6px; background: var(--orange-soft); }
+.block span { display: block; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--ink-2); }
+/* a clash stays orange; the left edge still says which course it is */
+.block.clash { border: 1.5px solid var(--orange-line); border-left: 3px solid var(--course); padding: 3.5px 6.5px 3.5px 5px; background: var(--orange-soft); }
 .block.clash span { color: var(--orange-ink); }
 .block.open { box-shadow: 0 0 0 2px var(--blue); z-index: 3; }
-/* the other sections wait in the week as ghosts: blue, because a click picks one; a clash is said in orange inside */
-.block.ghost { background: var(--card); border: 1.5px dashed var(--ghost-line); color: var(--blue-deep); z-index: 4; animation: appear .12s ease-out; }
-.block.ghost span { color: inherit; }
+/* the other sections wait in the week as ghosts: a dashed outline in the colour of their course, a clash said in orange inside.
+   Under the mouse, or while its tile is, a ghost turns blue like every outlined control: a click picks it */
+.block.ghost { background: var(--card); border: 1.5px dashed var(--course); padding: 3.5px 6.5px; color: var(--ink); z-index: 4; animation: appear .12s ease-out; }
 .block.ghost.bad span { color: var(--orange); }
 .block.ghost.hot { background: var(--blue-soft); border-style: solid; border-color: var(--blue); box-shadow: none; }
 @media (hover: hover) { .block.ghost:hover { background: var(--blue-soft); border-style: solid; border-color: var(--blue); box-shadow: none; } }
-.block.ghost.chosen { border-style: solid; }
 .block.fresh { animation: pop .28s ease-out; }
 @keyframes appear { from { opacity: 0; } to { opacity: 1; } }
 @keyframes pop { from { transform: scale(.94); opacity: .4; } to { transform: scale(1); opacity: 1; } }
@@ -339,7 +370,7 @@ details.about[open] > summary { display: none; }
 @media (hover: hover) { .bid-head:hover { background: var(--hover); } }
 .bid-row.open > .bid-head { border-radius: 11px 11px 0 0; }
 .rank { grid-area: rank; width: 22px; height: 22px; border-radius: 50%; background: var(--chip); color: var(--ink-2); font-size: 12px; font-weight: 500; display: grid; place-items: center; font-variant-numeric: tabular-nums; }
-.bid-name { grid-area: main; min-width: 0; display: flex; flex-direction: column; gap: 1px; padding: 0; border: 0; background: none; color: inherit; text-align: left; }
+.bid-name { grid-area: main; min-width: 0; display: flex; align-items: flex-start; gap: 8px; padding: 0; border: 0; background: none; color: inherit; text-align: left; }
 .bid-answer { grid-area: answer; display: flex; align-items: center; gap: 14px; }
 .bid-status { width: 176px; }
 .bid-status > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -382,6 +413,9 @@ details.about[open] > summary { display: none; }
 @media (hover: hover) { .go-row:hover > td { background: var(--hover); } .go-row:hover .i-next { color: var(--ink); } }
 .plan-table .chev { width: 12px; padding-left: 0; padding-right: 10px; }
 .plan-table td.chev .i { vertical-align: middle; }
+/* the dot before the name, the name over its facts (a phone shows them under the name) */
+.named { display: flex; align-items: flex-start; gap: 8px; min-width: 0; }
+.named > .dot { margin-top: calc((1.45em - 8px) / 2); }
 .name-link { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; color: inherit; text-decoration: none; }
 @media (hover: hover) { .name-link:hover { color: inherit; } }
 .plan-sub { display: none; }
@@ -457,8 +491,10 @@ ul.plain { margin: 0; padding-left: 18px; display: flex; flex-direction: column;
   .chooser { padding: 10px 10px 0; }
   .course-list { overflow: visible; margin: 0 -4px; padding: 0 4px 10px; }
   .course-view { overflow: visible; margin: 0; padding: 0 2px 16px; }
-  .course-head { min-height: 56px; padding: 6px 8px 6px 4px; }
-  .course-more { padding-left: 12px; }
+  .course-head { padding-right: 4px; }
+  .course-main { min-height: 56px; padding: 6px 6px 6px 8px; }
+  .course-more { padding-left: 24px; }
+  .group { padding-left: 8px; padding-right: calc(var(--control) + 14px); }
   .tile { min-height: 62px; }
   .time { display: inline; }
   .plan-head { padding: 10px 12px 10px; }
@@ -476,7 +512,9 @@ ul.plain { margin: 0; padding-left: 18px; display: flex; flex-direction: column;
   .week-days { grid-template-columns: 30px repeat(5, minmax(0, 1fr)); }
   .week-empty { left: 30px; }
   .hour-label { right: 3px; font-size: 10px; }
-  .block { font-size: 10.5px; padding: 2px 3px; }
+  .block { font-size: 10.5px; padding: 2px 3px 2px 2px; }
+  .block.clash { padding: 1.5px 2.5px 1.5px 2px; }
+  .block.ghost { padding: 1.5px 2.5px 1.5px 3.5px; }
   .block .room { display: none; }
   .clash-lines { order: -1; }
   .round-note { order: -2; }

@@ -243,8 +243,9 @@ function previewCourse(id) {
   }, id ? 180 : 0);
 }
 
-/* the add control: the same square at the start of every row. A plus adds; a tick says the course is in,
-   and under the mouse it turns into × because a click takes it out again. */
+/* the control at the right edge of every row. A plus adds an elective; a tick says the course is in,
+   and under the mouse it turns into × because a click takes it out again.
+   A mandatory course says "Pick" instead: Nova assigned its section, so Lance does not guess one, the row opens on its sections. */
 function pickButton(course, planned) {
   const key = `pick-${course.id}`;
   if (planned) {
@@ -254,13 +255,13 @@ function pickButton(course, planned) {
       onclick: () => { if (!tooSoon()) removeCourse(course.id, course.name); },
     });
   }
-  if (course.kind === "mandatory" && course.sections.length > 1) {
-    /* Nova assigned the section, so Lance does not guess one: the same plus opens the row on its sections */
+  if (course.kind === "mandatory") {
     return el("button", {
-      type: "button", class: "pick", "aria-label": `Pick your section of ${course.name}`, "aria-expanded": view.expanded === course.id ? "true" : "false",
-      title: "Pick your section", html: Lance.icons.plus, "data-key": key,
-      onclick: () => toggleExpanded(course),
-    });
+      type: "button", class: "btn small", "aria-label": `Pick your section of ${course.name}`, "data-key": key,
+      "aria-expanded": course.sections.length ? String(view.expanded === course.id) : null,
+      /* without a timetable there are no sections to show yet: then it opens the whole course */
+      onclick: () => (course.sections.length ? toggleExpanded(course) : go(course.id)),
+    }, "Pick");
   }
   return el("button", {
     type: "button", class: "pick", "aria-pressed": "false", "aria-label": `Add ${course.name}`, title: "Add", html: Lance.icons.plus, "data-key": key,
@@ -329,8 +330,8 @@ function noteLine(course, state) {
   return null;
 }
 
-/* a row of the list: the add control first, then name and facts. A click anywhere else on the row folds it open
-   on its sections; the chevron at the right edge says so. */
+/* a row of the list: name and facts, the chevron, and the control at the right edge. A click anywhere but the control
+   folds the row open on its sections. A course in your plan has a dot in its colour before the name, as in the week. */
 function courseRow(course, state) {
   const first = entriesOf(state, course.id)[0];
   const planned = Boolean(first);
@@ -343,14 +344,17 @@ function courseRow(course, state) {
     onmouseleave: canHover ? () => previewCourse(null) : null,
   },
     el("div", { class: "course-head" },
-      pickButton(course, planned),
       el("button", {
         type: "button", class: "course-main", title: course.name, "aria-expanded": sections ? String(open) : null, "data-key": `main-${course.id}`,
         /* without a timetable there is nothing to fold open, so the row leads to the whole course */
         onclick: () => (sections ? toggleExpanded(course) : go(course.id)),
       },
+        /* every row keeps the place of the dot, so that all names start on one line */
+        planned ? Lance.dot(state, course.id) : el("span", { class: "dot" }),
         el("span", { class: "course-text" }, el("span", { class: "course-name", text: course.name }), metaLine(course, first), noteLine(course, state)),
-        Lance.icon(sections ? "chev" : "next"))),
+        Lance.icon(sections ? "chev" : "next")),
+      /* one column of one width: every plus, tick and Pick ends on the same line */
+      el("span", { class: "control" }, pickButton(course, planned))),
     open ? el("div", { class: "course-more" },
       course.kind === "mandatory" && !planned ? el("p", { class: "hint", text: "Pick the section Nova assigned you." }) : null,
       sectionTiles(course, state),
@@ -433,10 +437,12 @@ function clashingItems(state) {
   return ids;
 }
 
+/* the other sections of the course in view wait in the week as ghosts: a dashed outline in the colour of their course */
 function ghostBlocks(state) {
   const course = courseById(view.open || view.preview || view.expanded);
   if (!course || !TERMS_OF[view.half] || !TERMS_OF[view.half].includes(course.term)) return [];
   const chosen = entriesOf(state, course.id)[0];
+  const colour = `colour-${Lance.colourOf(state, course.id)}`;
   const blocks = [];
   course.sections.forEach((section) => {
     if (chosen && chosen.section_id === section.id) return;
@@ -445,7 +451,7 @@ function ghostBlocks(state) {
       blocks.push({
         day: m.day, start: m.start, end: m.end,
         name: section.section, section: clash ? "clashes" : m.room, sectionId: section.id,
-        class: `ghost${clash ? " bad" : ""}${view.hot === section.id ? " hot" : ""}`,
+        class: `ghost ${colour}${clash ? " bad" : ""}${view.hot === section.id ? " hot" : ""}`,
         title: `${course.name} ${section.section}, ${m.day} ${compact(m.start)}–${compact(m.end)}, ${m.room}${clash ? `. Clashes with ${clash.join(", ")}` : ""}`,
         onclick: () => chooseSection(course, section),
         onmouseenter: () => markHot(section.id),
@@ -466,12 +472,14 @@ function renderWeek(state) {
   const blocks = [];
   state.items.forEach((item) => {
     if (!item.in_week || !TERMS_OF[view.half].includes(item.term)) return;
+    /* a block wears the colour of its course, the same as the dot before its name in the list, in Bids and in Summary */
+    const colour = `colour-${Lance.colourOf(state, item.offering_id)}`;
     item.meetings.forEach((m) => {
       blocks.push({
         day: m.day, start: m.start, end: m.end,
         name: item.name, section: item.section, room: m.room, sectionId: item.section_id,
         clashing: clashing.has(item.id),
-        class: [(view.open || view.expanded) === item.offering_id && "open", view.fresh === item.section_id && "fresh", view.hot === item.section_id && "hot"].filter(Boolean).join(" "),
+        class: [colour, (view.open || view.expanded) === item.offering_id && "open", view.fresh === item.section_id && "fresh", view.hot === item.section_id && "hot"].filter(Boolean).join(" "),
         title: `${item.name} ${item.section}, ${m.day} ${compact(m.start)}–${compact(m.end)}, ${m.room}`,
         onclick: () => go(item.offering_id),
       });
@@ -630,9 +638,11 @@ function planRow(entries, state, classClash, examClash) {
     class: `go-row${alternate ? " alt" : ""}`,
     onclick: (event) => { if (!event.target.closest("a")) go(first.offering_id); },
   },
-    el("td", { class: "name" },
-      el("a", { class: "name-link", href: `#${first.offering_id}`, title: first.name }, first.name),
-      el("span", { class: "plan-sub", text: [first.term, first.section ? `${first.section} ${time}` : null, exam ? `Exam ${exam.label}` : null].filter(Boolean).join(" · ") })),
+    el("td", { class: "name" }, el("span", { class: "named" },
+      Lance.dot(state, first.offering_id),
+      el("span", { class: "course-text" },
+        el("a", { class: "name-link", href: `#${first.offering_id}`, title: first.name }, first.name),
+        el("span", { class: "plan-sub", text: [first.term, first.section ? `${first.section} ${time}` : null, exam ? `Exam ${exam.label}` : null].filter(Boolean).join(" · ") })))),
     el("td", { class: "opt" }, first.section || "–", backups.length ? el("span", { class: "faint", title: `If full: ${backups.join(", ")}`, text: ` +${backups.length}` }) : null),
     el("td", { class: "opt" }, clash ? cellValue(`${first.term} · ${time}`, "warn", `Clashes: ${clash}`) : el("span", { class: "faint", text: `${first.term} · ` }), clash ? null : time),
     el("td", { class: `r num${alternate ? " faint" : ""}`, title: alternate ? "The alternate list does not count" : null, text: alternate ? `(${first.ects})` : String(first.ects) }),

@@ -103,6 +103,36 @@ const Lance = {
     return Lance.el("span", { class: `status ${tone}${options.cls ? ` ${options.cls}` : ""}`, title: options.title || null },
       Lance.icon(tone), Lance.el("span", { text }));
   },
+
+  /* ---- course colours: a course looks the same everywhere, as a dot before its name and as its block in the week ---- */
+
+  /* the eight colours of app.css (.colour-olive ...). Neighbours in this list look different,
+     so a course that has to step aside to the next colour still stands apart */
+  COLOURS: ["olive", "plum", "teal", "violet", "forest", "mauve", "jade", "petrol"],
+
+  /* Which colour a course has. Every course prefers the colour its id points to. The courses of the plan take
+     their colours in the order they came into it (the item id), and a course whose colour is already taken steps
+     aside to the next free one. So adding a course never recolours another, and removing one can only recolour a
+     later course that had to step aside. A course that is not in the plan gets the colour it would get if added now. */
+  colourOf(state, offeringId) {
+    const order = [...new Set(state.items.slice().sort((a, b) => a.id - b.id).map((item) => item.offering_id))];
+    if (!order.includes(offeringId)) order.push(offeringId);
+    const count = Lance.COLOURS.length;
+    const taken = [];
+    for (const id of order) {
+      /* the colour this course prefers: a number made from the letters of its id, always the same for the same id */
+      let colour = [...id].reduce((sum, letter) => (sum * 31 + letter.charCodeAt(0)) % 9973, 0) % count;
+      /* taken by an earlier course: the next one round the circle. Once all eight are taken, two courses share one */
+      while (taken.includes(colour) && taken.length < count) colour = (colour + 1) % count;
+      if (id === offeringId) return Lance.COLOURS[colour];
+      taken.push(colour);
+    }
+  },
+
+  /* the dot before a course name; only the name says which course it is, so screen readers skip it */
+  dot(state, offeringId) {
+    return Lance.el("span", { class: `dot colour-${Lance.colourOf(state, offeringId)}`, "aria-hidden": "true" });
+  },
 };
 
 document.addEventListener("pointerdown", () => { Lance.pressed = true; }, true);
