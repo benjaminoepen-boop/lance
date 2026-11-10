@@ -9,13 +9,11 @@ document.getElementById("send").addEventListener("click", async () => {
   });
   const answer = await response.json();
   if (answer.error) {
-    result.textContent = answer.error;
-    result.style.color = "var(--red)";
+    result.replaceChildren(Lance.status("bad", answer.error));
     return;
   }
   box.value = "";
-  result.style.color = "var(--green)";
-  result.textContent = answer.stored === 1 ? "1 rank list added. Thank you!" : `${answer.stored} rank lists added. Thank you!`;
+  result.replaceChildren(Lance.status("ok", answer.stored === 1 ? "1 rank list added. Thank you!" : `${answer.stored} rank lists added. Thank you!`));
   document.getElementById("coverage-text").textContent = `${answer.coverage.covered} of ${answer.coverage.total}`;
   document.getElementById("coverage-bar").style.width = `${answer.coverage.percent}%`;
 });

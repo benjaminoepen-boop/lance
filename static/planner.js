@@ -24,7 +24,6 @@ const HALVES = {
   Spring: [["T3", "T3: from 1 Feb"], ["T4", "T4: from 5 Apr"]],
 };
 const TERMS_OF = { T1: ["S1", "T1"], T2: ["S1", "T2"], T3: ["S2", "T3"], T4: ["S2", "T4"] };
-const EXAM_WORD = { exam: "Exam", midterm: "Midterm", presentation: "Presentation" };
 const TABS = ["week", "bids", "summary"];
 const canHover = window.matchMedia("(hover: hover)").matches;
 const onPhone = () => window.matchMedia("(max-width: 860px)").matches;   /* one half at a time */
@@ -152,7 +151,7 @@ async function showOpenCourse() {
   render(Lance.state);
   /* the last course goes at once: its links must not be clickable while the next one loads */
   box.replaceChildren(el("button", {
-    type: "button", class: "back", html: `${Lance.icons.back} Courses`, onclick: goBack,
+    type: "button", class: "btn tertiary flush back", html: `${Lance.icons.back} Courses`, onclick: goBack,
   }));
   const response = await fetch(`/api/sheet/${encodeURIComponent(wanted)}`);
   if (view.open !== wanted) return;
@@ -189,24 +188,27 @@ function previewCourse(id) {
   }, id ? 180 : 0);
 }
 
-/* the one control of a row. Plus always adds. A tick means it is in; under the mouse it shows that a click takes it out. */
+/* the add control: the same square at the start of every row. A plus adds; a tick says the course is in,
+   and under the mouse it turns into × because a click takes it out again. */
 function pickButton(course, planned) {
+  const key = `pick-${course.id}`;
   if (planned) {
     return el("button", {
-      type: "button", class: "pick", "aria-pressed": "true", "aria-label": `Remove ${course.name}`, title: "Remove", "data-key": `pick-${course.id}`,
+      type: "button", class: "pick", "aria-pressed": "true", "aria-label": `Remove ${course.name}`, title: "Remove", "data-key": key,
       html: `<span class="is-in">${Lance.icons.tick}</span><span class="to-out">${Lance.icons.close}</span>`,
       onclick: () => { if (!tooSoon()) removeCourse(course.id, course.name); },
     });
   }
   if (course.kind === "mandatory" && course.sections.length > 1) {
-    /* Nova assigned the section, so Lance does not guess one: the row folds open instead */
+    /* Nova assigned the section, so Lance does not guess one: the same plus opens the row on its sections */
     return el("button", {
-      type: "button", class: "btn small", "aria-label": `Pick your section of ${course.name}`, "data-key": `pick-${course.id}`,
+      type: "button", class: "pick", "aria-label": `Pick your section of ${course.name}`, "aria-expanded": view.expanded === course.id ? "true" : "false",
+      title: "Pick your section", html: Lance.icons.plus, "data-key": key,
       onclick: () => toggleExpanded(course),
-    }, "Pick");
+    });
   }
   return el("button", {
-    type: "button", class: "pick", "aria-pressed": "false", "aria-label": `Add ${course.name}`, title: "Add", html: Lance.icons.plus, "data-key": `pick-${course.id}`,
+    type: "button", class: "pick", "aria-pressed": "false", "aria-label": `Add ${course.name}`, title: "Add", html: Lance.icons.plus, "data-key": key,
     onclick: () => { if (!tooSoon()) addCourse(course); },
   });
 }
@@ -216,7 +218,7 @@ function clashNote(course, state) {
   const entry = entriesOf(state, course.id)[0];
   const sections = entry ? course.sections.filter((section) => section.id === entry.section_id) : course.sections;
   if (!sections.length || !sections.every((section) => state.section_warnings[section.id])) return null;
-  return `clashes with ${state.section_warnings[sections[0].id][0]}`;
+  return `Clashes with ${state.section_warnings[sections[0].id][0]}`;
 }
 
 /* the sections of a course as small tiles: one click picks one, the week shows where they lie */
@@ -226,13 +228,13 @@ function sectionTiles(course, state) {
     const at = entries.findIndex((entry) => entry.section_id === section.id);
     const clash = state.section_warnings[section.id];
     const known = section.cutoff !== null && section.cutoff !== undefined;
-    const note = clash ? el("span", { class: "tile-note warn", text: "clashes" })
+    const note = clash ? Lance.status("warn", "clashes", { cls: "tile-note" })
       : at > 0 ? el("span", { class: "tile-note", text: "backup" })
         : known ? el("span", { class: "tile-note", text: `from ${Math.ceil(section.cutoff)}` }) : null;
     const where = section.meetings.map((m) => `${m.day} ${compact(m.start)}–${compact(m.end)}, ${m.room}`).join("; ");
     return el("button", {
       type: "button",
-      class: `tile${at === 0 ? " on" : ""}${clash ? " warn" : ""}${view.hot === section.id ? " hot" : ""}`,
+      class: `tile${at === 0 ? " on" : ""}${view.hot === section.id ? " hot" : ""}`,
       "aria-pressed": at === 0 ? "true" : "false",
       "data-section": section.id, "data-key": `tile-${section.id}`,
       title: [where, section.delivery === "blended" ? "blended" : null, clash ? `Clashes with ${clash.join(", ")}` : null,
@@ -249,37 +251,35 @@ function sectionTiles(course, state) {
   }));
 }
 
-/* a row of the list: name and facts, one control, and folded open the sections to pick from */
-function courseRow(course, state, mine) {
-  const entries = entriesOf(state, course.id);
-  const first = entries[0];
-  const planned = entries.length > 0;
+/* the facts under a name: term and ECTS, then the section it has in your plan, or what a seat cost last round */
+function metaLine(course, first) {
+  const chosen = first && first.section ? ` · ${first.section} ${meetingsText(first.meetings)}` : "";
+  const price = first || course.cutoff_low === null ? ""
+    : course.cutoff_low === course.cutoff_high ? ` · seat from ${Math.ceil(course.cutoff_low)}`
+      : ` · seats from ${Math.ceil(course.cutoff_low)} to ${Math.ceil(course.cutoff_high)}`;
+  /* a phone has no week beside the list, so a course with one section says its time here */
+  const time = !first && course.sections.length === 1 ? el("span", { class: "time", text: ` · ${meetingsText(course.sections[0].meetings)}` }) : null;
+  return el("span", { class: "course-sub" }, `${course.term} · ${course.ects} ECTS`, chosen, time, price);
+}
+
+/* the one thing to know before adding, as a status line: an exam at the same time is worst, then a class, then the same course in the other half */
+function noteLine(course, state) {
+  const exam = state.exam_warnings[course.id];
+  if (exam) return Lance.status("bad", `Exam at the same time as ${exam.join(", ")}`, { cls: "course-note" });
   const clash = clashNote(course, state);
-  const open = view.expanded === course.id && course.sections.length > 0;
-  const price = course.cutoff_low === null ? "" : course.cutoff_low === course.cutoff_high ? ` · seat from ${Math.ceil(course.cutoff_low)}` : ` · seats from ${Math.ceil(course.cutoff_low)} to ${Math.ceil(course.cutoff_high)}`;
+  if (clash) return Lance.status("warn", clash, { cls: "course-note" });
   const twin = state.items.find((item) => item.code === course.code && item.offering_id !== course.id);
-  const lines = [];
-  if (mine) {
-    lines.push(el("span", { class: "course-sub" }, `${course.term} · `, first.section ? `${first.section} · ${meetingsText(first.meetings)}` : "Timetable not published",
-      first.list === "alternate" ? " · alternate, not counted" : ""));
-    const exams = state.exams.filter((exam) => exam.offering_id === course.id);
-    const clashWhen = new Set(state.clashes.filter((item) => item.kind !== "class").map((item) => item.when));
-    exams.forEach((exam) => lines.push(el("span", {
-      class: `course-sub${clashWhen.has(`${exam.label}, ${exam.start}`) ? " bad" : ""}`,
-      text: `${EXAM_WORD[exam.kind] || exam.kind} ${exam.label}, ${exam.start}`,
-    })));
-    const note = first.conflicts[0] || (clash ? { level: "class", text: clash[0].toUpperCase() + clash.slice(1) } : null);
-    if (note) lines.push(el("span", { class: `course-sub ${note.level === "exam" ? "bad" : "warn"}`, text: note.text }));
-  } else {
-    const chosen = first && first.section ? ` · ${first.section} ${meetingsText(first.meetings)}` : "";
-    lines.push(el("span", { class: "course-sub" },
-      `${course.term} · ${course.ects} ECTS`, chosen,
-      !first && course.sections.length === 1 ? el("span", { class: "time", text: ` · ${meetingsText(course.sections[0].meetings)}` }) : null,
-      first ? "" : price,
-      state.exam_warnings[course.id] ? el("span", { class: "bad", title: `Exam at the same time as ${state.exam_warnings[course.id].join(", ")}`, text: " · exam clash" }) : null,
-      clash ? el("span", { class: "warn", text: ` · ${clash}` }) : null,
-      twin ? el("span", { class: "warn", text: ` · in your plan in ${twin.term}` }) : null));
-  }
+  if (twin) return Lance.status("warn", `In your plan in ${twin.term}`, { cls: "course-note" });
+  return null;
+}
+
+/* a row of the list: the add control first, then name and facts. A click anywhere else on the row folds it open
+   on its sections; the chevron at the right edge says so. */
+function courseRow(course, state) {
+  const first = entriesOf(state, course.id)[0];
+  const planned = Boolean(first);
+  const sections = course.sections.length > 0;
+  const open = view.expanded === course.id && sections;
   const exam = state.exams.find((item) => item.offering_id === course.id && item.kind === "exam");
   return el("article", {
     class: `course${open ? " open" : ""}${planned ? " in" : ""}`,
@@ -287,19 +287,20 @@ function courseRow(course, state, mine) {
     onmouseleave: canHover ? () => previewCourse(null) : null,
   },
     el("div", { class: "course-head" },
+      pickButton(course, planned),
       el("button", {
-        type: "button", class: "course-main", title: course.name, "aria-expanded": course.sections.length ? (open ? "true" : "false") : null, "data-key": `main-${course.id}`,
-        onclick: () => (course.sections.length ? toggleExpanded(course) : go(course.id)),
+        type: "button", class: "course-main", title: course.name, "aria-expanded": sections ? String(open) : null, "data-key": `main-${course.id}`,
+        /* without a timetable there is nothing to fold open, so the row leads to the whole course */
+        onclick: () => (sections ? toggleExpanded(course) : go(course.id)),
       },
-        el("span", { class: "course-name" }, el("span", { text: course.name }), course.sections.length ? el("span", { class: "chev", html: Lance.icons.down }) : null),
-        ...lines),
-      pickButton(course, planned)),
+        el("span", { class: "course-text" }, el("span", { class: "course-name", text: course.name }), metaLine(course, first), noteLine(course, state)),
+        Lance.icon(sections ? "chev" : "next"))),
     open ? el("div", { class: "course-more" },
       course.kind === "mandatory" && !planned ? el("p", { class: "hint", text: "Pick the section Nova assigned you." }) : null,
       sectionTiles(course, state),
       el("div", { class: "course-foot" },
-        el("span", { class: "faint", text: [exam ? `Exam ${exam.label}` : course.exam ? `Exam ${course.exam}` : null, course.lecturers].filter(Boolean).join(" · ") }),
-        el("button", { type: "button", class: "text-btn", onclick: () => go(course.id) }, "Course details", el("span", { html: Lance.icons.next })))) : null);
+        el("span", { class: "meta", text: [exam ? `Exam ${exam.label}` : course.exam ? `Exam ${course.exam}` : null, course.lecturers].filter(Boolean).join(" · ") }),
+        el("a", { class: "go", href: `#${course.id}` }, "Course details"))) : null);
 }
 
 function renderList(state) {
@@ -312,7 +313,7 @@ function renderList(state) {
     const other = state.plan.semester === "Fall" ? "Spring" : "Fall";
     list.append(el("div", { class: "empty-note" },
       el("p", { text: view.fits ? "Nothing else fits your week." : `No course matches in ${state.plan.semester}.` }),
-      view.fits ? null : el("button", { type: "button", class: "link-btn", onclick: () => changeSetting({ semester: other }) }, `Look in ${other}`)));
+      view.fits ? null : el("button", { type: "button", class: "btn tertiary", onclick: () => changeSetting({ semester: other }) }, `Look in ${other}`)));
     return;
   }
   const noProgramme = !state.plan.programme;
@@ -321,11 +322,12 @@ function renderList(state) {
     const courses = shown.filter((course) => course.kind === kind);
     if (!courses.length) return;
     const folded = !view.query && !noProgramme && view.closed[kind];
+    /* a group heading folds like a row: the whole line is the button, the chevron at the right edge */
     list.append(el("button", {
-      type: "button", class: "group", "aria-expanded": folded ? "false" : "true", html: Lance.icons.down,
+      type: "button", class: "group", "aria-expanded": folded ? "false" : "true",
       onclick: () => { view.closed[kind] = !view.closed[kind]; renderList(Lance.state); },
-    }, el("span", { class: "group-name", text: titles[kind] }), el("span", { class: "count", text: String(courses.length) })));
-    if (!folded) courses.forEach((course) => list.append(courseRow(course, state, false)));
+    }, el("span", { class: "group-name", text: titles[kind] }), el("span", { class: "count", text: String(courses.length) }), Lance.icon("chev")));
+    if (!folded) courses.forEach((course) => list.append(courseRow(course, state)));
   });
   list.scrollTop = scroll;
   if (focused) {
@@ -343,21 +345,23 @@ function renderSections(state) {
   const title = el("h2", { text: "Sections" });
   if (!course) {
     const other = state.plan.semester === "Fall" ? "Spring" : "Fall";
-    box.replaceChildren(title, el("p", { class: "muted small" }, `This course runs in ${other}. `,
-      el("button", { type: "button", class: "link-btn", onclick: async () => { await changeSetting({ semester: other }); renderSections(Lance.state); } }, `Plan for ${other.toLowerCase()}`)));
+    box.replaceChildren(title, el("p", { class: "meta" }, `This course runs in ${other}. `,
+      el("button", { type: "button", class: "inline-link", onclick: async () => { await changeSetting({ semester: other }); renderSections(Lance.state); } }, `Plan for ${other.toLowerCase()}`)));
     return;
   }
   const entries = entriesOf(state, course.id);
-  const remove = entries.length ? el("button", { type: "button", class: "text-btn small", style: "align-self:flex-start", onclick: () => removeCourse(course.id, course.name) }, "Remove from my plan") : null;
+  /* taking a course out is a small extra here, so it is a tertiary button; putting it in is the secondary one */
+  const remove = entries.length ? el("button", { type: "button", class: "btn tertiary flush", onclick: () => removeCourse(course.id, course.name) }, "Remove from my plan") : null;
   if (!course.sections.length) {
-    box.replaceChildren(title, el("p", { class: "small muted", text: "Nova has not published the timetable yet." }),
-      remove || el("button", { type: "button", class: "btn small", style: "align-self:flex-start", onclick: () => Lance.send("/api/add", { offering_id: course.id }) }, "Add to my plan"));
+    box.replaceChildren(title, el("p", { class: "meta", text: "Nova has not published the timetable yet." }),
+      remove || el("button", { type: "button", class: "btn", style: "align-self:flex-start", onclick: () => Lance.send("/api/add", { offering_id: course.id }) }, "Add to my plan"));
     return;
   }
+  const examClash = state.exam_warnings[course.id];
   box.replaceChildren(...[
     title,
     course.kind === "mandatory" && !entries.length ? el("p", { class: "hint", text: "Pick the section Nova assigned you." }) : null,
-    state.exam_warnings[course.id] ? el("p", { class: "small bad", text: `Exam at the same time as ${state.exam_warnings[course.id].join(", ")}` }) : null,
+    examClash ? Lance.status("bad", `Exam at the same time as ${examClash.join(", ")}`) : null,
     sectionTiles(course, state),
     remove,
   ].filter(Boolean));
@@ -423,7 +427,7 @@ function renderWeek(state) {
   const empty = document.getElementById("week-empty");
   empty.hidden = state.items.length > 0 || ghosts.length > 0;
   empty.replaceChildren(el("span", { text: state.plan.programme ? "Pick your mandatory sections, then press + on an elective." : "Choose your programme, then press + on a course." }),
-    el("button", { type: "button", class: "btn small", onclick: tryExample }, "Try an example"));
+    el("button", { type: "button", class: "btn", onclick: tryExample }, "Try an example"));
 }
 
 async function tryExample() {
@@ -447,7 +451,7 @@ function renderTabs(state) {
   if (!note.hidden) {
     const next = state.next_deadline;
     note.replaceChildren(`The ${state.plan.semester} round closed on ${state.round.last_day}: this is practice. ${next ? `Next: ${next.range.split(" – ")[0].split(" ").slice(1).join(" ")}. ` : ""}`,
-      state.plan.semester === "Fall" ? el("button", { type: "button", class: "link-btn", onclick: () => changeSetting({ semester: "Spring" }) }, "Plan for spring") : null);
+      state.plan.semester === "Fall" ? el("button", { type: "button", class: "inline-link", onclick: () => changeSetting({ semester: "Spring" }) }, "Plan for spring") : null);
   }
   document.getElementById("fits").hidden = !hasWeek(state) || !state.items.some((item) => item.in_week);
   /* the way to Nova turns blue once there is something to bid on */
@@ -462,9 +466,9 @@ function clashActions(clash, state) {
   const course = courseById(target.offering_id);
   const other = course && clash.kind === "class" ? course.sections.find((section) => section.id !== target.section_id && !state.section_warnings[section.id]) : null;
   return [
-    clash.weeks && !clash.weeks.includes(view.half) ? el("button", { type: "button", class: "btn small", onclick: () => { view.half = clash.weeks[0]; render(Lance.state); } }, `Show ${clash.weeks[0]}`) : null,
-    other ? el("button", { type: "button", class: "btn small", title: `Switch ${target.name} to ${other.section}`, onclick: () => chooseSection(course, other) }, `Switch to ${other.section}`) : null,
-    el("button", { type: "button", class: "btn small", title: `Remove ${target.name}`, onclick: () => removeCourse(target.offering_id, target.name) }, `Remove ${target.name}`),
+    clash.weeks && !clash.weeks.includes(view.half) ? el("button", { type: "button", class: "btn tertiary", onclick: () => { view.half = clash.weeks[0]; render(Lance.state); } }, `Show ${clash.weeks[0]}`) : null,
+    other ? el("button", { type: "button", class: "btn tertiary", title: `Switch ${target.name} to ${other.section}`, onclick: () => chooseSection(course, other) }, `Switch to ${other.section}`) : null,
+    el("button", { type: "button", class: "btn tertiary", title: `Remove ${target.name}`, onclick: () => removeCourse(target.offering_id, target.name) }, `Remove ${target.name}`),
   ];
 }
 
@@ -477,17 +481,19 @@ function clashText(clash) {
   return ["Midterm: ", `${clash.first} × ${clash.second}`, `, ${clash.when}. Nova does not check this.`];
 }
 
+/* a clash under the week is a status line, worst first: an exam is red, a class or a midterm orange */
 function renderClashes(state) {
   const shown = state.clashes.slice(0, view.allClashes ? undefined : 2);
   const box = document.getElementById("clashes");
   box.replaceChildren(...shown.map((clash) => {
     const [before, pair, after] = clashText(clash);
+    const tone = clash.kind === "exam" ? "bad" : "warn";
     return el("div", { class: `clash-line ${clash.severity}` },
-      el("div", { class: "grow" }, before, el("b", { text: pair }), after),
+      el("p", { class: `status ${tone}` }, Lance.icon(tone), el("span", {}, before, el("b", { text: pair }), after)),
       ...clashActions(clash, state).filter(Boolean));
   }));
   if (state.clashes.length > 2 && !view.allClashes) {
-    box.append(el("button", { type: "button", class: "link-btn small", style: "align-self:flex-start", onclick: () => { view.allClashes = true; renderClashes(Lance.state); } }, `${state.clashes.length - 2} more`));
+    box.append(el("button", { type: "button", class: "btn tertiary flush", onclick: () => { view.allClashes = true; renderClashes(Lance.state); } }, `${state.clashes.length - 2} more`));
   }
 }
 
@@ -500,13 +506,15 @@ function renderHead(state) {
   const above = state.ects.total > state.ects.recommended;
   const clashes = state.clashes.length;
   const exam = state.clashes.some((clash) => clash.kind === "exam");
-  const figure = (value, label, cls, title, id) => el("span", { class: cls || null, title, id }, el("b", { class: "num", text: value }), ` ${label}`);
+  /* a figure: the number dark, the word grey; a tone (warn, bad) adds colour and an icon */
+  const figure = (value, label, tone, title, id) => el("span", { class: tone ? `status ${tone}` : null, title, id },
+    tone ? Lance.icon(tone) : null, el("b", { class: "num", text: value }), ` ${label}`);
   document.getElementById("figures").replaceChildren(
-    figure(String(state.ects.total), "ECTS", state.ects.over ? "bad" : above ? "warn" : state.items.length ? "" : "faint",
+    figure(String(state.ects.total), "ECTS", state.ects.over ? "bad" : above ? "warn" : null,
       `Nova recommends ${state.ects.recommended} ECTS, the maximum is ${state.ects.maximum}`, "ects"),
-    points ? figure(String(left), "points left", left < 0 ? "bad" : "", `${state.reserved} of your ${points} points are held while bidding`)
-      : el("span", { class: electives ? "warn" : "faint", text: "No points yet" }),
-    clashes ? figure(String(clashes), clashes === 1 ? "clash" : "clashes", exam ? "bad" : "warn") : el("span", { class: "faint", text: "No clash" }));
+    points ? figure(String(left), "points left", left < 0 ? "bad" : null, `${state.reserved} of your ${points} points are held while bidding`)
+      : electives ? Lance.status("warn", "No points yet") : el("span", { text: "No points yet" }),
+    clashes ? figure(String(clashes), clashes === 1 ? "clash" : "clashes", exam ? "bad" : "warn") : el("span", { text: "No clash" }));
   badge("week", clashes ? { cls: exam ? "bad" : "", text: `${clashes} ${clashes === 1 ? "clash" : "clashes"}` } : null);
   badge("bids", typeof Bids === "undefined" ? null : Bids.problem(state));
 }
@@ -522,6 +530,11 @@ function badge(key, found) {
 
 /* ---- the Summary tab: every course of the plan in one table, the totals at the bottom ---- */
 
+/* a table cell that can carry a status: the plain value, or the same value in the colour and with the icon of its tone */
+function cellValue(text, tone, title) {
+  return tone ? Lance.status(tone, text, { title }) : text;
+}
+
 function planRow(entries, state, classClash, examClash) {
   const first = entries[0];
   const alternate = first.list === "alternate";
@@ -533,13 +546,31 @@ function planRow(entries, state, classClash, examClash) {
   const time = first.section ? meetingsText(first.meetings) : "Not published";
   return el("tr", { class: alternate ? "alt" : null },
     el("td", { class: "name" },
-      el("button", { type: "button", class: "name-btn", title: first.name, onclick: () => go(first.offering_id) }, first.name),
+      /* the name is a link: a click opens the whole course on the left */
+      el("a", { class: "name-link", href: `#${first.offering_id}`, title: first.name }, first.name),
       el("span", { class: "plan-sub", text: [first.term, first.section ? `${first.section} ${time}` : null, exam ? `Exam ${exam.label}` : null].filter(Boolean).join(" · ") })),
     el("td", { class: "opt" }, first.section || "–", backups.length ? el("span", { class: "faint", title: `If full: ${backups.join(", ")}`, text: ` +${backups.length}` }) : null),
-    el("td", { class: `opt${clash ? " warn" : ""}`, title: clash ? `Clashes: ${clash}` : null }, el("span", { class: "faint", text: `${first.term} · ` }), time),
+    el("td", { class: "opt" }, clash ? cellValue(`${first.term} · ${time}`, "warn", `Clashes: ${clash}`) : el("span", { class: "faint", text: `${first.term} · ` }), clash ? null : time),
     el("td", { class: `r num${alternate ? " faint" : ""}`, title: alternate ? "The alternate list does not count" : null, text: alternate ? `(${first.ects})` : String(first.ects) }),
-    el("td", { class: `opt${examLevel === "exam" ? " bad" : examLevel ? " warn" : ""}`, text: exam ? exam.label : "–" }),
-    el("td", { class: `r num${first.list === "primary" && bid === null ? " warn" : alternate ? " faint" : ""}`, text: first.list === "mandatory" ? "–" : bid === null ? "No bid" : String(bid) }));
+    el("td", { class: "opt" }, cellValue(exam ? exam.label : "–", examLevel === "exam" ? "bad" : examLevel ? "warn" : null)),
+    el("td", { class: `r num${alternate ? " faint" : ""}` },
+      first.list === "mandatory" ? "–" : bid === null ? cellValue("No bid", first.list === "primary" ? "warn" : null) : String(bid)));
+}
+
+/* the totals under the table: numbers dark, words grey, a tone only where something needs a look */
+function totalsRow(state, counted, alternates) {
+  const weekClashes = state.clashes.filter((clash) => clash.kind === "class").length;
+  const examClashes = state.clashes.filter((clash) => clash.kind !== "class");
+  const above = state.ects.total > state.ects.recommended;
+  const many = (count, word) => `${count} ${word}${count === 1 ? "" : word.endsWith("sh") ? "es" : "s"}`;
+  return el("tr", {},
+    el("th", { scope: "row" }, el("b", { class: "num", text: String(counted) }), counted === 1 ? " course" : " courses", alternates ? ` + ${alternates} alternate` : null),
+    el("td", { class: "opt" }),
+    el("td", { class: "opt" }, weekClashes ? cellValue(many(weekClashes, "clash"), "warn") : "No clash"),
+    el("td", { class: "r num", title: `Nova recommends ${state.ects.recommended} ECTS, the maximum is ${state.ects.maximum}` },
+      state.ects.over || above ? cellValue(String(state.ects.total), state.ects.over ? "bad" : "warn") : el("b", { text: String(state.ects.total) })),
+    el("td", { class: "opt" }, examClashes.length ? cellValue(many(examClashes.length, "clash"), examClashes.some((clash) => clash.kind === "exam") ? "bad" : "warn") : "No clash"),
+    el("td", { class: "r num", title: "Held while bidding" }, el("b", { text: String(state.reserved) }), " held"));
 }
 
 function renderPlanTable(state) {
@@ -559,29 +590,18 @@ function renderPlanTable(state) {
   [["mandatory", "Mandatory"], ["primary", "Primary list"], ["alternate", "Alternate list"]].forEach(([list, title]) => {
     const ids = offerings.filter((id) => entriesOf(state, id)[0].list === list);
     if (!ids.length) return;
-    body.append(el("tr", { class: "group" }, el("th", { colspan: 6, scope: "colgroup", text: title })));
+    body.append(el("tr", { class: "plan-group" }, el("th", { colspan: 6, scope: "colgroup", text: title })));
     ids.forEach((id) => body.append(planRow(entriesOf(state, id), state, classClash, examClash)));
   });
   const counted = offerings.filter((id) => entriesOf(state, id)[0].list !== "alternate").length;
-  const alternates = offerings.length - counted;
-  const weekClashes = state.clashes.filter((clash) => clash.kind === "class").length;
-  const examClashes = state.clashes.filter((clash) => clash.kind !== "class");
-  const above = state.ects.total > state.ects.recommended;
-  const many = (count, word) => `${count} ${word}${count === 1 ? "" : word.endsWith("sh") ? "es" : "s"}`;
   const head = (label, cls) => el("th", { scope: "col", class: cls || null, text: label });
   box.replaceChildren(
     el("table", { class: "plan-table" },
       el("thead", {}, el("tr", {}, head("Course"), head("Section", "opt"), head("Time", "opt"), head("ECTS", "r"), head("Exam", "opt"), head("Bid", "r"))),
       body,
-      el("tfoot", {}, el("tr", {},
-        el("th", { scope: "row" }, many(counted, "course"), alternates ? el("span", { class: "faint", text: ` + ${alternates} alternate` }) : null),
-        el("td", { class: "opt" }),
-        el("td", { class: `opt ${weekClashes ? "warn" : "faint"}`, text: weekClashes ? many(weekClashes, "clash") : "No clash" }),
-        el("td", { class: `r num${state.ects.over ? " bad" : above ? " warn" : ""}`, title: `Nova recommends ${state.ects.recommended} ECTS, the maximum is ${state.ects.maximum}`, text: String(state.ects.total) }),
-        el("td", { class: `opt ${examClashes.length ? (examClashes.some((clash) => clash.kind === "exam") ? "bad" : "warn") : "faint"}`, text: examClashes.length ? many(examClashes.length, "clash") : "No clash" }),
-        el("td", { class: "r num", title: "Held while bidding" }, String(state.reserved), el("span", { class: "faint", text: " held" }))))),
+      el("tfoot", {}, totalsRow(state, counted, offerings.length - counted))),
     el("button", {
-      type: "button", class: "text-btn plan-reset",
+      type: "button", class: "btn plan-reset",
       onclick: () => { if (window.confirm(`Remove every ${state.plan.semester} course from your plan?`)) Lance.send("/api/start-over", {}); },
     }, "Start over"));
 }
@@ -604,11 +624,12 @@ function render(state) {
   fitToValue(semester);
 }
 
-/* a menu is only as wide as what it shows, so that everything stays on one line (browsers make it as wide as its longest option) */
+/* a menu is only as wide as what it shows, so that everything stays on one line (browsers make it as wide as its longest option).
+   46 = the padding on the left (10) and right (32, room for the chevron) and the border (2), plus a little air */
 function fitToValue(select) {
   const context = fitToValue.canvas.getContext("2d");
   context.font = getComputedStyle(select).font;
-  select.style.width = `${Math.ceil(context.measureText(select.selectedOptions[0].text).width) + 36}px`;
+  select.style.width = `${Math.ceil(context.measureText(select.selectedOptions[0].text).width) + 46}px`;
 }
 fitToValue.canvas = document.createElement("canvas");
 

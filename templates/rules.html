@@ -11,9 +11,9 @@
     <div class="pay num" role="img" aria-label="You bid 164. The lowest winning bid is 100. You pay the middle: 132.">
       <span>Your bid</span><div class="track"><i style="width:100%"></i></div><b>164</b>
       <span>Lowest winning bid</span><div class="track"><i style="width:61%"></i></div><b>100</b>
-      <span class="strong">You pay the middle</span><div class="track"><i style="width:80.5%"></i></div><b>132</b>
+      <span class="lead">You pay the middle</span><div class="track mid"><i style="width:80.5%"></i></div><b>132</b>
     </div>
-    <p class="muted small" style="margin-top:10px">So bidding higher costs only half of what you add. No seat, no charge.</p>
+    <p class="meta" style="margin-top:10px">So bidding higher costs only half of what you add. No seat, no charge.</p>
   </section>
 
   <div class="tight">
@@ -76,7 +76,7 @@
       {% call wording() %}
         {{ quote("Bidding - primary list: the average between the points allocated to the bid and those given by the last student who successfully gets a seat.", "Bidding Rules") }}
         {{ quote("Bidding - alternative list: the smaller number between the points allocated to the bid and the remaining points in the student's balance. Add/drop cycle: the actual points allocated to the bid.", "Bidding Rules") }}
-        <p class="small muted">Checked on two real accounts: the lowest winning bid counts across all sections of the course, not only your own. Nova's page does not say so.</p>
+        <p class="meta">Checked on two real accounts: the lowest winning bid counts across all sections of the course, not only your own. Nova's page does not say so.</p>
       {% endcall %}
     </div></details>
 
@@ -97,10 +97,10 @@
       {% for row in calendar %}
       <div class="date-row small {{ 'past' if row.last_day < today }}"><span class="{{ 'strong' if row.is_window }}">{{ row.label }}</span><span class="num">{{ row.first_label }} – {{ row.last_label }}</span></div>
       {% endfor %}
-      <p class="small faint">Nova's academic calendar 2026/27, last update 29/04/2026. Nova notes it "may be subject to last minute changes".</p>
+      <p class="meta">Nova's academic calendar 2026/27, last update 29/04/2026. Nova notes it "may be subject to last minute changes".</p>
     </div></details>
     </div>
   </details>
-  <p class="small faint">Student project in Introduction to Programming. Not an official Nova SBE system. Bids are placed on Nova's platform only.</p>
+  <p class="meta">Student project in Introduction to Programming. Not an official Nova SBE system. Bids are placed on Nova's platform only.</p>
 </div>
 {% endblock %}

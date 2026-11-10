@@ -7,11 +7,11 @@
 <div class="planner" id="planner" data-zone="courses" data-view="{{ tab|default('week') }}" data-open="{{ open_course|default('') }}" data-saved="{{ saved|default('', true) }}">
   <section class="chooser" aria-label="Find courses">
     <div class="scope">
-      <select class="quiet" id="set-programme" aria-label="Your programme">
+      <select class="field" id="set-programme" aria-label="Your programme">
         {% if not plan.programme %}<option value="" selected disabled>Your programme</option>{% endif %}
         {% for name in programmes %}<option value="{{ name }}" {{ 'selected' if name == plan.programme }}>{{ name }}</option>{% endfor %}
       </select>
-      <select class="quiet" id="set-semester" aria-label="Semester">
+      <select class="field" id="set-semester" aria-label="Semester">
         {% for name, label in semesters %}<option value="{{ name }}" {{ 'selected' if plan.semester == name }}>{{ label }}</option>{% endfor %}
       </select>
       <div class="seg" id="half-tabs" role="group" aria-label="Part of the semester"></div>
@@ -22,7 +22,7 @@
           <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/></svg>
           <input class="field" type="search" id="search" placeholder="Search all courses" autocomplete="off">
         </label>
-        <button type="button" class="toggle" id="fits" aria-pressed="false" title="Only courses with a section that fits your week">Fits my week</button>
+        <button type="button" class="btn toggle" id="fits" aria-pressed="false" title="Only courses with a section that fits your week">Fits my week</button>
       </div>
       <div class="course-list" id="courses"></div>
     </div>

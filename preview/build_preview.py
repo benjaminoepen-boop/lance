@@ -67,8 +67,8 @@ def main(out_dir):
     for name, address in pages.items():
         html = page_html(client, address)
         # the plan link and the calendar file only exist in the full app
-        html = re.sub(r'<a class="btn small" href="/plan\.ics"[^>]*>.*?</a>', '', html, flags=re.S)
-        html = re.sub(r'<button type="button" class="btn small" id="copy-link".*?</button>', '<span id="copy-link" hidden></span><span class="small muted">The calendar file and the plan link need the full app.</span>', html, flags=re.S)
+        html = re.sub(r'<a class="btn[^"]*" href="/plan\.ics"[^>]*>.*?</a>', '', html, flags=re.S)
+        html = re.sub(r'<button type="button" class="btn[^"]*" id="copy-link".*?</button>', '<span id="copy-link" hidden></span><span class="meta">The calendar file and the plan link need the full app.</span>', html, flags=re.S)
         with open(os.path.join(out_dir, name), "w", encoding="utf-8") as file:
             file.write(html)
 

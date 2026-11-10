@@ -6,21 +6,21 @@
   <p class="muted">After a round, the platform shows you all bids in your own sections, in the tab Rank. Nova publishes nothing else. Pooled, these lists tell the next students what a seat costs.</p>
   <section class="card">
     <div class="figure" style="margin-bottom:8px"><span>Sections with past prices</span><b class="num strong" id="coverage-text">{{ coverage.covered }} of {{ coverage.total }}</b></div>
-    <div class="bar"><i id="coverage-bar" style="width:{{ coverage.percent }}%"></i></div>
+    <div class="meter"><i id="coverage-bar" style="width:{{ coverage.percent }}%"></i></div>
   </section>
   <div class="three">
-    <section class="card tight"><b class="strong">Keep the button</b>
-      <p class="muted small">Drag it to your bookmarks bar.</p>
-      <div><a class="bookmarklet" href="{{ bookmarklet }}" draggable="true" data-bookmarklet>Copy my rank lists</a></div></section>
-    <section class="card tight"><b class="strong">Run it on the platform</b>
-      <p class="muted small">Open the tab <i>Rank</i> and click the button. It reads your sections by itself.</p></section>
-    <section class="card tight"><b class="strong">Paste it here</b>
+    <section class="card"><h2>Keep the button</h2>
+      <p class="meta">Drag it to your bookmarks bar.</p>
+      <a class="btn bookmarklet" href="{{ bookmarklet }}" draggable="true" data-bookmarklet>Copy my rank lists</a></section>
+    <section class="card"><h2>Run it on the platform</h2>
+      <p class="meta">Open the tab <i>Rank</i> and click the button. It reads your sections by itself.</p></section>
+    <section class="card"><h2>Paste it here</h2>
       <textarea class="field copy-box" id="export" placeholder="Paste here" aria-label="Your export"></textarea>
-      <div><button type="button" class="btn primary small" id="send">Share</button></div>
-      <p class="small" id="share-result"></p></section>
+      <div><button type="button" class="btn primary" id="send">Share</button></div>
+      <p id="share-result"></p></section>
   </div>
   <details class="more"><summary>What leaves your browser?</summary>
-    <ul class="plain muted small">
+    <ul class="plain meta">
       <li>Read: course, section, seats, and per row the bid, the rank value and whether it won a seat.</li>
       <li>Never read: the student column and the ECTS column.</li>
       <li>Stored here: only totals per section. The rows are thrown away right after counting.</li>

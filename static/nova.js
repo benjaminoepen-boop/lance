@@ -10,11 +10,11 @@ function coursesOf(state, list) {
 function listBlock(title, rows, numbered) {
   if (!rows.length) return [];
   return [
-    el("div", { class: "small strong muted", style: "margin-top:4px", text: title }),
+    el("h3", { style: "margin-top:4px", text: title }),
     ...rows.map((sections, index) => el("div", { class: "platform-row" },
       el("span", { class: "n", text: numbered ? String(index + 1) : "·" }),
       el("div", {},
-        el("div", { text: sections[0].name }),
+        el("div", { class: "lead", text: sections[0].name }),
         el("div", { class: "bids", text: `${sections[0].code} · ${sections[0].term} · ${sections.map((item) => `${item.section || "section to choose"} ${item.bid === null ? "no bid" : item.bid}`).join(", ")}` })))),
   ];
 }
@@ -29,7 +29,7 @@ function roundLine(state) {
     box.replaceChildren(`The ${state.plan.semester} round closed on ${round.last_day}, so this plan is practice.`,
       next ? ` Next: ${next.label.replace(" (bidding)", "")}, ${next.range}. ` : " ",
       state.plan.semester === "Fall" ? el("button", {
-        type: "button", class: "link-btn",
+        type: "button", class: "inline-link",
         onclick: async () => {
           await Lance.send("/api/settings", { semester: "Spring" });
           Lance.toast("Now planning spring. Your fall plan stays saved.", { label: "Back to fall", run: () => Lance.send("/api/settings", { semester: "Fall" }) });
@@ -47,8 +47,10 @@ function beforeYouGo(state) {
     ...state.warnings,
   ];
   document.getElementById("before").hidden = !rows.length;
-  document.getElementById("before-list").replaceChildren(...rows.map((row) => el("div", { class: `figure small ${row.level === "stop" ? "bad" : "warn"}` },
-    el("span", { text: row.text }), el("a", { href: pages[row.where], style: "white-space:nowrap", text: row.where === "bids" ? "To bids" : "To courses" }))));
+  /* each line: what is missing as a status, and a link to where it is fixed */
+  document.getElementById("before-list").replaceChildren(...rows.map((row) => el("div", { class: "before-row" },
+    Lance.status(row.level === "stop" ? "bad" : "warn", row.text),
+    el("a", { class: "go", href: pages[row.where], text: row.where === "bids" ? "To bids" : "To courses" }))));
 }
 
 function render(state) {
