@@ -3,12 +3,13 @@
 
    Start a server first:  LANCE_DB=/tmp/flow.db uv run flask --app app run --port 8771
    Then:                  NODE_PATH=<folder with playwright>/node_modules node tests/browser/flow.cjs [base address] [c|w|a|all]
-   c = Chromium on a laptop, w = Safari on an iPhone, a = Chrome on an Android phone.
+   c = Chromium on a laptop, s = a small laptop, w = Safari on an iPhone, a = Chrome on an Android phone.
+   The static preview: serve the folder preview/ (python3 -m http.server) and give the address of its out folder.
    Every run starts with an empty browser, so it does not matter what the database already holds. */
 const { chromium, webkit, devices } = require("playwright");
 const BASE = process.argv[2] || "http://127.0.0.1:8771";
 const WHICH = process.argv[3] || "all";
-const PREVIEW = BASE.includes("preview");
+const PREVIEW = /preview|\/out\/?$/.test(BASE);
 const results = [];
 const check = (name, ok, detail) => results.push({ name, ok: Boolean(ok), detail: ok ? "" : String(detail === undefined ? "" : detail) });
 
@@ -24,9 +25,19 @@ async function run(browserType, label, options) {
   const n = (text) => `${label}: ${text}`;
   const url = (address) => (PREVIEW ? BASE + { "/": "/index.html", "/bids": "/bids.html", "/nova": "/nova.html", "/rules": "/rules.html", "/share": "/share.html" }[address] : BASE + address);
   const noSideways = async (where) => check(n(`${where} does not scroll sideways`), await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1));
-  const toWeek = async () => { if (phone) { await page.locator(".tabbar [data-tab=week]").click(); await page.waitForTimeout(120); } };
+  /* the courses are on the left, your plan on the right with the tabs Week, Bids and Summary.
+     A phone shows one half at a time: the bar at the bottom changes it, and the summary sits under the week. */
+  const toWeek = async () => {
+    if (phone) { await page.locator(".tabbar [data-tab=week]").click(); await page.waitForTimeout(120); }
+    else if ((await page.locator("#tab-week").getAttribute("aria-selected")) !== "true") { await page.locator("#tab-week").click(); await page.waitForTimeout(120); }
+  };
+  const toSummary = async () => {
+    if (phone) await toWeek();
+    else { await page.locator("#tab-summary").click(); await page.waitForTimeout(120); }
+  };
   const toCourses = async () => { if (phone) { await page.locator(".tabbar [data-tab=courses]").click(); await page.waitForTimeout(120); } };
   const row = (name) => page.locator("#courses .course", { hasText: name }).first();
+  const bidCard = (name) => page.locator("#bid-lists .bid-row", { hasText: name });
   const toast = () => page.locator("#toast");
   const sectionRow = (name) => page.locator("#sheet-sections .tile").filter({ has: page.locator("b", { hasText: new RegExp(`^${name}$`) }) });
 
@@ -64,11 +75,12 @@ async function run(browserType, label, options) {
   await toCourses();
   await page.fill("#search", "");
   await page.waitForTimeout(120);
-  check(n("my courses counts it"), (await page.locator("#ects").textContent()).startsWith("7 ECTS"), await page.locator("#courses").textContent());
+  check(n("your plan counts it"), (await page.locator("#ects").textContent()).startsWith("7 ECTS"), await page.locator("#figures").textContent());
 
-  /* ---- a mandatory course: Nova assigned the section, the student picks it right in the list ---- */
+  /* ---- a mandatory course: Nova assigned the section, the student picks it right in the list.
+     The add control is the same square, but it asks for the section instead of adding one ---- */
   const strategy = page.locator("#courses .course", { hasText: "Advanced Strategy" }).first();
-  check(n("a mandatory course asks for its section and has no plus"), (await strategy.getByRole("button", { name: /Pick your section/ }).count()) === 1 && (await strategy.locator(".pick").count()) === 0);
+  check(n("a mandatory course asks for its section and does not add one"), (await strategy.getByRole("button", { name: /Pick your section/ }).count()) === 1 && (await strategy.getByRole("button", { name: /^Add / }).count()) === 0 && (await strategy.locator(".pick[aria-pressed]").count()) === 0);
   await strategy.getByRole("button", { name: /Pick your section/ }).click();
   await page.waitForTimeout(150);
   check(n("Pick folds the row open with all ten sections"), (await strategy.locator(".tile").count()) === 10);
@@ -90,7 +102,7 @@ async function run(browserType, label, options) {
   await page.waitForTimeout(120);
   const opened = page.locator("#courses .course", { hasText: "Advanced Strategy" }).first();
   if (!(await opened.locator(".tile").count())) await opened.locator(".course-main").click();
-  await opened.getByRole("button", { name: "Course details" }).click();
+  await opened.getByRole("link", { name: "Course details" }).click();
   await page.waitForSelector("#sheet-sections .tile");
   check(n("all ten sections are in the course"), (await page.locator("#sheet-sections .tile").count()) === 10);
   check(n("a clashing section is marked in its tile"), (await sectionRow("TXB").getAttribute("title")).includes("Clashes with Introduction to Programming TXA"), await sectionRow("TXB").getAttribute("title"));
@@ -143,7 +155,7 @@ async function run(browserType, label, options) {
   await page.fill("#search", "programming");
   await page.waitForTimeout(120);
   if (!(await row("Introduction to Programming").locator(".tile").count())) await row("Introduction to Programming").locator(".course-main").click();
-  await row("Introduction to Programming").getByRole("button", { name: "Course details" }).click();
+  await row("Introduction to Programming").getByRole("link", { name: "Course details" }).click();
   await page.waitForSelector("#sheet-sections .tile");
   await page.locator("#course-view a", { hasText: "Applied Corporate Finance" }).click();
   await page.waitForFunction(() => document.querySelector("#sheet-name") && document.querySelector("#sheet-name").textContent.includes("Applied Corporate Finance"));
@@ -184,7 +196,7 @@ async function run(browserType, label, options) {
   await page.locator("#set-points").fill("165");
   await page.locator("#set-points").blur();
   await page.waitForTimeout(250);
-  const programming = page.locator(".bid-row", { hasText: "Introduction to Programming" });
+  const programming = bidCard("Introduction to Programming");
   const status = programming.locator(".bid-status");
   check(n("an empty bid says so in its row"), (await status.textContent()) === "No bid" && (await status.getAttribute("title")).includes("not interested"), await status.textContent());
   await programming.locator(".bid-name").click();
@@ -209,19 +221,21 @@ async function run(browserType, label, options) {
   await programming.getByRole("button", { name: "Do not try TXC" }).click();
   await page.waitForTimeout(250);
   check(n("a section can be taken out alone"), (await programming.locator(".sec-line").count()) === 1);
-  const card = page.locator(".bid-row", { hasText: "Impact Investments" });
-  await card.locator(".menu summary").click();
+  /* what else a course can do sits at the foot of its open card */
+  const card = bidCard("Impact Investments");
+  await card.locator(".bid-name").click();
+  await page.waitForTimeout(150);
   check(n("the primary list can be reordered"), (await card.getByRole("button", { name: "Move up" }).count()) === 1);
   await card.getByRole("button", { name: "To alternate list" }).click();
   await page.waitForTimeout(250);
   const lists = await page.locator("#bid-lists > section").nth(1).textContent();
   check(n("a course moves to the alternate list"), lists.includes("Impact Investments"), lists);
-  const moved = page.locator(".bid-row", { hasText: "Impact Investments" });
-  await moved.locator(".menu summary").click();
-  check(n("the order of the alternate list does not count, so no arrows"), (await moved.getByRole("button", { name: "Move up" }).count()) === 0);
+  const moved = bidCard("Impact Investments");
+  if (!(await moved.locator(".bid-actions").count())) await moved.locator(".bid-name").click();   /* the card stays open after the move */
+  check(n("the order of the alternate list does not count, so no arrows"), (await moved.getByRole("button", { name: "To primary list" }).isVisible()) && (await moved.getByRole("button", { name: "Move up" }).count()) === 0);
   await page.keyboard.press("Escape");
-  check(n("Esc closes the menu"), !(await moved.getByRole("button", { name: "Remove" }).isVisible()));
-  await page.getByRole("button", { name: "+ Alternate course" }).click();
+  check(n("Esc folds the card"), !(await moved.getByRole("button", { name: "Remove" }).isVisible()));
+  await page.locator("#bid-lists").getByRole("button", { name: "Add alternate course" }).click();
   await page.getByLabel("Search a course for the alternate list").fill("family business");
   await page.waitForTimeout(120);
   await page.getByRole("button", { name: "Add Family Business to the alternate list" }).click();
@@ -242,7 +256,7 @@ async function run(browserType, label, options) {
   check(n("Esc folds the row"), (await page.locator("#courses .course.open").count()) === 0);
   await page.goto(url("/bids"));
   await page.waitForSelector("#bid-lists input");
-  check(n("the new section took over the bid"), (await page.locator("article", { hasText: "Introduction to Programming" }).textContent()).includes("TXC") && (await page.locator('input[aria-label="Bid on Introduction to Programming"]').inputValue()) === "120");
+  check(n("the new section took over the bid"), (await bidCard("Introduction to Programming").textContent()).includes("TXC") && (await page.locator('input[aria-label="Bid on Introduction to Programming"]').inputValue()) === "120");
 
   /* ---- finish on Nova ---- */
   await page.goto(url("/nova"));
@@ -272,14 +286,16 @@ async function run(browserType, label, options) {
   await page.selectOption("#set-programme", "Management");
   await page.waitForTimeout(300);
 
-  /* ---- my courses, start over, the example ---- */
+  /* ---- the summary of your plan, start over, the example ---- */
   await page.goto(url("/"));
   await page.waitForSelector("#courses .course");
-  await page.locator("#courses .group", { hasText: "My courses" }).click();
-  await page.waitForTimeout(120);
-  check(n("my courses lists the plan with its exams"), (await page.locator("#courses .course.in").first().textContent()).includes("Exam"), await page.locator("#courses .course.in").first().textContent());
-  await page.getByRole("button", { name: "Start over" }).click();
+  await toSummary();
+  const planned = page.locator("#plan-table tbody tr:not(.plan-group)").first();
+  const examOf = ((await planned.locator(".plan-sub").textContent()).match(/Exam (.+)$/) || [])[1];   /* a laptop shows it in the column Exam, a phone under the name */
+  check(n("the summary lists the plan with its exams"), Boolean(examOf) && (await planned.innerText()).includes(examOf), await planned.innerText());
+  await page.locator("#plan-table").getByRole("button", { name: "Start over" }).click();
   await page.waitForTimeout(250);
+  await toCourses();
   await page.fill("#search", "family business");
   await page.waitForTimeout(120);
   await row("Family Business").locator(".pick").click();
@@ -291,21 +307,21 @@ async function run(browserType, label, options) {
   check(n("the alternate list is not numbered, its order does not count"), (await page.locator("#platform-lists .n").first().textContent()) === "1");
   await page.goto(url("/"));
   await page.waitForSelector("#courses .course");
-  await page.locator("#courses .group", { hasText: "My courses" }).click();
-  await page.getByRole("button", { name: "Start over" }).click();
+  await toSummary();
+  await page.locator("#plan-table").getByRole("button", { name: "Start over" }).click();
   await page.waitForTimeout(250);
   if (!phone) await page.mouse.move(800, 500);   /* the pointer off the list: a course under it would be previewed in the week */
   await page.waitForTimeout(250);
   await toWeek();
   await page.getByRole("button", { name: "Try an example" }).first().click();
   await page.waitForTimeout(350);
-  await toCourses();
-  check(n("the example fills the plan"), (await page.locator("#courses .group", { hasText: "My courses" }).textContent()).includes("6 + 2 alternate"), await page.locator("#courses .group").first().textContent());
+  await toSummary();
+  check(n("the example fills the plan"), (await page.locator("#plan-table tfoot").textContent()).includes("6 courses + 2 alternate"), await page.locator("#plan-table tfoot").textContent());
   await toWeek();
   check(n("the real plan has no clash"), (await page.locator("#clashes .clash-line").count()) === 0);
   await page.goto(url("/bids"));
   await page.waitForSelector("#bid-lists input");
-  check(n("the real plan comes out at 132 and 33"), (await page.locator("#summary").textContent()).includes("You pay about132") && (await page.locator("#summary").textContent()).includes("Back afterwards33"), await page.locator("#summary").textContent());
+  check(n("the real plan comes out at 132 and 33"), (await page.locator("#summary").textContent()).includes("you pay about 132") && (await page.locator("#summary").textContent()).includes("33 back afterwards"), await page.locator("#summary").textContent());
 
   /* ---- a phone shows one surface at a time, all five days ---- */
   if (phone) {
