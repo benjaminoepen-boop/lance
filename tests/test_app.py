@@ -245,3 +245,13 @@ def test_the_example_never_overwrites_a_plan(client):
     client.post("/api/add", json={"section_id": "2477-S1-TXB"})
     assert client.post("/api/example", json={}).get_json()["error"]
     assert len(state_of(client)["items"]) == 1
+
+
+# ---------- the semester menu ----------
+
+def test_a_round_that_is_over_is_offered_as_practice(client):
+    # The first-time user test (10 Nov): "Fall · closed" read as if Fall could not be chosen. Planning still works.
+    import app as lance
+    assert lance.semester_option("Fall", today="2026-11-07") == "Fall · practice"
+    assert lance.semester_option("Spring", today="2026-11-07") == "Spring · opens 18 Jan"
+    assert lance.semester_option("Spring", today="2027-01-19") == "Spring · open now"

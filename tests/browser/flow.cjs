@@ -76,14 +76,22 @@ async function run(browserType, label, options) {
   await page.fill("#search", "");
   await page.waitForTimeout(120);
   check(n("your plan counts it"), (await page.locator("#ects").textContent()).startsWith("7 ECTS"), await page.locator("#figures").textContent());
+  /* a phone has no plan beside the list: the same figures stand above it, so a + shows what it changed */
+  if (phone) check(n("the list shows the figures of your plan"), (await page.locator("#list-figures").isVisible()) && (await page.locator("#list-figures").textContent()).startsWith("7 ECTS"), await page.locator("#list-figures").textContent());
 
   /* ---- a mandatory course: Nova assigned the section, the student picks it right in the list.
      The add control is the same square, but it asks for the section instead of adding one ---- */
   const strategy = page.locator("#courses .course", { hasText: "Advanced Strategy" }).first();
   check(n("a mandatory course asks for its section and does not add one"), (await strategy.getByRole("button", { name: /Pick your section/ }).count()) === 1 && (await strategy.getByRole("button", { name: /^Add / }).count()) === 0 && (await strategy.locator(".pick[aria-pressed]").count()) === 0);
   await strategy.getByRole("button", { name: /Pick your section/ }).click();
-  await page.waitForTimeout(150);
+  await page.waitForTimeout(phone ? 700 : 150);
   check(n("Pick folds the row open with all ten sections"), (await strategy.locator(".tile").count()) === 10);
+  if (phone) {
+    /* the page does not jump: the row comes up just far enough that its sections stand above the bar at the bottom */
+    const opened = await strategy.boundingBox();
+    const bar = await page.locator(".tabbar").boundingBox();
+    check(n("the opened row stands above the bar at the bottom"), opened.y > 0 && opened.y + opened.height <= bar.y + 1, `row ${Math.round(opened.y)} to ${Math.round(opened.y + opened.height)}, bar at ${Math.round(bar.y)}`);
+  }
   check(n("it says why Lance does not choose"), (await strategy.textContent()).includes("Pick the section Nova assigned you."));
   check(n("a clashing section says so before the choice"), (await strategy.locator(".tile", { hasText: "TXB" }).textContent()).includes("clashes"));
   if (!phone) {
@@ -188,7 +196,9 @@ async function run(browserType, label, options) {
   await page.goto(url("/bids"));
   await page.waitForSelector("#bid-lists input");
   await noSideways("the bids");
-  check(n("a new plan asks for the points"), (await page.inputValue("#set-points")) === "" && (await page.locator("#points-left").textContent()) === "–");
+  /* without points there is nothing to compare: no budget line and no bar, only the note that asks for them */
+  check(n("a new plan asks for the points"), (await page.inputValue("#set-points")) === "" && (await page.locator("#points-left, #budget-use .meter").count()) === 0
+    && (await page.locator("#sum-note").textContent()).includes("Enter your points"), await page.locator("#summary").textContent());
   const bid = page.locator('input[aria-label="Bid on Introduction to Programming"]');
   await bid.fill("10");
   await page.waitForTimeout(600);
@@ -212,6 +222,17 @@ async function run(browserType, label, options) {
   await bid.fill("120");
   await page.waitForTimeout(600);
   check(n("the points left follow"), (await page.locator("#points-left").textContent()) === String(165 - 120), await page.locator("#points-left").textContent());
+  check(n("the budget says what is in bids"), (await page.locator("#budget-use").textContent()) === "120 of 165 in bids · 45 left", await page.locator("#budget-use").textContent());
+  /* a click or a tap into a number selects it, so typing replaces it instead of adding digits to it.
+     The bid field still has the cursor from typing: first into the points, then back into the bid */
+  if (phone) await page.locator("#set-points").tap(); else await page.locator("#set-points").click();
+  await page.keyboard.type("165");
+  const typedPoints = await page.inputValue("#set-points");
+  if (phone) await bid.tap(); else await bid.click();
+  await page.keyboard.type("120");
+  check(n("a focused bid field has its value selected, so typing replaces it"), typedPoints === "165" && (await bid.inputValue()) === "120", `${typedPoints} / ${await bid.inputValue()}`);
+  await bid.blur();
+  await page.waitForTimeout(600);
   await programming.locator(".backup-add", { hasText: "TXC" }).click();
   await page.waitForTimeout(300);
   check(n("another section holds no extra points"), (await page.locator("#points-left").textContent()) === String(165 - 120), await page.locator("#points-left").textContent());
@@ -241,6 +262,19 @@ async function run(browserType, label, options) {
   await page.getByRole("button", { name: "Add Family Business to the alternate list" }).click();
   await page.waitForTimeout(250);
   check(n("the alternate list has its own way in"), (await page.locator("#bid-lists > section").nth(1).textContent()).includes("Family Business"));
+  check(n("the alternate list says it needs a bid"), (await page.locator("#bid-lists > section").nth(1).textContent()).includes("Needs a bid, holds no points."));
+  if (!phone) {
+    /* a course opened in the list leaves the right half where it is: Bids stays open */
+    await page.fill("#search", "programming");
+    await page.waitForTimeout(120);
+    await row("Introduction to Programming").locator(".course-main").click();
+    await page.waitForTimeout(200);
+    check(n("opening a course in the list keeps Bids open"), (await row("Introduction to Programming").locator(".tile").count()) === 3
+      && (await page.locator("#tab-bids").getAttribute("aria-selected")) === "true" && (await page.locator("#pane-bids").isVisible()));
+    await page.keyboard.press("Escape");
+    await page.fill("#search", "");
+    await page.waitForTimeout(120);
+  }
 
   /* ---- switching keeps the bid ---- */
   await page.goto(url("/"));
@@ -317,11 +351,19 @@ async function run(browserType, label, options) {
   await page.waitForTimeout(350);
   await toSummary();
   check(n("the example fills the plan"), (await page.locator("#plan-table tfoot").textContent()).includes("6 courses + 2 alternate"), await page.locator("#plan-table tfoot").textContent());
+  /* the ECTS say in words what they are measured against, in the head and in the summary */
+  check(n("the ECTS figure shows 28 recommended for the example plan"), /ECTS · 28 recommended$/.test(await page.locator("#ects").textContent())
+    && (await page.locator("#plan-table tfoot").textContent()).includes("ECTS · 28 recommended"), `${await page.locator("#ects").textContent()} / ${await page.locator("#plan-table tfoot").textContent()}`);
   await toWeek();
   check(n("the real plan has no clash"), (await page.locator("#clashes .clash-line").count()) === 0);
   await page.goto(url("/bids"));
   await page.waitForSelector("#bid-lists input");
   check(n("the real plan comes out at 132 and 33"), (await page.locator("#summary").textContent()).includes("you pay about 132") && (await page.locator("#summary").textContent()).includes("33 back afterwards"), await page.locator("#summary").textContent());
+  check(n("the example has all its points in bids"), (await page.locator("#budget-use").textContent()) === "165 of 165 in bids · 0 left", await page.locator("#budget-use").textContent());
+  /* the (?) answers the question it raises: the price rule on the rules page, not its top */
+  await page.locator("#forecast a.why").click();
+  await page.waitForSelector("#price");
+  check(n("the (?) leads to the price rule"), /#price$/.test(page.url()) && (await page.locator("#price").evaluate((node) => node.matches(":target") && node.getBoundingClientRect().top >= 0)), page.url());
 
   /* ---- a phone shows one surface at a time, all five days ---- */
   if (phone) {

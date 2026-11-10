@@ -36,10 +36,19 @@ def remember(response, plan):
     return response
 
 
+def semester_option(name, today=None):
+    """What the semester menu says. A round that is over still plans, as practice, so it says "practice":
+    "closed" read as if the semester could not be chosen at all (first-time user test, 10 Nov)."""
+    round_ = logic.round_of(name, today)
+    if round_ is not None and round_["status"] == "closed":
+        return name + " · practice"
+    return logic.semester_label(name, today)
+
+
 def page(template, plan, is_new, **values):
     """Render a page and keep the plan cookie alive."""
     state = logic.state_of(plan)
-    semesters = [(name, logic.semester_label(name)) for name in ("Fall", "Spring")]
+    semesters = [(name, semester_option(name)) for name in ("Fall", "Spring")]
     response = make_response(render_template(template, plan=plan, state=state, programmes=db.load_programmes(), semesters=semesters, **values))
     return remember(response, plan)
 

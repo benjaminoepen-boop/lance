@@ -24,6 +24,8 @@
         </label>
         <button type="button" class="btn toggle" id="fits" aria-pressed="false" title="Only courses with a section that fits your week">Fits my week</button>
       </div>
+      {#- a phone shows the list without your plan beside it: the figures of its head come along, so a + shows its effect -#}
+      <div class="figures list-figures" id="list-figures" hidden></div>
       <div class="course-list" id="courses"></div>
     </div>
     <div class="course-view" id="course-view" hidden></div>

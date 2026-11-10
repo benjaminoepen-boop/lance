@@ -55,8 +55,11 @@ button, input, select, textarea { font: inherit; color: inherit; }
 ::selection { background: var(--blue-soft); }
 [hidden] { display: none !important; }
 
-/* ---- one state system: a pointing hand on everything clickable and nowhere else, one focus ring, one disabled look ---- */
+/* ---- one state system: a pointing hand on everything clickable and nowhere else, one focus ring, one disabled look.
+   Hover only for a real mouse, so every :hover sits in @media (hover: hover): after a tap nothing stays lit. Focus is for everyone ---- */
 button, select, summary, label.check, .scale label { cursor: pointer; }
+/* a redraw never moves the page by itself: planner.js keeps the row that was clicked in its place (Chrome would otherwise jump) */
+html, body { overflow-anchor: none; }
 :focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
 :disabled { opacity: .38; cursor: default; }
 
@@ -80,22 +83,22 @@ details > summary::-webkit-details-marker { display: none; }
 
 /* ---- one link style: blue; underlined inside running text, a chevron after it when it stands alone ---- */
 a { color: var(--blue); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
-a:hover { color: var(--blue-deep); }
+@media (hover: hover) { a:hover { color: var(--blue-deep); } }
 .go { display: inline-flex; align-items: center; gap: 3px; text-decoration: none; }
-.go:hover { text-decoration: underline; }
+@media (hover: hover) { .go:hover { text-decoration: underline; } }
 /* a button that sits inside a sentence looks like the link it is */
 .inline-link { border: 0; background: none; padding: 0; color: var(--blue); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
-.inline-link:hover { color: var(--blue-deep); }
+@media (hover: hover) { .inline-link:hover { color: var(--blue-deep); } }
 
 /* ---- three kinds of button with one height and one radius:
    primary (filled blue, one per screen), secondary (white with a border), tertiary (blue words for small extras) ---- */
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: var(--h); padding: 0 14px; border: 1px solid var(--line-2); border-radius: var(--r-ctl); background: var(--card); color: var(--ink); font-size: 15px; font-weight: 500; white-space: nowrap; text-decoration: none; }
 /* one hover for every outlined control: the border turns blue */
-.btn:hover:not(:disabled), .tile:hover, .scale label:hover span, .add-card:hover { border-color: var(--blue); color: var(--blue-deep); }
+@media (hover: hover) { .btn:hover:not(:disabled), .tile:hover, .scale label:hover span, .add-card:hover { border-color: var(--blue); color: var(--blue-deep); } }
 .btn.primary { background: var(--blue); border-color: var(--blue); color: #fff; }
-.btn.primary:hover:not(:disabled) { background: var(--blue-deep); border-color: var(--blue-deep); color: #fff; }
+@media (hover: hover) { .btn.primary:hover:not(:disabled) { background: var(--blue-deep); border-color: var(--blue-deep); color: #fff; } }
 .btn.tertiary { border-color: transparent; background: none; color: var(--blue); padding: 0 10px; }
-.btn.tertiary:hover:not(:disabled) { border-color: transparent; background: var(--hover); color: var(--blue-deep); }
+@media (hover: hover) { .btn.tertiary:hover:not(:disabled) { border-color: transparent; background: var(--hover); color: var(--blue-deep); } }
 .btn.small { min-height: var(--h-sm); padding: 0 10px; font-size: 13px; }
 .btn.tertiary:disabled { color: var(--ink-2); }   /* switched off, it is no longer blue: blue only means clickable */
 .btn.flush { margin-left: -10px; align-self: flex-start; }   /* a tertiary button whose words line up with the text above */
@@ -103,11 +106,11 @@ a:hover { color: var(--blue-deep); }
 .toggle[aria-pressed=true], .toggle[aria-pressed=true]:hover:not(:disabled) { background: var(--blue-soft); border-color: var(--blue); color: var(--blue-deep); }
 /* × and ?: the only buttons without words, so they always carry a title */
 .icon-btn { display: inline-grid; place-items: center; flex: none; width: var(--h-icon); height: var(--h-icon); padding: 0; border: 0; border-radius: var(--r-ctl); background: none; color: var(--ink-3); text-decoration: none; }
-.icon-btn:hover { background: var(--hover); color: var(--ink); }
+@media (hover: hover) { .icon-btn:hover { background: var(--hover); color: var(--ink); } }
 
 /* ---- fields: white, a grey border that darkens under the mouse, the height of a button ---- */
 .field { min-height: var(--h); min-width: 0; padding: 0 10px; border: 1px solid var(--line-2); border-radius: var(--r-ctl); background: var(--card); color: var(--ink); font-size: 15px; }
-.field:hover { border-color: var(--line-3); }
+@media (hover: hover) { .field:hover { border-color: var(--line-3); } }
 textarea.field { padding: 8px 10px; }
 select.field { -webkit-appearance: none; appearance: none; max-width: 100%; padding-right: 32px; background: var(--card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='%236b6b70' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5'/%3E%3C/svg%3E") no-repeat right 11px center / 12px 12px; }
 input[type=number] { -moz-appearance: textfield; }
@@ -132,7 +135,7 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 
 /* ---- the add control: one square for one job. A plus when the course is out, a tick on pale blue when it is in ---- */
 .pick { flex: none; display: inline-grid; place-items: center; width: var(--h-icon); height: var(--h-icon); padding: 0; border: 1px solid var(--line-2); border-radius: var(--r-ctl); background: var(--card); color: var(--ink-2); }
-.pick:hover { border-color: var(--blue); color: var(--blue); }
+@media (hover: hover) { .pick:hover { border-color: var(--blue); color: var(--blue); } }
 .pick[aria-pressed=true] { background: var(--blue-soft); border-color: var(--blue); color: var(--blue); }
 .pick .to-out { display: none; }
 @media (hover: hover) { .pick[aria-pressed=true]:hover .is-in { display: none; } .pick[aria-pressed=true]:hover .to-out { display: inline; } }
@@ -141,18 +144,18 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-card); padding: 14px 16px; min-width: 0; }
 .seg { display: inline-flex; background: var(--chip); border-radius: var(--r-ctl); padding: 2px; gap: 2px; }
 .seg > * { display: inline-flex; align-items: center; gap: 6px; min-height: calc(var(--h) - 4px); padding: 0 12px; border: 0; border-radius: 6px; background: transparent; color: var(--ink-2); font-weight: 500; white-space: nowrap; }
-.seg > *:hover { color: var(--ink); }
+@media (hover: hover) { .seg > *:hover { color: var(--ink); } }
 .seg > .on { background: var(--card); color: var(--ink); box-shadow: 0 0 0 1px var(--line); }
 /* a checkbox with its words: the whole line is the target, at least 32 px high */
 .check { display: inline-flex; align-items: center; gap: 10px; min-height: 32px; padding: 4px 8px; margin-left: -8px; border-radius: var(--r-ctl); color: var(--ink-2); }
-.check:hover { background: var(--hover); }
+@media (hover: hover) { .check:hover { background: var(--hover); } }
 .check input { width: 16px; height: 16px; margin: 0; flex: none; accent-color: var(--blue); cursor: pointer; }
 .only-phone { display: none; }
 
 /* ---- the frame: one bar on top, the page below ---- */
 .topbar { position: sticky; top: 0; z-index: 30; height: var(--top); display: flex; align-items: center; gap: 18px; padding: 0 var(--gap); background: var(--card); border-bottom: 1px solid var(--line); }
 .brand { display: flex; align-items: center; gap: 9px; margin-left: -8px; padding: 4px 8px; border-radius: var(--r-ctl); font-weight: 600; font-size: 17px; color: var(--ink); text-decoration: none; }
-.brand:hover { background: var(--hover); color: var(--ink); }
+@media (hover: hover) { .brand:hover { background: var(--hover); color: var(--ink); } }
 .brand i { width: 24px; height: 24px; border-radius: var(--r-ctl); background: var(--blue); display: grid; place-items: center; color: #fff; }
 .brand small { font-size: 12px; font-weight: 500; color: var(--ink-3); margin-left: 1px; }
 .top-right { margin-left: auto; display: flex; align-items: center; gap: 6px; }
@@ -170,22 +173,25 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 .search { position: relative; flex: 1; min-width: 0; display: flex; }
 .search svg { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--ink-3); pointer-events: none; }
 .search input { width: 100%; padding-left: 34px; }
-.course-list { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; margin: 0 -8px; padding: 0 8px 12px; }
+.course-list { flex: 1; min-height: 0; overflow-y: auto; overflow-anchor: none; display: flex; flex-direction: column; gap: 2px; margin: 0 -8px; padding: 0 8px 12px; }
+/* the figures of your plan above the list: only on a phone, where your plan is not beside the list */
+.figures.list-figures { display: none; }
 /* a group heading folds its courses: the chevron at the right edge like every row */
 .group { display: flex; align-items: center; gap: 8px; width: 100%; min-height: var(--h); margin-top: 6px; padding: 0 12px 0 10px; border: 0; border-radius: var(--r-row); background: none; text-align: left; }
 .group:first-child { margin-top: 0; }
-.group:hover { background: var(--hover); }
-.group:hover .i-chev { color: var(--ink); }
+@media (hover: hover) { .group:hover { background: var(--hover); } }
+@media (hover: hover) { .group:hover .i-chev { color: var(--ink); } }
 .group-name { font-size: 13px; font-weight: 600; color: var(--ink-2); }
 .group .count, h3 .count { font-size: 13px; font-weight: 400; color: var(--ink-3); font-variant-numeric: tabular-nums; }
 .group .i-chev { margin-left: auto; }
 /* a course row: the add control in a fixed column on the left, the rest of the row opens it.
    White at rest, paper under the mouse; open, it is a paper surface holding white section tiles. */
 .course { border-radius: var(--r-row); transition: background-color .15s; }
-.course:hover, .course.open { background: var(--paper); }
+.course.open { background: var(--paper); }
+@media (hover: hover) { .course:hover { background: var(--paper); } }
 .course-head { display: flex; align-items: center; gap: 12px; padding: 6px 12px 6px 8px; }
 .course-main { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; padding: 2px 0; border: 0; background: none; color: inherit; text-align: left; }
-.course-main:hover .i-chev, .course-main:hover .i-next, .bid-head:hover .i-chev { color: var(--ink); }
+@media (hover: hover) { .course-main:hover .i-chev, .course-main:hover .i-next, .bid-head:hover .i-chev { color: var(--ink); } }
 .course-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
 .course-name { display: block; min-width: 0; font-weight: 500; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .course-sub { display: block; font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -221,12 +227,12 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 .price-row { background: var(--paper); border-radius: var(--r-ctl); padding: 8px 11px; }
 /* a fold that opens in place: blue words with the chevron, like a tertiary button */
 details.more > summary { display: inline-flex; align-items: center; gap: 6px; min-height: var(--h); margin-left: -10px; padding: 0 10px; border-radius: var(--r-ctl); color: var(--blue); font-weight: 500; }
-details.more > summary:hover { background: var(--hover); color: var(--blue-deep); }
+@media (hover: hover) { details.more > summary:hover { background: var(--hover); color: var(--blue-deep); } }
 details.more[open] > summary { margin-bottom: 4px; }
 details.about > summary { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
 details.about[open] > summary { display: none; }
 .more-hint { display: inline-flex; align-items: center; gap: 4px; color: var(--blue); font-weight: 500; }
-details.about > summary:hover .more-hint { text-decoration: underline; }
+@media (hover: hover) { details.about > summary:hover .more-hint { text-decoration: underline; } }
 /* charts: grey bars, the darker part won a seat, the black line is the last seat */
 .spark { width: 100%; height: 44px; display: block; margin-top: 6px; }
 .spark .all, .spark .base { fill: var(--bar); }
@@ -266,7 +272,7 @@ details.about > summary:hover .more-hint { text-decoration: underline; }
 .figures .status b { color: inherit; }
 .tabs { display: flex; gap: 24px; }
 .tab { position: relative; display: inline-flex; align-items: center; gap: 7px; border: 0; background: none; padding: 8px 0 10px; font-weight: 500; color: var(--ink-2); }
-.tab:hover { color: var(--ink); }
+@media (hover: hover) { .tab:hover { color: var(--ink); } }
 .tab[aria-selected=true] { color: var(--ink); }
 .tab[aria-selected=true]::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; border-radius: 2px; background: var(--blue); }
 .pane { display: none; flex: 1; min-height: 0; overflow-y: auto; padding: 14px 18px 18px; }
@@ -285,7 +291,7 @@ details.about > summary:hover .more-hint { text-decoration: underline; }
 .day { position: relative; border-left: 1px solid var(--grid); }
 .slot-line { position: absolute; left: 0; right: 0; border-top: 1px solid var(--grid); }
 .block { position: absolute; border-radius: var(--r-ctl); padding: 4px 7px; font-size: 12px; line-height: 1.25; overflow: hidden; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; text-align: left; color: var(--ink); border: 1px solid var(--blue-line); background: var(--block); transition: border-color .12s, box-shadow .12s; }
-.block:hover { border-color: var(--block-hover); }
+@media (hover: hover) { .block:hover { border-color: var(--block-hover); } }
 .block.hot { box-shadow: 0 0 0 2px var(--blue); z-index: 3; }
 .block b { font-weight: 600; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow-wrap: anywhere; hyphens: auto; }
 .block span { display: block; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--block-ink); }
@@ -296,7 +302,8 @@ details.about > summary:hover .more-hint { text-decoration: underline; }
 .block.ghost { background: var(--card); border: 1.5px dashed var(--ghost-line); color: var(--blue-deep); z-index: 4; animation: appear .12s ease-out; }
 .block.ghost span { color: inherit; }
 .block.ghost.bad span { color: var(--orange); }
-.block.ghost:hover, .block.ghost.hot { background: var(--blue-soft); border-style: solid; border-color: var(--blue); box-shadow: none; }
+.block.ghost.hot { background: var(--blue-soft); border-style: solid; border-color: var(--blue); box-shadow: none; }
+@media (hover: hover) { .block.ghost:hover { background: var(--blue-soft); border-style: solid; border-color: var(--blue); box-shadow: none; } }
 .block.ghost.chosen { border-style: solid; }
 .block.fresh { animation: pop .28s ease-out; }
 @keyframes appear { from { opacity: 0; } to { opacity: 1; } }
@@ -320,6 +327,7 @@ details.about > summary:hover .more-hint { text-decoration: underline; }
 .budget-text b.bad { color: var(--red); }
 .forecast { font-size: 13px; color: var(--ink-3); }
 .forecast b { color: var(--ink-2); }
+.forecast .part { white-space: nowrap; }   /* the line breaks between its parts, never inside one */
 .forecast .why { vertical-align: middle; margin: -10px -4px -8px -2px; }
 .bid-stack { display: flex; flex-direction: column; gap: 22px; }
 .bid-list { display: flex; flex-direction: column; gap: 8px; }
@@ -328,7 +336,7 @@ details.about > summary:hover .more-hint { text-decoration: underline; }
 .bid-row { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-card); }
 .bid-head { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto 12px; grid-template-areas: "rank main answer chev"; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 11px; cursor: pointer; transition: background-color .15s; }
 .bid-head.no-rank { grid-template-columns: minmax(0, 1fr) auto 12px; grid-template-areas: "main answer chev"; }
-.bid-head:hover { background: var(--hover); }
+@media (hover: hover) { .bid-head:hover { background: var(--hover); } }
 .bid-row.open > .bid-head { border-radius: 11px 11px 0 0; }
 .rank { grid-area: rank; width: 22px; height: 22px; border-radius: 50%; background: var(--chip); color: var(--ink-2); font-size: 12px; font-weight: 500; display: grid; place-items: center; font-variant-numeric: tabular-nums; }
 .bid-name { grid-area: main; min-width: 0; display: flex; flex-direction: column; gap: 1px; padding: 0; border: 0; background: none; color: inherit; text-align: left; }
@@ -366,16 +374,25 @@ details.about > summary:hover .more-hint { text-decoration: underline; }
 .plan-table .plan-group th { padding: 16px 10px 4px; font-size: 13px; font-weight: 600; color: var(--ink-2); }
 .plan-table td.name { width: 100%; max-width: 0; }
 .plan-table .status { font-size: inherit; }
-.plan-table tfoot .status { font-weight: 600; }
-.name-link { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; text-decoration: none; }
-.name-link:hover { text-decoration: underline; }
+/* a course row opens as a whole, like the rows of the other lists: paper under the mouse, the chevron in its own column */
+.go-row { cursor: pointer; }
+.go-row > td { transition: background-color .15s; }
+.go-row > td:first-child { border-radius: 8px 0 0 8px; }
+.go-row > td:last-child { border-radius: 0 8px 8px 0; }
+@media (hover: hover) { .go-row:hover > td { background: var(--hover); } .go-row:hover .i-next { color: var(--ink); } }
+.plan-table .chev { width: 12px; padding-left: 0; padding-right: 10px; }
+.plan-table td.chev .i { vertical-align: middle; }
+.name-link { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; color: inherit; text-decoration: none; }
+@media (hover: hover) { .name-link:hover { color: inherit; } }
 .plan-sub { display: none; }
 .plan-table tr.alt td { color: var(--ink-2); }
-.plan-table tfoot th, .plan-table tfoot td { background: var(--paper); color: var(--ink-2); }
-.plan-table tfoot b { color: var(--ink); }
-.plan-table tfoot tr > * { border-top: 10px solid var(--card); }
-.plan-table tfoot th { border-radius: 8px 0 0 8px; }
-.plan-table tfoot td:last-child { border-radius: 0 8px 8px 0; }
+/* the totals: one line in the order of the columns on a paper surface, wrapping only between its parts */
+.plan-table tfoot td { padding: 10px 0 0; white-space: normal; }
+.plan-totals { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 2px 20px; padding: 8px 10px; background: var(--paper); border-radius: var(--r-ctl); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.plan-totals > span { white-space: nowrap; }
+.plan-totals b { color: var(--ink); }
+.plan-totals .status { font-size: inherit; font-weight: 600; }
+.plan-totals .status b { color: inherit; }
 .plan-reset { margin-top: 16px; }
 
 /* ---- step 3 and the quiet pages ---- */
@@ -388,12 +405,15 @@ details.about > summary:hover .more-hint { text-decoration: underline; }
 .before-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .before-row .go { flex: none; font-size: 13px; }
 .row-gap { display: flex; flex-wrap: wrap; gap: 8px; }
+/* the answer a (?) leads to: below the bar on top, ringed like a focused control, because that is where you are */
+.answer { scroll-margin-top: calc(var(--top) + var(--gap)); }
+.answer:target { outline: 2px solid var(--blue); outline-offset: 2px; }
 /* a question on the rules page: the whole row opens it, the chevron at the right edge */
 details.rule { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-card); }
 details.rule > summary { display: flex; justify-content: space-between; align-items: center; gap: 10px; min-height: 48px; padding: 10px 16px; border-radius: 11px; font-weight: 500; }
 details.rule > summary::after { color: var(--ink-3); }
-details.rule > summary:hover { background: var(--hover); }
-details.rule > summary:hover::after { color: var(--ink); }
+@media (hover: hover) { details.rule > summary:hover { background: var(--hover); } }
+@media (hover: hover) { details.rule > summary:hover::after { color: var(--ink); } }
 details.rule[open] > summary { border-radius: 11px 11px 0 0; }
 details.rule .body { padding: 6px 16px 14px; display: flex; flex-direction: column; gap: 9px; color: var(--ink-2); }
 blockquote { margin: 0; padding: 8px 12px; background: var(--paper); border-radius: var(--r-ctl); color: var(--ink-2); font-size: 13px; }
@@ -414,7 +434,7 @@ blockquote cite { display: block; font-style: normal; font-size: 12px; font-weig
 ul.plain { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
 .toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: 24px; width: max-content; pointer-events: none; display: flex; align-items: center; gap: 14px; background: var(--ink); color: #fff; padding: 9px 16px; border-radius: var(--r-ctl); font-weight: 500; z-index: 40; max-width: calc(100% - 32px); }
 .toast button { border: 0; background: none; color: var(--blue-on-dark); font-weight: 500; padding: 2px 0; white-space: nowrap; pointer-events: auto; }
-.toast button:hover { color: #fff; text-decoration: underline; text-underline-offset: 3px; }
+@media (hover: hover) { .toast button:hover { color: #fff; text-decoration: underline; text-underline-offset: 3px; } }
 
 /* ---- laptops with little height: the page may scroll instead of squeezing the week ---- */
 @media (max-height: 640px) { .planner { height: auto; } .course-list, .course-view { max-height: 70vh; } .week { min-height: 460px; } }
@@ -429,7 +449,7 @@ ul.plain { margin: 0; padding-left: 18px; display: flex; flex-direction: column;
   .toast { bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
   .tabbar { display: grid; grid-template-columns: repeat(4, 1fr); position: fixed; left: 0; right: 0; bottom: 0; background: var(--card); border-top: 1px solid var(--line); padding: 5px 4px calc(5px + env(safe-area-inset-bottom, 0px)); z-index: 30; }
   .tabbar a { display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--ink-3); font-size: 12px; font-weight: 500; padding: 3px 0; text-decoration: none; }
-  .tabbar a:hover { color: var(--ink-2); }
+  @media (hover: hover) { .tabbar a:hover { color: var(--ink-2); } }
   .tabbar a.on { color: var(--blue-deep); }
   .planner { display: flex; flex-direction: column; height: auto; min-height: 0; gap: 8px; }
   .scope .seg { margin-left: 0; }
@@ -449,6 +469,7 @@ ul.plain { margin: 0; padding-left: 18px; display: flex; flex-direction: column;
   .planner[data-view=week] #pane-week, .planner[data-view=summary] #pane-week { display: flex; flex-direction: column; gap: 10px; overflow: visible; }
   .planner[data-view=week] #pane-summary, .planner[data-view=summary] #pane-summary { display: block; padding-top: 4px; }
   .plan-table .opt { display: none; }
+  .plan-totals { gap: 2px 16px; }
   .plan-sub { display: block; font-size: 12px; font-weight: 500; color: var(--ink-3); overflow: hidden; text-overflow: ellipsis; }
   .plan-table th, .plan-table td { padding: 6px 6px; }
   .week { height: 560px; flex: none; grid-template-columns: 30px repeat(5, minmax(0, 1fr)); }
@@ -460,6 +481,14 @@ ul.plain { margin: 0; padding-left: 18px; display: flex; flex-direction: column;
   .clash-lines { order: -1; }
   .round-note { order: -2; }
   .check { min-height: 44px; }
+  /* the figures of your plan stay in sight above the list, so a + shows what it changed */
+  .figures.list-figures { display: flex; justify-content: space-between; gap: 2px 8px; position: sticky; top: var(--top); z-index: 5; margin: 0 -10px; padding: 7px 8px; background: var(--card); border-bottom: 1px solid var(--line); }
+  /* the forecast in two lines: what you pay, then what comes back */
+  .forecast .sep { display: none; }
+  .forecast .sep + .part { display: block; }
+  /* Take above its three amounts, which share one row in equal widths */
+  .quick > .meta { flex-basis: 100%; }
+  .quick > .btn { flex: 1 1 0; min-width: 0; flex-direction: column; gap: 0; padding: 4px 6px; line-height: 1.25; }
   /* a card on the phone: name and facts first, the bid and its answer on a second line, the chevron top right */
   .bid-head { grid-template-columns: 22px minmax(0, 1fr) 12px; grid-template-areas: "rank main chev" ". answer answer"; gap: 10px; padding: 12px; }
   .bid-head.no-rank { grid-template-columns: minmax(0, 1fr) 12px; grid-template-areas: "main chev" "answer answer"; }

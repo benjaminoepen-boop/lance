@@ -47,8 +47,12 @@ async function addCourse(course) {
   if (answer.error) return;
   const entry = entriesOf(Lance.state, course.id)[0];
   view.fresh = entry.section_id;
-  if (course.sections.length > 1) { view.expanded = course.id; showWeek(); }
-  render(Lance.state);
+  if (course.sections.length > 1) {
+    view.expanded = course.id;
+    renderKeeping(course.id);
+  } else {
+    render(Lance.state);
+  }
   Lance.toast(`Added ${course.name}${course.sections.length > 1 ? ` ${entry.section}` : ""}`);
 }
 
@@ -72,18 +76,68 @@ function markHot(sectionId) {
 }
 
 function toggleExpanded(course) {
-  /* a click beats the mouse: the week shows the row just opened, not the one hovered a moment ago */
+  /* a click beats the mouse: the week shows the row just opened, not the one hovered a moment ago.
+     The right half stays where it is: on Bids or Summary it stays there, on Week the sections wait there as ghosts */
   clearTimeout(previewTimer);
   view.preview = null;
   view.expanded = view.expanded === course.id ? null : course.id;
-  if (view.expanded) { bringForward(course); showWeek(); }
-  render(Lance.state);
+  if (view.expanded) bringForward(course);
+  renderKeeping(course.id);
 }
 
-/* a row folded open shows its sections in the week, so the right half turns to the week */
-function showWeek() {
-  if (view.tab !== "week" && !onPhone()) setTab("week");
+/* a row that folds open or shut stays where it was under the finger or the mouse, even when another row above it folds shut.
+   Then it shows all of itself: above the bar at the bottom on a phone, inside the list on a laptop.
+   Only as far as needed, and never so far that its head leaves the top */
+function renderKeeping(courseId) {
+  const rowOf = () => {
+    const main = document.querySelector(`#courses [data-key="main-${courseId}"]`);
+    return main ? main.closest(".course") : null;
+  };
+  const old = rowOf();
+  const before = old ? old.getBoundingClientRect().top : null;
+  holdPreviews();
+  render(Lance.state);
+  const row = rowOf();
+  if (!row || before === null) return;
+  const phone = onPhone();
+  const scroller = phone ? document.scrollingElement : document.getElementById("courses");
+  scroller.scrollTop += row.getBoundingClientRect().top - before;
+  if (!row.classList.contains("open")) return;
+  const [top, bottom] = visibleArea(phone);
+  const box = row.getBoundingClientRect();
+  const move = Math.min(box.bottom - bottom, box.top - top);
+  if (move > 0) scroller.scrollBy({ top: move, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
 }
+
+/* the part of the list that can be seen: on a phone between the bars at the top and the bar at the bottom */
+function visibleArea(phone) {
+  if (!phone) {
+    const list = document.getElementById("courses").getBoundingClientRect();
+    return [list.top + 4, list.bottom - 12];
+  }
+  const figures = document.getElementById("list-figures");
+  const top = document.querySelector(".topbar").getBoundingClientRect().bottom + (figures.hidden ? 0 : figures.offsetHeight);
+  return [top + 8, document.querySelector(".tabbar").getBoundingClientRect().top - 8];
+}
+
+/* after a row opens or shuts, the list moves under a mouse that stood still. Until the mouse really moves,
+   a row or a section it lands on is not shown in the week: only the one that was clicked */
+const pointer = { x: -1, y: -1, still: null };
+function holdPreviews() {
+  if (canHover) pointer.still = { x: pointer.x, y: pointer.y };
+}
+document.addEventListener("mousemove", (event) => {
+  pointer.x = event.clientX;
+  pointer.y = event.clientY;
+  if (!pointer.still || Math.abs(event.clientX - pointer.still.x) + Math.abs(event.clientY - pointer.still.y) < 3) return;
+  pointer.still = null;
+  /* it moved: what is under it now counts, as if the mouse had just come in */
+  const target = event.target instanceof Element ? event.target : null;
+  const row = target && target.closest("#courses .course[data-row]");
+  if (row) previewCourse(row.dataset.row);
+  const tile = target && target.closest(".tile[data-section]");
+  if (tile) markHot(tile.dataset.section);
+}, { passive: true });
 
 /* the week of a T1 or T2 course comes forward; an S1 course is in both */
 function bringForward(course) {
@@ -180,6 +234,7 @@ function matches(course, state) {
 
 let previewTimer = null;
 function previewCourse(id) {
+  if (id && pointer.still) return;   /* the row came to the mouse, not the mouse to the row */
   clearTimeout(previewTimer);
   previewTimer = setTimeout(() => {
     if (view.preview === id) return;
@@ -238,9 +293,9 @@ function sectionTiles(course, state) {
       "aria-pressed": at === 0 ? "true" : "false",
       "data-section": section.id, "data-key": `tile-${section.id}`,
       title: [where, section.delivery === "blended" ? "blended" : null, clash ? `Clashes with ${clash.join(", ")}` : null,
-        known ? `Last round: seat from ${Math.ceil(section.cutoff)}, ${section.seats} seats, ${section.bids} bids` : null].filter(Boolean).join(". "),
+        known ? `Last round: a seat took ${Math.ceil(section.cutoff)}, ${section.seats} seats, ${section.bids} bids` : null].filter(Boolean).join(". "),
       onclick: () => { if (at !== 0) chooseSection(course, section); },
-      onmouseenter: canHover ? () => markHot(section.id) : null,
+      onmouseenter: canHover ? () => { if (!pointer.still) markHot(section.id); } : null,
       onmouseleave: canHover ? () => markHot(null) : null,
       onfocus: () => markHot(section.id),
       onblur: () => markHot(null),
@@ -254,9 +309,10 @@ function sectionTiles(course, state) {
 /* the facts under a name: term and ECTS, then the section it has in your plan, or what a seat cost last round */
 function metaLine(course, first) {
   const chosen = first && first.section ? ` · ${first.section} ${meetingsText(first.meetings)}` : "";
+  /* "a seat took", because "seats from 109" read like a number of seats */
   const price = first || course.cutoff_low === null ? ""
-    : course.cutoff_low === course.cutoff_high ? ` · seat from ${Math.ceil(course.cutoff_low)}`
-      : ` · seats from ${Math.ceil(course.cutoff_low)} to ${Math.ceil(course.cutoff_high)}`;
+    : course.cutoff_low === course.cutoff_high ? ` · a seat took ${Math.ceil(course.cutoff_low)}`
+      : ` · a seat took ${Math.ceil(course.cutoff_low)} to ${Math.ceil(course.cutoff_high)}`;
   /* a phone has no week beside the list, so a course with one section says its time here */
   const time = !first && course.sections.length === 1 ? el("span", { class: "time", text: ` · ${meetingsText(course.sections[0].meetings)}` }) : null;
   return el("span", { class: "course-sub" }, `${course.term} · ${course.ects} ECTS`, chosen, time, price);
@@ -282,7 +338,7 @@ function courseRow(course, state) {
   const open = view.expanded === course.id && sections;
   const exam = state.exams.find((item) => item.offering_id === course.id && item.kind === "exam");
   return el("article", {
-    class: `course${open ? " open" : ""}${planned ? " in" : ""}`,
+    class: `course${open ? " open" : ""}${planned ? " in" : ""}`, "data-row": course.id,
     onmouseenter: canHover ? () => previewCourse(course.id) : null,
     onmouseleave: canHover ? () => previewCourse(null) : null,
   },
@@ -325,7 +381,7 @@ function renderList(state) {
     /* a group heading folds like a row: the whole line is the button, the chevron at the right edge */
     list.append(el("button", {
       type: "button", class: "group", "aria-expanded": folded ? "false" : "true",
-      onclick: () => { view.closed[kind] = !view.closed[kind]; renderList(Lance.state); },
+      onclick: () => { view.closed[kind] = !view.closed[kind]; holdPreviews(); renderList(Lance.state); },
     }, el("span", { class: "group-name", text: titles[kind] }), el("span", { class: "count", text: String(courses.length) }), Lance.icon("chev")));
     if (!folded) courses.forEach((course) => list.append(courseRow(course, state)));
   });
@@ -499,22 +555,46 @@ function renderClashes(state) {
 
 /* ---- the head of your plan: where you stand, whatever tab is open ---- */
 
-function renderHead(state) {
+/* the ECTS say what they are measured against, in words and not only in a tooltip:
+   above Nova's recommendation "31.5 ECTS · 28 recommended" in orange, above the maximum "42 ECTS · max 31.5" in red */
+function ectsWords(ects) {
+  if (ects.over) return { tone: "bad", label: `ECTS · max ${ects.maximum}` };
+  if (ects.total > ects.recommended) return { tone: "warn", label: `ECTS · ${ects.recommended} recommended` };
+  return { tone: null, label: "ECTS" };
+}
+
+/* where you stand: the number dark, the word grey; a tone (warn, bad) adds colour and an icon.
+   The head of your plan has them, and a phone shows the same above the list, without the ids */
+function figuresOf(state, head) {
   const points = state.plan.points;
   const left = points - state.reserved;
   const electives = state.items.some((item) => item.list === "primary");
-  const above = state.ects.total > state.ects.recommended;
   const clashes = state.clashes.length;
   const exam = state.clashes.some((clash) => clash.kind === "exam");
-  /* a figure: the number dark, the word grey; a tone (warn, bad) adds colour and an icon */
-  const figure = (value, label, tone, title, id) => el("span", { class: tone ? `status ${tone}` : null, title, id },
+  const ects = ectsWords(state.ects);
+  const figure = (value, label, tone, title, id) => el("span", { class: tone ? `status ${tone}` : null, title, id: head ? id : null },
     tone ? Lance.icon(tone) : null, el("b", { class: "num", text: value }), ` ${label}`);
-  document.getElementById("figures").replaceChildren(
-    figure(String(state.ects.total), "ECTS", state.ects.over ? "bad" : above ? "warn" : null,
-      `Nova recommends ${state.ects.recommended} ECTS, the maximum is ${state.ects.maximum}`, "ects"),
-    points ? figure(String(left), "points left", left < 0 ? "bad" : null, `${state.reserved} of your ${points} points are held while bidding`)
+  return [
+    figure(String(state.ects.total), ects.label, ects.tone, `Nova recommends ${state.ects.recommended} ECTS, the maximum is ${state.ects.maximum}`, "ects"),
+    points ? figure(String(left), "points left", left < 0 ? "bad" : null, `${state.reserved} of your ${points} points are in bids`)
       : electives ? Lance.status("warn", "No points yet") : el("span", { text: "No points yet" }),
-    clashes ? figure(String(clashes), clashes === 1 ? "clash" : "clashes", exam ? "bad" : "warn") : el("span", { text: "No clash" }));
+    clashes ? figure(String(clashes), clashes === 1 ? "clash" : "clashes", exam ? "bad" : "warn") : el("span", { text: "No clash" }),
+  ];
+}
+
+function renderHead(state) {
+  const clashes = state.clashes.length;
+  const exam = state.clashes.some((clash) => clash.kind === "exam");
+  document.getElementById("figures").replaceChildren(...figuresOf(state, true));
+  /* above the list only once there is something in the plan: then a + shows what it changed */
+  const line = document.getElementById("list-figures");
+  const shown = state.items.length > 0;
+  const list = document.getElementById("courses");
+  const before = line.hidden === shown && onPhone() ? list.getBoundingClientRect().top : null;
+  line.hidden = !shown;
+  line.replaceChildren(...figuresOf(state, false));
+  /* when it comes or goes while the list is scrolled past it, the list stays where it is */
+  if (before !== null && before < document.querySelector(".topbar").getBoundingClientRect().bottom) window.scrollBy(0, list.getBoundingClientRect().top - before);
   badge("week", clashes ? { cls: exam ? "bad" : "", text: `${clashes} ${clashes === 1 ? "clash" : "clashes"}` } : null);
   badge("bids", typeof Bids === "undefined" ? null : Bids.problem(state));
 }
@@ -544,9 +624,13 @@ function planRow(entries, state, classClash, examClash) {
   const examLevel = examClash.get(first.offering_id);
   const bid = entries.some((item) => item.bid !== null) ? Math.max(...entries.map((item) => item.bid || 0)) : null;
   const time = first.section ? meetingsText(first.meetings) : "Not published";
-  return el("tr", { class: alternate ? "alt" : null },
+  /* like every list: the whole row opens the course on the left, the chevron at the right edge says so.
+     The name stays a link for the keyboard, in ink like the names in the other lists */
+  return el("tr", {
+    class: `go-row${alternate ? " alt" : ""}`,
+    onclick: (event) => { if (!event.target.closest("a")) go(first.offering_id); },
+  },
     el("td", { class: "name" },
-      /* the name is a link: a click opens the whole course on the left */
       el("a", { class: "name-link", href: `#${first.offering_id}`, title: first.name }, first.name),
       el("span", { class: "plan-sub", text: [first.term, first.section ? `${first.section} ${time}` : null, exam ? `Exam ${exam.label}` : null].filter(Boolean).join(" · ") })),
     el("td", { class: "opt" }, first.section || "–", backups.length ? el("span", { class: "faint", title: `If full: ${backups.join(", ")}`, text: ` +${backups.length}` }) : null),
@@ -554,23 +638,26 @@ function planRow(entries, state, classClash, examClash) {
     el("td", { class: `r num${alternate ? " faint" : ""}`, title: alternate ? "The alternate list does not count" : null, text: alternate ? `(${first.ects})` : String(first.ects) }),
     el("td", { class: "opt" }, cellValue(exam ? exam.label : "–", examLevel === "exam" ? "bad" : examLevel ? "warn" : null)),
     el("td", { class: `r num${alternate ? " faint" : ""}` },
-      first.list === "mandatory" ? "–" : bid === null ? cellValue("No bid", first.list === "primary" ? "warn" : null) : String(bid)));
+      first.list === "mandatory" ? "–" : bid === null ? cellValue("No bid", first.list === "primary" ? "warn" : null) : String(bid)),
+    el("td", { class: "chev" }, Lance.icon("next")));
 }
 
-/* the totals under the table: numbers dark, words grey, a tone only where something needs a look */
+/* the totals under the table: numbers dark, words grey, a tone only where something needs a look.
+   One line in the order of the columns (courses, Time, ECTS, Exam, Bid) that wraps between its parts, and not one cell
+   per column: "31.5 ECTS · 28 recommended", in the words of the head of your plan, does not fit under the narrow column ECTS.
+   A phone, without the columns Time and Exam, leaves out their two checks as well */
 function totalsRow(state, counted, alternates) {
-  const weekClashes = state.clashes.filter((clash) => clash.kind === "class").length;
+  const classClashes = state.clashes.filter((clash) => clash.kind === "class").length;
   const examClashes = state.clashes.filter((clash) => clash.kind !== "class");
-  const above = state.ects.total > state.ects.recommended;
+  const ects = ectsWords(state.ects);
   const many = (count, word) => `${count} ${word}${count === 1 ? "" : word.endsWith("sh") ? "es" : "s"}`;
-  return el("tr", {},
-    el("th", { scope: "row" }, el("b", { class: "num", text: String(counted) }), counted === 1 ? " course" : " courses", alternates ? ` + ${alternates} alternate` : null),
-    el("td", { class: "opt" }),
-    el("td", { class: "opt" }, weekClashes ? cellValue(many(weekClashes, "clash"), "warn") : "No clash"),
-    el("td", { class: "r num", title: `Nova recommends ${state.ects.recommended} ECTS, the maximum is ${state.ects.maximum}` },
-      state.ects.over || above ? cellValue(String(state.ects.total), state.ects.over ? "bad" : "warn") : el("b", { text: String(state.ects.total) })),
-    el("td", { class: "opt" }, examClashes.length ? cellValue(many(examClashes.length, "clash"), examClashes.some((clash) => clash.kind === "exam") ? "bad" : "warn") : "No clash"),
-    el("td", { class: "r num", title: "Held while bidding" }, el("b", { text: String(state.reserved) }), " held"));
+  return el("tr", {}, el("td", { colspan: 7 }, el("div", { class: "plan-totals" },
+    el("span", {}, el("b", { class: "num", text: String(counted) }), counted === 1 ? " course" : " courses", alternates ? ` + ${alternates} alternate` : null),
+    el("span", { class: "opt" }, classClashes ? cellValue(many(classClashes, "class clash"), "warn") : "No class clash"),
+    el("span", { title: `Nova recommends ${state.ects.recommended} ECTS, the maximum is ${state.ects.maximum}` },
+      ...(ects.tone ? [cellValue(`${state.ects.total} ${ects.label}`, ects.tone)] : [el("b", { class: "num", text: String(state.ects.total) }), " ECTS"])),
+    el("span", { class: "opt" }, examClashes.length ? cellValue(many(examClashes.length, "exam clash"), examClashes.some((clash) => clash.kind === "exam") ? "bad" : "warn") : "No exam clash"),
+    el("span", {}, el("b", { class: "num", text: String(state.reserved) }), " in bids"))));
 }
 
 function renderPlanTable(state) {
@@ -590,14 +677,15 @@ function renderPlanTable(state) {
   [["mandatory", "Mandatory"], ["primary", "Primary list"], ["alternate", "Alternate list"]].forEach(([list, title]) => {
     const ids = offerings.filter((id) => entriesOf(state, id)[0].list === list);
     if (!ids.length) return;
-    body.append(el("tr", { class: "plan-group" }, el("th", { colspan: 6, scope: "colgroup", text: title })));
+    body.append(el("tr", { class: "plan-group" }, el("th", { colspan: 7, scope: "colgroup", text: title })));
     ids.forEach((id) => body.append(planRow(entriesOf(state, id), state, classClash, examClash)));
   });
   const counted = offerings.filter((id) => entriesOf(state, id)[0].list !== "alternate").length;
   const head = (label, cls) => el("th", { scope: "col", class: cls || null, text: label });
   box.replaceChildren(
     el("table", { class: "plan-table" },
-      el("thead", {}, el("tr", {}, head("Course"), head("Section", "opt"), head("Time", "opt"), head("ECTS", "r"), head("Exam", "opt"), head("Bid", "r"))),
+      el("thead", {}, el("tr", {}, head("Course"), head("Section", "opt"), head("Time", "opt"), head("ECTS", "r"), head("Exam", "opt"), head("Bid", "r"),
+        el("th", { class: "chev" }, el("span", { class: "sr", text: "Open" })))),
       body,
       el("tfoot", {}, totalsRow(state, counted, offerings.length - counted))),
     el("button", {
@@ -664,7 +752,7 @@ document.getElementById("set-semester").addEventListener("change", (event) => ch
 document.addEventListener("keydown", (event) => {
   if (event.key !== "Escape") return;
   if (view.open) goBack();
-  else if (view.expanded) { const id = view.expanded; view.expanded = null; render(Lance.state); const main = document.querySelector(`[data-key="main-${id}"]`); if (main) main.focus(); }
+  else if (view.expanded) { const id = view.expanded; view.expanded = null; renderKeeping(id); const main = document.querySelector(`[data-key="main-${id}"]`); if (main) main.focus({ preventScroll: true }); }
 });
 window.addEventListener("hashchange", route);
 /* on a phone the bar at the bottom only changes the surface; there is no need to load the page again */

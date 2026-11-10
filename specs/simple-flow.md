@@ -12,7 +12,7 @@ One screen in two halves: **courses** on the left, **your plan** on the right wi
 
 **Your plan.** The head says where you stand (ECTS, points left, clashes); a tab names what needs a look ("1 clash", "1 too low"). *Week*: your week, the clashes under it with a way out, the worst first. *Summary*: every course in one table with section, time, ECTS, exam and bid, the totals below, and *Start over*. A phone shows one half at a time; the summary sits under the week.
 
-**Bids.** Your points on top, the only field there, next to "165 of 165 held · 0 left" with a slim bar, and one quiet line: if last round repeats, what you pay and what comes back. Then one card per course with one number, because only the highest is held, and last round's answer in words at the same place in every card: "Enough · pays ~132", "Too low · from 116". A click opens the card in place: three amounts, the sections in the order Nova tries them with a bid each, other sections to try if full, and a row of actions (*Move up*, *To alternate list*, *Remove* ...). The alternate list ends in a dashed card that adds to it, and never promises a seat.
+**Bids.** Your points on top, the only field there, next to "165 of 165 in bids · 0 left" with a slim bar, and one quiet line: if last round repeats, what you pay and what comes back. Then one card per course with one number, because only the highest is held, and last round's answer in words at the same place in every card: "Enough · pays ~132", "Too low · from 116". A click opens the card in place: three amounts, the sections in the order Nova tries them with a bid each, other sections to try if full, and a row of actions (*Move up*, *To alternate list*, *Remove* ...). The alternate list ends in a dashed card that adds to it, and never promises a seat.
 
 **Finish on Nova.** "Nothing has been sent." The round of this semester, what is missing, the lists, the calendar file and the plan link.
 
@@ -56,6 +56,10 @@ Beni chose the two halves and asked for one visual language: obvious what can be
 | Fewer text styles, nothing above 600; named colours, three control heights, two radii | Nielsen Norman Group (consistency) |
 
 Not in this round, Beni decides first: course colours and picking a section by clicking blocks in the week, both as in NUSMods.
+
+**First-time user test (10 Nov).** A fresh agent, playing a Management student on a laptop and an iPhone, lost time where the page moved by itself (a + on the phone jumped to the top and left the sections under the bar; on the laptop the week previewed whatever course slid under the still mouse), where a field added digits instead of replacing them (0 became 1100), and where words read wrong: "Fall · closed" as not selectable, "seats from 109" as a seat count, "held", a red 42 ECTS without a reason.
+
+What changed: the row that opens stays under the finger and comes up above the bar; a preview waits until the mouse moves; a click selects the number in a field; opening a course leaves *Bids* or *Summary* open; the ECTS say "31.5 ECTS · 28 recommended" or "42 ECTS · max 31.5" in the head and in the totals; "Fall · practice", "a seat took 109 to 120", "165 of 165 in bids · 0 left", "Needs a bid, holds no points"; the (?) opens the price rule; a phone shows the figures of your plan above the list; hover only for a real mouse. Measured afterwards: first screen with the example 42 controls and 189 words, a course 26 and 221, *Bids* 49 and 299, the rest unchanged.
 
 ## Out of scope
 

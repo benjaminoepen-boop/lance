@@ -28,7 +28,7 @@
   <div class="tight">
   {% for p in sheet.prices %}
     <div class="price-row">
-      <div class="figure"><b class="label">{{ p.section }}</b><span class="meta num">Seat from {{ (p.min_rank_value|round(0, 'ceil'))|int if p.min_rank_value is not none else '?' }} · {{ p.seats }} seats · {{ p.bids }} bids</span></div>
+      <div class="figure"><b class="label">{{ p.section }}</b><span class="meta num">A seat took {{ (p.min_rank_value|round(0, 'ceil'))|int if p.min_rank_value is not none else '?' }} · {{ p.seats }} seats · {{ p.bids }} bids</span></div>
       {{ bars(p.histogram, p.min_rank_value) }}
       <p class="meta num" style="margin-top:4px">Lowest winning bid {{ '%g' % p.min_bid if p.min_bid is not none else '?' }} · highest {{ '%g' % p.max_rank_value if p.max_rank_value is not none else '?' }} · {{ p.zero_bids }} people bid 0 · {{ p.round }}</p>
     </div>

@@ -27,9 +27,27 @@ const Bids = (() => {
   /* a number in its field with the unit inside: the same field for your points, a course's bid and, smaller, each section's bid.
      The unit lets clicks through, so a click on "pts" still lands in the field. */
   function numberField(attrs, small) {
-    return el("span", { class: `num-field${small ? " small" : ""}` },
-      el("input", { type: "number", min: 0, step: 1, inputmode: "numeric", placeholder: "–", ...attrs }),
-      el("span", { class: "unit", text: "pts" }));
+    const input = el("input", { type: "number", min: 0, step: 1, inputmode: "numeric", placeholder: "–", ...attrs });
+    selectOnFocus(input);
+    return el("span", { class: `num-field${small ? " small" : ""}` }, input, el("span", { class: "unit", text: "pts" }));
+  }
+
+  /* a click or a tap into a number selects it, so that typing replaces it: a 0 never turns into 1100.
+     The release of the click would put the cursor back, so it is held once; a redraw that puts the cursor
+     back into the field it was in (see render) is no click and leaves the cursor where it was. */
+  let restoring = false;
+  function selectOnFocus(input) {
+    let fresh = false;
+    const select = () => { try { input.select(); } catch (error) { /* a browser that cannot select here simply does not */ } };
+    input.addEventListener("focus", () => {
+      if (restoring) return;
+      fresh = true;
+      select();
+      setTimeout(() => { if (fresh && document.activeElement === input) select(); }, 0);
+    });
+    input.addEventListener("mouseup", (event) => { if (fresh) event.preventDefault(); fresh = false; });
+    input.addEventListener("keydown", () => { fresh = false; });
+    input.addEventListener("blur", () => { fresh = false; });
   }
 
   /* ---- your points on top: the one field here, what your bids hold, and what last round would have charged ---- */
@@ -55,40 +73,45 @@ const Bids = (() => {
       field = document.getElementById("set-points");
     }
     if (field !== document.activeElement) field.value = state.plan.points || "";
-    document.getElementById("budget-use").replaceChildren(...budget(state));
+    const use = budget(state);
+    document.getElementById("budget-use").hidden = !use.length;
+    document.getElementById("budget-use").replaceChildren(...use);
     const forecast = forecastLine(state);
     document.getElementById("forecast").hidden = !forecast;
     document.getElementById("forecast").replaceChildren(...(forecast || []));
     document.getElementById("sum-note").replaceChildren(...pointsNote(state));
   }
 
-  /* "165 of 165 held · 0 left" and a slim bar of what the bids hold; red once they hold more than you have */
+  /* "165 of 165 in bids · 0 left" and a slim bar of what the bids take; red once they take more than you have.
+     Without your points there is nothing to compare: no line and no bar, only the note that asks for them */
   function budget(state) {
     const points = state.plan.points;
+    if (!points) return [];
     const left = points - state.reserved;
-    const over = Boolean(points) && left < 0;
-    const held = el("b", { class: "num", text: String(state.reserved) });
-    const leftNow = el("b", { class: `num${over ? " bad" : ""}`, id: "points-left", text: points ? String(left) : "–" });
-    if (!points) return [el("p", { class: "budget-text" }, held, " held · ", leftNow, " left")];
+    const over = left < 0;
     const share = Math.min(100, (state.reserved / points) * 100);
     return [
-      el("p", { class: "budget-text" }, held, " of ", el("b", { class: "num", text: String(points) }), " held · ", leftNow, " left"),
+      el("p", { class: "budget-text" }, el("b", { class: "num", text: String(state.reserved) }), " of ", el("b", { class: "num", text: String(points) }), " in bids · ",
+        el("b", { class: `num${over ? " bad" : ""}`, id: "points-left", text: String(left) }), " left"),
       el("div", { class: `meter${over ? " over" : ""}`, "aria-hidden": "true" }, el("i", { style: `width:${share}%` })),
     ];
   }
 
-  /* what last round would have charged: one quiet line, the question it raises answered one click away */
+  /* what last round would have charged: one quiet line, the question it raises answered one click away, on the rules page at the price.
+     The line breaks only between its parts, never inside one */
   function forecastLine(state) {
     const points = state.plan.points;
     const f = state.forecast;
     const seats = f.rows.filter((row) => row.status === "seat").length;
     const unknown = f.rows.filter((row) => row.status === "no data").length;
     if (!points || points < state.reserved || !seats) return null;
-    const why = el("a", { class: "icon-btn why", href: Lance.pages.rules, title: "Why less than you bid?", "aria-label": "Why less than you bid?", html: Lance.icons.help });
+    const why = el("a", { class: "icon-btn why", href: `${Lance.pages.rules}#price`, title: "Why less than you bid?", "aria-label": "Why less than you bid?", html: Lance.icons.help });
     const pay = el("b", { class: "num", text: whole(f.expected) });
+    const part = (...children) => el("span", { class: "part" }, ...children);
     /* without a price for every course the points coming back cannot be said */
-    if (unknown) return ["If last round repeats, for the courses with a price: you pay about ", pay, " ", why];
-    return ["If last round repeats: you pay about ", pay, " ", why, " · ", el("b", { class: "num", text: whole(f.left) }), " back afterwards"];
+    if (unknown) return [part("If last round repeats, for the courses with a price:"), " ", part("you pay about ", pay, " ", why)];
+    return [part("If last round repeats:"), " ", part("you pay about ", pay, " ", why), el("span", { class: "sep", text: " · " }),
+      part(el("b", { class: "num", text: whole(f.left) }), " back afterwards")];
   }
 
   /* missing points or a budget spent twice: one line with its icon */
@@ -108,7 +131,7 @@ const Bids = (() => {
       mandatory ? el("p", { text: `${mandatory} mandatory ${mandatory === 1 ? "course needs" : "courses need"} no bid.` }) : null,
       state.items.some((item) => item.analysis && item.analysis.known) ? el("label", { class: "check", title: "Part of the students with 45 or more ECTS passed rank with their bid × 1.1. It shows on your rank list. Not sure: leave it off." },
         el("input", { type: "checkbox", checked: state.plan.has_bonus ? true : null, onchange: (event) => Lance.send("/api/settings", { has_bonus: event.target.checked }) }),
-        el("span", { text: "My rank list shows bid × 1.1" })) : null,
+        el("span", { text: "My bids count × 1.1 (45+ ECTS passed)" })) : null,
       el("p", {}, "Only a plan: nothing goes to Nova from here.", known ? ` Past prices for ${known.sections} of ${known.total} sections. ` : " ",
         el("a", { href: Lance.pages.share, text: "Share yours" })));
   }
@@ -201,7 +224,7 @@ const Bids = (() => {
   function sectionLine(item, rows, state) {
     const a = item.analysis;
     const backup = rows.indexOf(item) > 0;
-    const numbers = a.known ? [a.cutoff !== null && a.cutoff !== undefined ? `seat from ${Math.ceil(a.cutoff)}` : "no seat went out", a.seats !== null ? `${a.seats} seats` : null, a.bids !== null ? `${a.bids} bids` : null].filter(Boolean).join(" · ") : "no past price";
+    const numbers = a.known ? [a.cutoff !== null && a.cutoff !== undefined ? `a seat took ${Math.ceil(a.cutoff)}` : "no seat went out", a.seats !== null ? `${a.seats} seats` : null, a.bids !== null ? `${a.bids} bids` : null].filter(Boolean).join(" · ") : "no past price";
     const warning = item.conflicts.length ? item.conflicts.map((note) => note.text).join(" ") : null;
     /* every line has the same six places, so that the columns stay under each other; an empty one keeps its place */
     return el("div", { class: "sec-line" },
@@ -224,9 +247,10 @@ const Bids = (() => {
     const quick = listName === "primary" && a.exact && first.section ? QUICK.filter(([key]) => a.suggestions[key] !== null && a.suggestions[key] !== undefined) : [];
     const notes = notesOf(rows, state);
     return el("div", { class: "bid-details" },
+      /* the amount in its own span: on a phone it stands under its name, so that three buttons fit one row */
       quick.length ? el("div", { class: "quick" }, el("span", { class: "meta", text: "Take" }), ...quick.map(([key, label, hint]) => el("button", {
         type: "button", class: "btn small", title: hint, onclick: () => Lance.send("/api/bid", { offering_id: first.offering_id, bid: Math.min(a.suggestions[key], state.plan.points) }),
-      }, `${label} ${a.suggestions[key]}`))) : null,
+      }, el("span", { text: label }), " ", el("span", { class: "num", text: String(a.suggestions[key]) })))) : null,
       ...notes.map((note) => noteStatus(note)),
       el("div", { class: "sec-lines" },
         rows.length > 1 || free.length ? el("p", { class: "meta", text: listName === "primary" ? "Nova tries the sections in this order:" : "Sections:" }) : null,
@@ -386,12 +410,14 @@ const Bids = (() => {
         el("button", { type: "button", class: "btn only-phone", onclick: () => { location.hash = ""; } }, "Pick courses")));
       return;
     }
-    const alternate = listBlock("Alternate list", "Tried if a primary course gets no seat. Holds no points.", "alternate", state);
+    const alternate = listBlock("Alternate list", "Tried if a primary course gets no seat. Needs a bid, holds no points.", "alternate", state);
     alternate.append(alternatePicker(state));
     box.replaceChildren(listBlock("Primary list", "Higher up goes first", "primary", state), alternate, foot(state));
     const again = focusKey ? box.querySelector(focusKey) : null;
     if (!again) return;
+    restoring = true;
     again.focus({ preventScroll: true });
+    restoring = false;
     if (again.type === "number") {
       /* the cursor goes back behind the last digit; a number field only allows that as a text field */
       const end = focused.value.length;
