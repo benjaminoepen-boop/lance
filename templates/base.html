@@ -12,13 +12,10 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
 </head>
 <body data-page="{{ active }}">
-{% set steps = [('planner','Courses',url_for('planner')),('bids','Bids',url_for('bids')),('nova','Finish on Nova',url_for('nova'))] %}
 <header class="topbar">
   <a class="brand" href="{{ url_for('planner') }}"><i><svg width="14" height="14" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 14 14 3M9.5 3H14v4.5"/></svg></i>Lance <small>Student project</small></a>
-  <nav class="seg steps" aria-label="Steps">
-    {% for key, label, href in steps %}<a class="{{ 'on' if active == key }}" href="{{ href }}" {% if active == key %}aria-current="page"{% endif %}>{{ label }}</a>{% endfor %}
-  </nav>
   <div class="top-right">
+    {% if active not in ('planner', 'bids') %}<a class="top-link" href="{{ url_for('planner') }}">Your plan</a>{% endif %}
     <a class="top-link" href="{{ url_for('rules') }}" title="How Nova's bidding works">Rules</a>
     {% block action %}{% endblock %}
   </div>

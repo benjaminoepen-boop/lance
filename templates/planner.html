@@ -1,10 +1,11 @@
 {% extends "base.html" %}
+{#- One screen, two halves: finding on the left, your plan on the right. /bids is this same screen with the Bids tab open. -#}
 {% block title %}Lance · Courses{% endblock %}
-{% block action %}<a class="btn primary" id="next" href="{{ url_for('bids') }}">Continue <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.5 2.5 10 7l-4.5 4.5"/></svg></a>{% endblock %}
+{% block action %}<a class="btn" id="next" href="{{ url_for('nova') }}">Finish on Nova <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.5 2.5 10 7l-4.5 4.5"/></svg></a>{% endblock %}
 {% block content %}
-<h1 class="sr">Choose your courses</h1>
-<div class="planner" id="planner" data-zone="courses" data-open="{{ open_course|default('') }}" data-saved="{{ saved|default('', true) }}">
-  <section class="chooser" aria-label="Choose">
+<h1 class="sr">{% block heading %}Choose your courses{% endblock %}</h1>
+<div class="planner" id="planner" data-zone="courses" data-view="{{ tab|default('week') }}" data-open="{{ open_course|default('') }}" data-saved="{{ saved|default('', true) }}">
+  <section class="chooser" aria-label="Find courses">
     <div class="scope">
       <select class="quiet" id="set-programme" aria-label="Your programme">
         {% if not plan.programme %}<option value="" selected disabled>Your programme</option>{% endif %}
@@ -28,19 +29,37 @@
     <div class="course-view" id="course-view" hidden></div>
   </section>
 
-  <section class="card result" id="result" aria-label="Your week">
-    <div class="week-wrap" id="week-wrap">
-      <div class="week-days" id="week-days"></div>
-      <div class="week" id="week"></div>
-      <div class="week-empty" id="week-empty" hidden></div>
+  <section class="card plan" id="plan" aria-label="Your plan">
+    <header class="plan-head">
+      <div class="plan-title"><h2>Your plan</h2><div class="figures" id="figures"></div></div>
+      <div class="tabs" id="plan-tabs" role="tablist" aria-label="Your plan">
+        {% for key, label in [('week', 'Week'), ('bids', 'Bids'), ('summary', 'Summary')] %}
+        <button type="button" class="tab" role="tab" id="tab-{{ key }}" data-view="{{ key }}" aria-controls="pane-{{ key }}" aria-selected="{{ 'true' if key == tab|default('week') else 'false' }}">{{ label }}<span class="badge" id="badge-{{ key }}" hidden></span></button>
+        {% endfor %}
+      </div>
+    </header>
+    <div class="pane pane-week" id="pane-week" role="tabpanel" aria-labelledby="tab-week">
+      <div class="week-wrap" id="week-wrap">
+        <div class="week-days" id="week-days"></div>
+        <div class="week" id="week"></div>
+        <div class="week-empty" id="week-empty" hidden></div>
+      </div>
+      <div class="empty-plan" id="no-timetable" hidden>Nova has not published the spring timetable yet. Pick courses and plan your bids now; the week fills in once it is out.</div>
+      <div class="clash-lines" id="clashes"></div>
+      <p class="round-note" id="round-note" hidden></p>
     </div>
-    <div class="empty-plan" id="no-timetable" hidden>Nova has not published the spring timetable yet. Pick courses and plan your bids now; the week fills in once it is out.</div>
-    <div class="clash-lines" id="clashes"></div>
-    <p class="round-note" id="round-note" hidden></p>
+    <div class="pane pane-bids" id="pane-bids" role="tabpanel" aria-labelledby="tab-bids">
+      <section class="points" id="summary" aria-label="Your points"></section>
+      <div class="bid-stack" id="bid-lists"></div>
+    </div>
+    <div class="pane pane-summary" id="pane-summary" role="tabpanel" aria-labelledby="tab-summary">
+      <div id="plan-table"></div>
+    </div>
   </section>
 </div>
 {% endblock %}
 {% block scripts %}
 <script src="{{ url_for('static', filename='week.js') }}"></script>
 <script src="{{ url_for('static', filename='planner.js') }}"></script>
+<script src="{{ url_for('static', filename='bids.js') }}"></script>
 {% endblock %}

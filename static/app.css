@@ -76,28 +76,27 @@ button { cursor: pointer; }
 .warn { color: var(--orange); } .bad { color: var(--red); }
 .only-phone { display: none; }
 
-/* ---- step 1: choose on the left, see the result on the right ---- */
-.planner { display: grid; grid-template-columns: minmax(340px, 400px) minmax(0, 1fr); gap: var(--gap); height: calc(100vh - var(--top) - var(--gap) * 2); min-height: 560px; }
+/* ---- one screen, two halves: finding on the left (about 40 %), your plan on the right (about 60 %) ---- */
+.planner { display: grid; grid-template-columns: minmax(360px, 2fr) minmax(0, 3fr); gap: var(--gap); height: calc(100vh - var(--top) - var(--gap) * 2); min-height: 560px; }
 .scope { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; min-width: 0; margin-left: -8px; }
 .scope .seg { margin-left: auto; }
 .scope .seg > * { padding: 3px 10px; min-height: 28px; }
-.chooser { min-height: 0; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.chooser { min-height: 0; display: flex; flex-direction: column; gap: 10px; min-width: 0; background: var(--card); border: 1px solid var(--line); border-radius: var(--r-card); padding: 12px 14px 0; }
 .list-view { display: flex; flex-direction: column; gap: 10px; min-height: 0; flex: 1; }
 .tools { display: flex; gap: 8px; }
 .search { position: relative; flex: 1; min-width: 0; }
 .search svg { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--ink-3); pointer-events: none; }
 .search input { width: 100%; padding-left: 32px; }
-.course-list { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding: 1px 2px 12px 1px; }
+.course-list { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; margin: 0 -8px; padding: 0 8px 12px; }
 .group { display: flex; align-items: center; gap: 6px; width: 100%; border: 0; background: none; padding: 10px 2px 2px; font-size: 13px; font-weight: 600; color: var(--ink-2); text-align: left; }
 .group svg { flex: none; color: var(--ink-3); transition: transform .15s; }
 .group[aria-expanded=false] svg { transform: rotate(-90deg); }
 .group .count { font-weight: 500; color: var(--ink-3); font-variant-numeric: tabular-nums; }
 .group-sum { margin-left: auto; font-size: 12px; font-weight: 600; color: var(--ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .group-sum.warn { color: var(--orange); } .group-sum.bad { color: var(--red); }
-.course { background: var(--card); border: 1px solid var(--line); border-radius: 10px; transition: border-color .15s, box-shadow .15s; }
-.course:hover { border-color: var(--line-2); }
-.course.open { border-color: var(--line-2); box-shadow: 0 8px 24px -18px rgba(29, 29, 31, .45); }
-.course-head { display: flex; align-items: center; gap: 10px; padding: 8px 8px 8px 12px; }
+.course { border-radius: 10px; transition: background-color .15s; }
+.course:hover, .course.open { background: var(--paper); }
+.course-head { display: flex; align-items: center; gap: 10px; padding: 7px 6px 7px 10px; }
 .course-main { flex: 1; min-width: 0; text-align: left; border: 0; background: none; padding: 0; display: block; color: inherit; }
 .course-name { display: flex; align-items: center; gap: 5px; min-width: 0; font-weight: 500; line-height: 1.3; }
 .course-name > span:first-child { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -106,7 +105,8 @@ button { cursor: pointer; }
 [aria-expanded=true] .chev { transform: rotate(180deg); }
 .time { display: none; }
 .course-sub { display: block; font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.course-more { display: flex; flex-direction: column; gap: 10px; padding: 0 12px 12px; animation: unfold .16s ease-out; }
+.course-more { display: flex; flex-direction: column; gap: 10px; padding: 2px 10px 12px; animation: unfold .16s ease-out; }
+.course-more .tile { background: var(--card); }
 .hint { font-size: 13px; color: var(--ink-2); }
 /* the sections of a course: a tile each, one click picks */
 .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(98px, 1fr)); gap: 6px; }
@@ -127,8 +127,8 @@ button { cursor: pointer; }
 @media (hover: hover) { .pick[aria-pressed=true]:hover .is-in { display: none; } .pick[aria-pressed=true]:hover .to-out { display: inline; } }
 .empty-note { padding: 22px 12px; text-align: center; color: var(--ink-3); display: flex; flex-direction: column; gap: 6px; align-items: center; }
 
-/* the left column when a course is open */
-.course-view { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; background: var(--card); border: 1px solid var(--line); border-radius: var(--r-card); padding: 12px 16px 18px; }
+/* the left half when a course is open: the same surface, no card inside the card */
+.course-view { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; margin: 0 -8px; padding: 0 8px 18px; }
 .back { align-self: flex-start; border: 0; background: none; padding: 2px 0; color: var(--ink-2); font-weight: 500; display: inline-flex; align-items: center; gap: 5px; }
 .back:hover { color: var(--ink); }
 .sheet-title { display: flex; flex-direction: column; gap: 3px; }
@@ -166,8 +166,28 @@ details.about[open] > summary { display: none; }
 .scale input:checked + span { background: var(--blue); border-color: var(--blue); color: #fff; }
 .scale input:focus-visible + span { outline: 2px solid var(--blue); outline-offset: 2px; }
 
-/* the right column: the week, or the list of my courses */
-.result { min-height: 0; display: flex; flex-direction: column; gap: 10px; padding: 12px 14px; }
+/* the right half: where you stand on top, then Week, Bids and Summary */
+.plan { min-height: 0; display: flex; flex-direction: column; padding: 0; }
+.plan-head { flex: none; display: flex; flex-direction: column; gap: 4px; padding: 12px 18px 0; border-bottom: 1px solid var(--line); }
+.plan-title { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 16px; min-height: 32px; }
+.plan-title h2 { font-size: 17px; }
+.figures { display: flex; flex-wrap: wrap; gap: 4px 20px; font-size: 14px; color: var(--ink-2); }
+.figures > span { white-space: nowrap; }
+.figures b { font-weight: 600; color: var(--ink); }
+.figures .warn, .figures .warn b { color: var(--orange); }
+.figures .bad, .figures .bad b { color: var(--red); }
+.figures .faint, .figures .faint b { color: var(--ink-3); }
+.tabs { display: flex; gap: 24px; }
+.tab { position: relative; display: inline-flex; align-items: center; gap: 7px; border: 0; background: none; padding: 8px 0 10px; font-weight: 500; color: var(--ink-2); }
+.tab:hover { color: var(--ink); }
+.tab[aria-selected=true] { color: var(--ink); }
+.tab[aria-selected=true]::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; border-radius: 2px; background: var(--blue); }
+.badge { font-size: 12px; font-weight: 600; line-height: 18px; padding: 0 7px; border-radius: 9px; background: var(--orange-soft); color: var(--orange); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.badge.bad { background: var(--red-soft); color: var(--red); }
+.pane { display: none; flex: 1; min-height: 0; overflow-y: auto; padding: 14px 18px 18px; }
+.planner[data-view=week] #pane-week { display: flex; flex-direction: column; gap: 10px; overflow: hidden; padding-top: 10px; }
+.planner[data-view=bids] #pane-bids { display: flex; flex-direction: column; gap: 18px; }
+.planner[data-view=summary] #pane-summary { display: block; }
 .week-wrap { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; }
 .week-days { display: grid; grid-template-columns: 46px repeat(5, minmax(0, 1fr)); flex: none; }
 .week-half { font-size: 12px; font-weight: 600; color: var(--ink-3); padding: 1px 0 0 2px; }
@@ -207,36 +227,37 @@ details.about[open] > summary { display: none; }
 
 /* ---- step 2: the bids. One row per course in columns, a summary beside it ---- */
 .narrow { max-width: 860px; margin: 0 auto; display: flex; flex-direction: column; gap: var(--gap); }
-.bids-page { max-width: 1080px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr) 284px; gap: var(--gap); align-items: start; }
-.summary { position: sticky; top: calc(var(--top) + var(--gap)); display: flex; flex-direction: column; gap: 12px; padding: 16px; }
-.sum-points { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-weight: 600; }
-.sum-points small { display: block; font-size: 12px; font-weight: 400; color: var(--ink-3); }
-.sum-points input { width: 96px; font-size: 19px; font-weight: 600; text-align: right; }
-.sum-points input:placeholder-shown { border-color: var(--blue); box-shadow: 0 0 0 1px var(--blue); }
-#sum-body { display: flex; flex-direction: column; gap: 6px; }
-.sum-row { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; font-size: 14px; color: var(--ink-2); }
-.sum-row b { font-size: 15px; font-weight: 600; color: var(--ink); }
-.sum-row.bad b { color: var(--red); }
-.sum-head { margin-top: 8px; font-size: 13px; font-weight: 600; color: var(--ink); }
-.sum-note { font-size: 13px; }
-.sum-bonus { margin-top: 6px; color: var(--ink-2); }
-.sum-foot { margin-top: 6px; font-size: 12px; color: var(--ink-3); line-height: 1.5; }
-.bid-list { display: flex; flex-direction: column; gap: 6px; }
+.points { display: flex; flex-direction: column; gap: 6px; flex: none; }
+.pts-strip { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 10px 30px; padding: 10px 16px 12px; background: var(--paper); border-radius: 10px; }
+#sum-body { display: contents; }
+.pts { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.pts > span { font-size: 12px; color: var(--ink-3); white-space: nowrap; }
+.pts b { display: flex; align-items: center; min-height: 38px; font-size: 17px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.pts.bad b { color: var(--red); }
+.pts.forecast { margin-left: 12px; }
+.why { display: inline-grid; place-items: center; width: 28px; height: 28px; margin: -8px -8px -8px -4px; border-radius: 50%; color: var(--ink-3); vertical-align: middle; }
+.why:hover { color: var(--blue); background: var(--chip); text-decoration: none; }
+.pts-field input { width: 96px; height: 38px; font-size: 17px; font-weight: 600; text-align: right; }
+.pts-field input:placeholder-shown { border-color: var(--blue); box-shadow: 0 0 0 1px var(--blue); }
+.sum-note { font-size: 13px; padding: 0 2px; }
+.bid-stack { display: flex; flex-direction: column; gap: 18px; }
+.bids-foot { display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: var(--ink-3); line-height: 1.5; padding: 0 2px; }
+.bids-foot .check { font-size: 13px; color: var(--ink-2); }
+.bid-list { display: flex; flex-direction: column; gap: 2px; }
 .list-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; margin: 6px 2px 0; }
 .list-title span { font-size: 13px; color: var(--ink-3); }
 .cols, .bid-head { display: grid; grid-template-columns: minmax(0, 1fr) 92px 196px 32px; gap: 12px; align-items: center; }
-.cols { padding: 0 9px 0 15px; font-size: 12px; color: var(--ink-3); }
-.bid-row { background: var(--card); border: 1px solid var(--line); border-radius: 10px; transition: border-color .15s, box-shadow .15s; }
-.bid-row:hover { border-color: var(--line-2); }
-.bid-row.open { border-color: var(--line-2); box-shadow: 0 8px 24px -18px rgba(29, 29, 31, .45); }
-.bid-head { padding: 8px 8px 8px 14px; }
+.cols { padding: 0 6px 2px 12px; font-size: 12px; color: var(--ink-3); }
+.bid-row { border-radius: 10px; transition: background-color .15s; }
+.bid-row:hover, .bid-row.open { background: var(--paper); }
+.bid-head { padding: 7px 6px 7px 12px; }
 .bid-name { min-width: 0; border: 0; background: none; padding: 0; text-align: left; color: inherit; }
 .bid-input { width: 100%; font-size: 15px; font-weight: 600; text-align: right; }
 .bid-status { min-width: 0; font-size: 13px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .bid-status.warn, .course-sub.warn { color: var(--orange); }
 .bid-status.bad, .course-sub.bad { color: var(--red); }
 .bid-status.muted { color: var(--ink-2); } .bid-status.faint { color: var(--ink-3); }
-.bid-details { display: flex; flex-direction: column; gap: 10px; margin: 0 8px 8px; padding: 12px; border-radius: var(--r-ctl); background: var(--paper); font-size: 13px; animation: unfold .16s ease-out; }
+.bid-details { display: flex; flex-direction: column; gap: 10px; padding: 4px 12px 14px; font-size: 13px; animation: unfold .16s ease-out; }
 .quick { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; }
 .quick button { border: 1px solid var(--line-2); background: var(--card); border-radius: var(--r-mini); padding: 3px 8px; font-size: 13px; color: var(--ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .quick button:hover { border-color: var(--blue); color: var(--blue-deep); }
@@ -261,6 +282,25 @@ details.about[open] > summary { display: none; }
 .menu-items button { border: 0; background: none; text-align: left; padding: 7px 10px; border-radius: var(--r-mini); }
 .menu-items button:hover { background: var(--paper); }
 .menu-items button[disabled] { color: var(--ink-3); opacity: .55; cursor: default; background: none; }
+
+/* the Summary tab: every course of the plan in one table, the totals at the bottom */
+.plan-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 14px; }
+.plan-table th, .plan-table td { padding: 6px 10px; text-align: left; white-space: nowrap; font-weight: 400; }
+.plan-table thead th { padding-top: 0; font-size: 12px; color: var(--ink-3); }
+.plan-table .r { text-align: right; }
+.plan-table .group th { padding: 14px 10px 4px; font-size: 13px; font-weight: 600; color: var(--ink-2); }
+.plan-table tbody tr:not(.group):hover td { background: var(--paper); }
+.plan-table tbody td:first-child, .plan-table tfoot th { border-radius: 8px 0 0 8px; }
+.plan-table tbody td:last-child, .plan-table tfoot td:last-child { border-radius: 0 8px 8px 0; }
+.plan-table td.name { width: 100%; max-width: 0; }
+.name-btn { display: block; max-width: 100%; border: 0; background: none; padding: 0; color: inherit; font-weight: 500; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.name-btn:hover { color: var(--blue); }
+.plan-sub { display: none; }
+.plan-table tr.alt td { color: var(--ink-2); }
+.plan-table .warn { color: var(--orange); } .plan-table .bad { color: var(--red); } .plan-table .faint { color: var(--ink-3); }
+.plan-table tfoot th, .plan-table tfoot td { background: var(--paper); font-weight: 600; }
+.plan-table tfoot tr > * { border-top: 10px solid var(--card); }
+.plan-reset { margin: 14px 10px 0; }
 
 /* ---- step 3 and the quiet pages ---- */
 .stack { display: flex; flex-direction: column; gap: var(--gap); }
@@ -305,7 +345,7 @@ ul.plain { margin: 0; padding-left: 18px; display: flex; flex-direction: column;
   :root { --top: 50px; }
   body { padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
   .topbar { gap: 6px; padding: 0 10px; }
-  .topbar .seg, .brand small, .top-right .btn { display: none; }
+  .brand small, .top-right .btn { display: none; }
   .main { padding: 10px; }
   .toast { bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
   .tabbar { display: grid; grid-template-columns: repeat(4, 1fr); position: fixed; left: 0; right: 0; bottom: 0; background: var(--card); border-top: 1px solid var(--line); padding: 5px 4px calc(5px + env(safe-area-inset-bottom, 0px)); z-index: 30; }
@@ -314,11 +354,22 @@ ul.plain { margin: 0; padding-left: 18px; display: flex; flex-direction: column;
   .tabbar a.on { color: var(--blue-deep); }
   .planner { display: flex; flex-direction: column; height: auto; min-height: 0; gap: 8px; }
   .scope .seg { margin-left: 0; }
-  .planner[data-zone=courses] .result { display: none; }
-  .planner[data-zone=week] .list-view, .planner[data-zone=week] .course-view { display: none !important; }
-  .course-list { overflow: visible; }
-  .course-view { overflow: visible; padding: 10px 12px 16px; }
-  .result { padding: 10px 8px; }
+  .planner[data-zone=courses] .plan, .planner[data-zone=plan] .chooser { display: none; }
+  .chooser { padding: 10px 10px 0; }
+  .course-list { overflow: visible; margin: 0 -4px; padding: 0 4px 10px; }
+  .course-view { overflow: visible; margin: 0; padding: 0 2px 16px; }
+  .plan-head { padding: 10px 12px 10px; }
+  .plan-title { min-height: 0; }
+  .figures { gap: 2px 14px; font-size: 13px; }
+  .tabs { display: none; }
+  .pane { overflow: visible; padding: 10px 8px 12px; }
+  .planner[data-view=week] #pane-week, .planner[data-view=summary] #pane-week { display: flex; flex-direction: column; gap: 10px; overflow: visible; }
+  .planner[data-view=week] #pane-summary, .planner[data-view=summary] #pane-summary { display: block; padding-top: 4px; }
+  .plan-table .opt { display: none; }
+  .plan-sub { display: block; font-size: 12px; color: var(--ink-3); overflow: hidden; text-overflow: ellipsis; }
+  .plan-table th, .plan-table td { padding: 6px 6px; }
+  .pts-strip { gap: 8px 22px; padding: 10px 12px; }
+  .pts.forecast { margin-left: 0; }
   .week { height: 560px; flex: none; grid-template-columns: 30px repeat(5, minmax(0, 1fr)); }
   .week-days { grid-template-columns: 30px repeat(5, minmax(0, 1fr)); }
   .week-empty { left: 30px; }
@@ -328,8 +379,6 @@ ul.plain { margin: 0; padding-left: 18px; display: flex; flex-direction: column;
   .time { display: inline; }
   .clash-lines { order: -1; }
   .round-note { order: -2; }
-  .bids-page { grid-template-columns: minmax(0, 1fr); }
-  .summary { position: static; order: -1; }
   .cols { display: none; }
   .bid-head { grid-template-columns: 92px minmax(0, 1fr) 32px; gap: 8px 10px; }
   .bid-name { grid-column: 1 / -1; }

@@ -1,5 +1,6 @@
-/* Step 1: choose on the left, see the result on the right. Every rule lives on the server;
-   this file only draws what logic.py answered and sends what was clicked. */
+/* One screen, two halves: find courses on the left, your plan on the right (Week, Bids, Summary).
+   Every rule lives on the server; this file only draws what logic.py answered and sends what was clicked.
+   bids.js draws the Bids tab; this file draws everything else of the screen. */
 const { el } = Lance;
 
 const view = {
@@ -7,13 +8,14 @@ const view = {
   half: null,          /* which half of the semester both columns show */
   query: "",
   fits: false,
-  closed: { mine: true, outside: true },   /* list groups that are folded */
+  closed: { outside: true },   /* list groups that are folded */
+  tab: "week",         /* what the right half shows: week, bids or summary */
   open: null,          /* the course open in the left column with all its details */
   expanded: null,      /* the course folded open in the list, to pick a section right there */
   preview: null,       /* the course under the mouse in the list */
   hot: null,           /* the section under the mouse */
   fresh: null,         /* the section that was just added: it pops in */
-  backTo: "",          /* where the Back button of an open course leads: the list, or the week on a phone */
+  backTo: "",          /* where the Back button of an open course leads: the list, or a tab of your plan on a phone */
   allClashes: false,
   pausedUntil: 0,      /* a double click must not hit the row that has just moved under the mouse */
 };
@@ -23,7 +25,9 @@ const HALVES = {
 };
 const TERMS_OF = { T1: ["S1", "T1"], T2: ["S1", "T2"], T3: ["S2", "T3"], T4: ["S2", "T4"] };
 const EXAM_WORD = { exam: "Exam", midterm: "Midterm", presentation: "Presentation" };
+const TABS = ["week", "bids", "summary"];
 const canHover = window.matchMedia("(hover: hover)").matches;
+const onPhone = () => window.matchMedia("(max-width: 860px)").matches;   /* one half at a time */
 const hasWeek = (state) => state.plan.semester === "Fall";   /* Nova has not published the spring timetable yet */
 const courseById = (id) => view.catalogue.find((course) => course.id === id);
 const entriesOf = (state, offeringId) => state.items.filter((item) => item.offering_id === offeringId).sort((a, b) => a.position - b.position);
@@ -44,7 +48,7 @@ async function addCourse(course) {
   if (answer.error) return;
   const entry = entriesOf(Lance.state, course.id)[0];
   view.fresh = entry.section_id;
-  if (course.sections.length > 1) view.expanded = course.id;
+  if (course.sections.length > 1) { view.expanded = course.id; showWeek(); }
   render(Lance.state);
   Lance.toast(`Added ${course.name}${course.sections.length > 1 ? ` ${entry.section}` : ""}`);
 }
@@ -73,8 +77,13 @@ function toggleExpanded(course) {
   clearTimeout(previewTimer);
   view.preview = null;
   view.expanded = view.expanded === course.id ? null : course.id;
-  if (view.expanded) bringForward(course);
+  if (view.expanded) { bringForward(course); showWeek(); }
   render(Lance.state);
+}
+
+/* a row folded open shows its sections in the week, so the right half turns to the week */
+function showWeek() {
+  if (view.tab !== "week" && !onPhone()) setTab("week");
 }
 
 /* the week of a T1 or T2 course comes forward; an S1 course is in both */
@@ -82,23 +91,49 @@ function bringForward(course) {
   if (hasWeek(Lance.state) && TERMS_OF[course.term]) view.half = course.term;
 }
 
-/* ---- the address: nothing is the list, #week the week on a phone, anything else a course ---- */
+/* ---- the address: nothing is the list, #week, #bids or #summary a tab of your plan, anything else a course.
+   On a laptop both halves are always there; on a phone the address also says which half is on screen. ---- */
 
 function go(target) {
   location.hash = target;
 }
 
 function goBack() {
-  location.hash = view.backTo;
+  /* a tab chosen while the course was open stays chosen */
+  location.hash = TABS.includes(view.backTo) ? view.tab : view.backTo;
+}
+
+/* a tab of the right half: on a laptop a click, on a phone the bar at the bottom */
+function setTab(key) {
+  view.tab = key;
+  const target = decodeURIComponent(location.hash.slice(1));
+  if (TABS.includes(target) && target !== key) {
+    try { history.replaceState(null, "", `#${key}`); } catch (error) { /* a sandboxed preview keeps its address */ }
+  }
+  showTab();
+}
+
+function showTab() {
+  const planner = document.getElementById("planner");
+  planner.dataset.view = view.tab;
+  document.querySelectorAll("#plan-tabs [role=tab]").forEach((tab) => {
+    const on = tab.dataset.view === view.tab;
+    tab.setAttribute("aria-selected", on ? "true" : "false");
+    tab.tabIndex = on ? 0 : -1;
+  });
+  const shown = planner.dataset.zone === "courses" ? "courses" : view.tab === "bids" ? "bids" : "week";
+  document.querySelectorAll(".tabbar [data-tab]").forEach((link) => link.classList.toggle("on", link.dataset.tab === shown));
 }
 
 function route() {
   const target = decodeURIComponent(location.hash.slice(1));
   const planner = document.getElementById("planner");
-  const opening = target && target !== "week" ? target : null;
-  if (opening && !view.open) view.backTo = planner.dataset.zone === "week" ? "week" : "";
-  planner.dataset.zone = target === "week" ? "week" : "courses";
-  document.querySelectorAll("[data-tab=courses],[data-tab=week]").forEach((tab) => tab.classList.toggle("on", tab.dataset.tab === planner.dataset.zone));
+  const tab = TABS.includes(target) ? target : null;
+  const opening = target && !tab ? target : null;
+  if (opening && !view.open) view.backTo = planner.dataset.zone === "plan" ? view.tab : "";
+  if (tab) view.tab = tab;
+  planner.dataset.zone = tab ? "plan" : "courses";
+  showTab();
   if (opening === view.open) return;
   view.open = opening;
   view.preview = null;
@@ -267,40 +302,11 @@ function courseRow(course, state, mine) {
         el("button", { type: "button", class: "text-btn", onclick: () => go(course.id) }, "Course details", el("span", { html: Lance.icons.next })))) : null);
 }
 
-function mineBlock(state, list) {
-  const offerings = [...new Set(state.items.slice().sort((a, b) => a.position - b.position).map((item) => item.offering_id))];
-  if (!offerings.length) return;
-  const folded = view.closed.mine;
-  const above = state.ects.total > state.ects.recommended;
-  const alternates = offerings.filter((id) => entriesOf(state, id)[0].list === "alternate").length;
-  list.append(el("button", {
-    type: "button", class: "group", "aria-expanded": folded ? "false" : "true", html: Lance.icons.down,
-    onclick: () => { view.closed.mine = !view.closed.mine; renderList(Lance.state); },
-  }, el("span", { class: "group-name", text: "My courses" }),
-    el("span", { class: "count", text: `${offerings.length - alternates}${alternates ? ` + ${alternates} alternate` : ""}` }),
-    el("span", {
-      class: `group-sum${state.ects.over ? " bad" : above ? " warn" : ""}`, id: "ects",
-      title: `Nova recommends ${state.ects.recommended} ECTS, the maximum is ${state.ects.maximum}`,
-      text: `${state.ects.total} ECTS${state.ects.over ? ` · max ${state.ects.maximum}` : above ? ` · ${state.ects.recommended} recommended` : ""}`,
-    })));
-  if (folded) return;
-  const order = { mandatory: 0, primary: 1, alternate: 2 };
-  offerings.slice().sort((a, b) => order[entriesOf(state, a)[0].list] - order[entriesOf(state, b)[0].list]).forEach((id) => {
-    const course = courseById(id);
-    if (course) list.append(courseRow(course, state, true));
-  });
-  list.append(el("button", {
-    type: "button", class: "text-btn small", style: "align-self:flex-start;margin:0 2px 8px",
-    onclick: () => { if (window.confirm(`Remove every ${state.plan.semester} course from your plan?`)) Lance.send("/api/start-over", {}); },
-  }, "Start over"));
-}
-
 function renderList(state) {
   const list = document.getElementById("courses");
   const scroll = list.scrollTop;
   const focused = document.activeElement && list.contains(document.activeElement) ? document.activeElement.dataset.key : null;
   list.replaceChildren();
-  mineBlock(state, list);
   const shown = view.catalogue.filter((course) => matches(course, state));
   if (!shown.length) {
     const other = state.plan.semester === "Fall" ? "Spring" : "Fall";
@@ -423,7 +429,7 @@ function renderWeek(state) {
 async function tryExample() {
   await Lance.send("/api/example", {});
   await loadCatalogue();
-  render(Lance.state);
+  Lance.update(Lance.state);
   Lance.toast("An example: a real Management plan from Fall 2026.", { label: "Start over", run: () => Lance.send("/api/start-over", {}) });
 }
 
@@ -433,7 +439,6 @@ function renderTabs(state) {
   const halves = HALVES[state.plan.semester];
   if (!TERMS_OF[view.half] || !halves.some(([key]) => key === view.half)) view.half = halves[0][0];
   Lance.remember("half", view.half);
-  if (!hasWeek(state)) view.closed.mine = false;
   document.getElementById("half-tabs").replaceChildren(...halves.map(([key, when]) => el("button", {
     type: "button", class: view.half === key ? "on" : "", title: when, onclick: () => { view.half = key; render(Lance.state); },
   }, key)));
@@ -445,7 +450,8 @@ function renderTabs(state) {
       state.plan.semester === "Fall" ? el("button", { type: "button", class: "link-btn", onclick: () => changeSetting({ semester: "Spring" }) }, "Plan for spring") : null);
   }
   document.getElementById("fits").hidden = !hasWeek(state) || !state.items.some((item) => item.in_week);
-  document.getElementById("next").classList.toggle("primary", state.items.length > 0);
+  /* the way to Nova turns blue once there is something to bid on */
+  document.getElementById("next").classList.toggle("primary", state.items.some((item) => item.list !== "mandatory"));
 }
 
 /* the way out of a clash: another section that fits, or take the elective out */
@@ -485,14 +491,111 @@ function renderClashes(state) {
   }
 }
 
+/* ---- the head of your plan: where you stand, whatever tab is open ---- */
+
+function renderHead(state) {
+  const points = state.plan.points;
+  const left = points - state.reserved;
+  const electives = state.items.some((item) => item.list === "primary");
+  const above = state.ects.total > state.ects.recommended;
+  const clashes = state.clashes.length;
+  const exam = state.clashes.some((clash) => clash.kind === "exam");
+  const figure = (value, label, cls, title, id) => el("span", { class: cls || null, title, id }, el("b", { class: "num", text: value }), ` ${label}`);
+  document.getElementById("figures").replaceChildren(
+    figure(String(state.ects.total), "ECTS", state.ects.over ? "bad" : above ? "warn" : state.items.length ? "" : "faint",
+      `Nova recommends ${state.ects.recommended} ECTS, the maximum is ${state.ects.maximum}`, "ects"),
+    points ? figure(String(left), "points left", left < 0 ? "bad" : "", `${state.reserved} of your ${points} points are held while bidding`)
+      : el("span", { class: electives ? "warn" : "faint", text: "No points yet" }),
+    clashes ? figure(String(clashes), clashes === 1 ? "clash" : "clashes", exam ? "bad" : "warn") : el("span", { class: "faint", text: "No clash" }));
+  badge("week", clashes ? { cls: exam ? "bad" : "", text: `${clashes} ${clashes === 1 ? "clash" : "clashes"}` } : null);
+  badge("bids", typeof Bids === "undefined" ? null : Bids.problem(state));
+}
+
+/* a tab names what needs a look there, in two words at most */
+function badge(key, found) {
+  const node = document.getElementById(`badge-${key}`);
+  node.hidden = !found;
+  if (!found) return;
+  node.className = `badge${found.cls ? ` ${found.cls}` : ""}`;
+  node.textContent = found.text;
+}
+
+/* ---- the Summary tab: every course of the plan in one table, the totals at the bottom ---- */
+
+function planRow(entries, state, classClash, examClash) {
+  const first = entries[0];
+  const alternate = first.list === "alternate";
+  const backups = entries.slice(1).map((item) => item.section).filter(Boolean);
+  const exam = state.exams.find((item) => item.offering_id === first.offering_id && item.kind === "exam");
+  const clash = classClash.get(first.id);
+  const examLevel = examClash.get(first.offering_id);
+  const bid = entries.some((item) => item.bid !== null) ? Math.max(...entries.map((item) => item.bid || 0)) : null;
+  const time = first.section ? meetingsText(first.meetings) : "Not published";
+  return el("tr", { class: alternate ? "alt" : null },
+    el("td", { class: "name" },
+      el("button", { type: "button", class: "name-btn", title: first.name, onclick: () => go(first.offering_id) }, first.name),
+      el("span", { class: "plan-sub", text: [first.term, first.section ? `${first.section} ${time}` : null, exam ? `Exam ${exam.label}` : null].filter(Boolean).join(" · ") })),
+    el("td", { class: "opt" }, first.section || "–", backups.length ? el("span", { class: "faint", title: `If full: ${backups.join(", ")}`, text: ` +${backups.length}` }) : null),
+    el("td", { class: `opt${clash ? " warn" : ""}`, title: clash ? `Clashes: ${clash}` : null }, el("span", { class: "faint", text: `${first.term} · ` }), time),
+    el("td", { class: `r num${alternate ? " faint" : ""}`, title: alternate ? "The alternate list does not count" : null, text: alternate ? `(${first.ects})` : String(first.ects) }),
+    el("td", { class: `opt${examLevel === "exam" ? " bad" : examLevel ? " warn" : ""}`, text: exam ? exam.label : "–" }),
+    el("td", { class: `r num${first.list === "primary" && bid === null ? " warn" : alternate ? " faint" : ""}`, text: first.list === "mandatory" ? "–" : bid === null ? "No bid" : String(bid) }));
+}
+
+function renderPlanTable(state) {
+  const box = document.getElementById("plan-table");
+  const offerings = [...new Set(state.items.slice().sort((a, b) => a.position - b.position).map((item) => item.offering_id))];
+  if (!offerings.length) {
+    box.replaceChildren(el("p", { class: "empty-note", text: "Nothing in your plan yet." }));
+    return;
+  }
+  const classClash = new Map();   /* item -> the pair it clashes in */
+  const examClash = new Map();    /* course -> exam or midterm */
+  state.clashes.forEach((clash) => {
+    if (clash.kind === "class") clash.items.forEach((id) => classClash.set(id, `${clash.first} × ${clash.second}`));
+    else (clash.offerings || []).forEach((id) => { if (examClash.get(id) !== "exam") examClash.set(id, clash.kind); });
+  });
+  const body = el("tbody");
+  [["mandatory", "Mandatory"], ["primary", "Primary list"], ["alternate", "Alternate list"]].forEach(([list, title]) => {
+    const ids = offerings.filter((id) => entriesOf(state, id)[0].list === list);
+    if (!ids.length) return;
+    body.append(el("tr", { class: "group" }, el("th", { colspan: 6, scope: "colgroup", text: title })));
+    ids.forEach((id) => body.append(planRow(entriesOf(state, id), state, classClash, examClash)));
+  });
+  const counted = offerings.filter((id) => entriesOf(state, id)[0].list !== "alternate").length;
+  const alternates = offerings.length - counted;
+  const weekClashes = state.clashes.filter((clash) => clash.kind === "class").length;
+  const examClashes = state.clashes.filter((clash) => clash.kind !== "class");
+  const above = state.ects.total > state.ects.recommended;
+  const many = (count, word) => `${count} ${word}${count === 1 ? "" : word.endsWith("sh") ? "es" : "s"}`;
+  const head = (label, cls) => el("th", { scope: "col", class: cls || null, text: label });
+  box.replaceChildren(
+    el("table", { class: "plan-table" },
+      el("thead", {}, el("tr", {}, head("Course"), head("Section", "opt"), head("Time", "opt"), head("ECTS", "r"), head("Exam", "opt"), head("Bid", "r"))),
+      body,
+      el("tfoot", {}, el("tr", {},
+        el("th", { scope: "row" }, many(counted, "course"), alternates ? el("span", { class: "faint", text: ` + ${alternates} alternate` }) : null),
+        el("td", { class: "opt" }),
+        el("td", { class: `opt ${weekClashes ? "warn" : "faint"}`, text: weekClashes ? many(weekClashes, "clash") : "No clash" }),
+        el("td", { class: `r num${state.ects.over ? " bad" : above ? " warn" : ""}`, title: `Nova recommends ${state.ects.recommended} ECTS, the maximum is ${state.ects.maximum}`, text: String(state.ects.total) }),
+        el("td", { class: `opt ${examClashes.length ? (examClashes.some((clash) => clash.kind === "exam") ? "bad" : "warn") : "faint"}`, text: examClashes.length ? many(examClashes.length, "clash") : "No clash" }),
+        el("td", { class: "r num", title: "Held while bidding" }, String(state.reserved), el("span", { class: "faint", text: " held" }))))),
+    el("button", {
+      type: "button", class: "text-btn plan-reset",
+      onclick: () => { if (window.confirm(`Remove every ${state.plan.semester} course from your plan?`)) Lance.send("/api/start-over", {}); },
+    }, "Start over"));
+}
+
 /* ---- wiring ---- */
 
 function render(state) {
   renderTabs(state);
+  renderHead(state);
   renderList(state);
   renderSections(state);
   renderWeek(state);
   renderClashes(state);
+  renderPlanTable(state);
   const programme = document.getElementById("set-programme");
   const semester = document.getElementById("set-semester");
   programme.value = state.plan.programme;
@@ -509,9 +612,11 @@ function fitToValue(select) {
 }
 fitToValue.canvas = document.createElement("canvas");
 
+/* the Bids tab reads the same catalogue, for the sections to try if full and the alternate list */
 async function loadCatalogue() {
   const response = await fetch("/api/catalogue");
   view.catalogue = await response.json();
+  Lance.catalogue = view.catalogue;
 }
 
 async function changeSetting(body) {
@@ -520,7 +625,7 @@ async function changeSetting(body) {
   view.half = null;
   view.fits = false;
   document.getElementById("fits").setAttribute("aria-pressed", "false");
-  render(Lance.state);
+  Lance.update(Lance.state);
 }
 
 document.getElementById("search").addEventListener("input", (event) => {
@@ -541,19 +646,33 @@ document.addEventListener("keydown", (event) => {
   else if (view.expanded) { const id = view.expanded; view.expanded = null; render(Lance.state); const main = document.querySelector(`[data-key="main-${id}"]`); if (main) main.focus(); }
 });
 window.addEventListener("hashchange", route);
-/* on a phone the Courses tab only changes the surface; there is no need to load the page again */
-document.querySelector("[data-tab=courses]").addEventListener("click", (event) => { event.preventDefault(); location.hash = ""; });
+/* on a phone the bar at the bottom only changes the surface; there is no need to load the page again */
+[["courses", ""], ["week", "week"], ["bids", "bids"]].forEach(([key, target]) => {
+  document.querySelector(`.tabbar [data-tab=${key}]`).addEventListener("click", (event) => { event.preventDefault(); location.hash = target; });
+});
+document.querySelectorAll("#plan-tabs [role=tab]").forEach((tab) => tab.addEventListener("click", () => setTab(tab.dataset.view)));
+document.getElementById("plan-tabs").addEventListener("keydown", (event) => {
+  if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") return;
+  const next = TABS[(TABS.indexOf(view.tab) + (event.key === "ArrowRight" ? 1 : TABS.length - 1)) % TABS.length];
+  setTab(next);
+  document.getElementById(`tab-${next}`).focus();
+});
 
 (async function start() {
+  const planner = document.getElementById("planner");
+  view.tab = planner.dataset.view;
   view.half = Lance.remember("half") || null;
   view.query = Lance.remember("query") || "";
   document.getElementById("search").value = view.query;
   await loadCatalogue();
   Lance.onChange(render);
   await Lance.load();
-  const planner = document.getElementById("planner");
   /* a link to a course opens the same page with that course open */
   if (planner.dataset.open) history.replaceState(null, "", Lance.courseHref(planner.dataset.open));
+  /* /bids is this screen with the Bids tab open; on a phone the address says so, so that the bar can lead back */
+  else if (view.tab !== "week" && !location.hash) {
+    try { history.replaceState(null, "", `#${view.tab}`); } catch (error) { /* a sandboxed preview keeps its address */ }
+  }
   if (planner.dataset.saved === "yes") Lance.toast("Thanks, your answers are in.");
   if (planner.dataset.saved === "error") Lance.toast("Please answer every question.");
   route();
