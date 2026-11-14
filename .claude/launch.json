@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "lance",
+      "runtimeExecutable": "uv",
+      "runtimeArgs": ["run", "flask", "--app", "app", "run", "--debug", "--port", "8770"],
+      "port": 8770,
+      "autoPort": true
+    }
+  ]
+}
