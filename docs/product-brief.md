@@ -49,6 +49,7 @@ Three steps. **Courses:** a student chooses their programme, says which sections
 | LN R13 | The week is the first section of each course on the mandatory and primary lists. Only the week counts for clashes, for "fits my week" and for LN R11. A backup is checked against the week, an alternate against the mandatory and primary lists, each in its own row. An alternate whose exam meets the week says that Nova will not enroll you in both. | Bidding Rules; team decision |
 | LN R14 | A further section of a course starts with the bid of the first. Only the highest is held anyway (LN R6). | Team decision |
 | LN R15 | Removing a course removes all its sections and can be undone, including bids and place. Start over empties the plan and keeps the settings. | Team decision |
+| LN R16 | Two exams of different courses in the week on one date, one after the other, are not a clash (the platform allows it) but a hard day: Lance says so in the list before adding, under the week and in the Summary. It is not counted as a clash. Midterms and presentations do not count. | Team decision |
 
 ## What the product must remember
 
@@ -60,7 +61,7 @@ Content: courses, sections, weekly meetings, every class with its date, exams, t
 |---|---|---|
 | A1 | **Two real accounts.** 165 points, Programming 164, Impact Investments 1: seat in Programming TXB for 132, no seat in Impact Investments, 33 left. 218 points, Programming 130, Impact Investments 88: charged 115 and 64, 39 left. | `test_real_accounts.py` |
 | A2 | **Clashes.** Advanced Strategy TXC and Econometrics TXA clash. Two sections of one course do not. T1 and T2 at the same hour do not. An S1 course against a T2 course clashes on 6 of its 12 dates. | `test_clashes.py` |
-| A3 | **Exams.** Two T2 exams in one slot are reported as blocked. A midterm during a class is reported as not checked. | `test_clashes.py` |
+| A3 | **Exams.** Two T2 exams in one slot are reported as blocked. A midterm during a class is reported as not checked. Two exams on one day, one after the other, are reported as a hard day and not as a clash. | `test_clashes.py` |
 | A4 | **The data is right.** Programming TXB: 12 classes, B.0.04, make-up on Fri 4 Dec. No class on a holiday. Exam dates match the platform. | `test_data.py` |
 | A5 | **Restart.** A plan with a bid survives a restart. A refused bid is explained and changes nothing. One visitor cannot touch another's plan. | `test_app.py` |
 | A6 | **Take it along.** The calendar file has every class on its real date. The list keeps the order. | `test_app.py` |
