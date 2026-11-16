@@ -78,3 +78,33 @@ def test_the_page_says_it_supports_both_schemes(client):
     html = client.get("/").get_data(as_text=True)
     assert 'name="color-scheme" content="light dark"' in html
     assert html.count('name="theme-color"') == 2
+
+
+# ---------- the switch: system, light, dark ----------
+
+def test_the_chosen_dark_scheme_is_the_same_as_the_system_one():
+    """The dark values are written twice, once for a system set to dark and once for a chosen dark; they must not drift apart."""
+    chosen = colours(block(':root[data-theme="dark"] {'))
+    assert chosen and chosen == DARK
+
+
+def test_a_chosen_light_scheme_beats_a_system_set_to_dark():
+    assert ':root[data-theme="light"]' in CSS
+    assert ':root:not([data-theme="light"])' in block("@media (prefers-color-scheme: dark)") or ':root:not([data-theme="light"]) {' in CSS
+
+
+def test_every_page_has_the_switch_and_applies_the_choice_before_it_paints(client):
+    for path in ("/", "/bids", "/rules", "/nova"):
+        html = client.get(path).get_data(as_text=True)
+        assert 'id="theme"' in html, path
+        assert html.index("theme.js") < html.index("app.css"), path
+        assert 'aria-label="Colour theme' in html, path
+
+
+def test_the_saved_choice_is_applied_by_a_file_because_the_page_allows_no_inline_scripts(client):
+    """The page's Content Security Policy allows scripts from its own address only; the switch must not weaken it."""
+    response = client.get("/")
+    policy = response.headers.get("Content-Security-Policy", "")
+    assert "script-src 'self'" in policy and "unsafe-inline" not in policy.split("script-src")[1].split(";")[0]
+    assert "<script>" not in response.get_data(as_text=True)
+    assert "lance-theme" in (ROOT / "static" / "theme.js").read_text()
