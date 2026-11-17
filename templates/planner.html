@@ -4,7 +4,7 @@
 {% block action %}<a class="btn" id="next" href="{{ url_for('nova') }}">Finish on Nova <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.5 2.5 10 7l-4.5 4.5"/></svg></a>{% endblock %}
 {% block content %}
 <h1 class="sr">{% block heading %}Choose your courses{% endblock %}</h1>
-<div class="planner" id="planner" data-zone="courses" data-view="{{ tab|default('week') }}" data-open="{{ open_course|default('') }}" data-saved="{{ saved|default('', true) }}">
+<div class="planner" id="planner" data-zone="courses" data-view="{{ tab|default('week') }}" data-open="{{ open_course|default('') }}">
   <section class="chooser" aria-label="Find courses">
     <div class="scope">
       <select class="field" id="set-programme" aria-label="Your programme">
@@ -33,7 +33,8 @@
 
   <section class="card plan" id="plan" aria-label="Your plan">
     <header class="plan-head">
-      <div class="plan-title"><h2>Your plan</h2><div class="figures" id="figures"></div></div>
+      <div class="plan-title"><h2>Your plan</h2><div class="figures" id="figures"></div>
+        <button type="button" class="btn tertiary small" id="reset" title="Remove every course from your plan" hidden>Reset</button></div>
       <div class="tabs" id="plan-tabs" role="tablist" aria-label="Your plan">
         {% for key, label in [('week', 'Week'), ('bids', 'Bids'), ('summary', 'Summary')] %}
         <button type="button" class="tab" role="tab" id="tab-{{ key }}" data-view="{{ key }}" aria-controls="pane-{{ key }}" aria-selected="{{ 'true' if key == tab|default('week') else 'false' }}">{{ label }}<span class="badge" id="badge-{{ key }}" hidden></span></button>

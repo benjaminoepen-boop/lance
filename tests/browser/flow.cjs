@@ -77,6 +77,7 @@ async function run(browserType, label, options) {
   await page.waitForFunction(() => document.querySelector("#toast") && !document.querySelector("#toast").hidden);
   check(n("the toast names the section"), (await toast().textContent()).includes("Introduction to Programming TXA"), await toast().textContent());
   check(n("the plus became a tick"), (await row("Introduction to Programming").locator(".pick").getAttribute("aria-pressed")) === "true");
+  check(n("a row of the list shows the rating from Uni Feedback"), (await row("Introduction to Programming").locator(".course-sub").textContent()).includes("★ 4.6"), await row("Introduction to Programming").locator(".course-sub").textContent());
   check(n("the row folds open with its sections to pick from"), (await row("Introduction to Programming").locator(".tile").count()) === 3);
   check(n("the section it took is marked"), (await row("Introduction to Programming").locator(".tile.on").textContent()).includes("TXA"));
   await toWeek();
@@ -207,16 +208,14 @@ async function run(browserType, label, options) {
   await page.goto(url("/bids"));
   await page.waitForSelector("#bid-lists input");
   await noSideways("the bids");
-  /* without points there is nothing to compare: no budget line and no bar, only the note that asks for them */
-  check(n("a new plan asks for the points"), (await page.inputValue("#set-points")) === "" && (await page.locator("#points-left, #budget-use .meter").count()) === 0
-    && (await page.locator("#sum-note").textContent()).includes("Enter your points"), await page.locator("#summary").textContent());
+  /* LN R16: nobody typed points yet, so they are an estimate from the one mandatory course picked above (7 ECTS), and a line says so */
+  check(n("a new plan estimates the points from the mandatory courses"), (await page.inputValue("#set-points")) === "227"
+    && (await page.locator("#points-estimate").textContent()).includes("Estimated from your 7 mandatory ECTS"), await page.locator("#summary").textContent());
   const bid = page.locator('input[aria-label="Bid on Introduction to Programming"]');
-  await bid.fill("10");
-  await page.waitForTimeout(600);
-  check(n("a bid before the points says what to do"), (await toast().textContent()).includes("Enter your points"), await toast().textContent());
   await page.locator("#set-points").fill("165");
   await page.locator("#set-points").blur();
   await page.waitForTimeout(250);
+  check(n("typed points replace the estimate"), (await page.locator("#points-estimate").count()) === 0 && (await page.locator("#budget-use").textContent()).includes("of 165 in bids"), await page.locator("#summary").textContent());
   const programming = bidCard("Introduction to Programming");
   const status = programming.locator(".bid-status");
   check(n("an empty bid says so in its row"), (await status.textContent()) === "No bid" && (await status.getAttribute("title")).includes("not interested"), await status.textContent());
@@ -338,7 +337,23 @@ async function run(browserType, label, options) {
   const planned = page.locator("#plan-table tbody tr:not(.plan-group)").first();
   const examOf = ((await planned.locator(".plan-sub").textContent()).match(/Exam (.+)$/) || [])[1];   /* a laptop shows it in the column Exam, a phone under the name */
   check(n("the summary lists the plan with its exams"), Boolean(examOf) && (await planned.innerText()).includes(examOf), await planned.innerText());
-  await page.locator("#plan-table").getByRole("button", { name: "Start over" }).click();
+  /* LN R15: a course goes out right in its row of the summary, and everything goes out with Reset; both offer Undo */
+  const rows = () => page.locator("#plan-table tbody tr:not(.plan-group)").count();
+  const filled = await rows();
+  await planned.getByRole("button", { name: /^Remove / }).click();
+  await page.waitForTimeout(250);
+  check(n("a course can be removed in its row of the summary"), (await rows()) === filled - 1 && (await toast().textContent()).includes("Undo"), `${filled} -> ${await rows()}`);
+  await toast().getByRole("button", { name: "Undo" }).click();
+  await page.waitForTimeout(250);
+  check(n("and undo puts it back"), (await rows()) === filled, `${await rows()} of ${filled}`);
+  await page.locator("#reset").click();
+  await page.waitForTimeout(250);
+  check(n("reset empties the plan and offers undo"), (await page.locator("#plan-table").textContent()).includes("Nothing in your plan yet") && (await toast().textContent()).includes("Undo")
+    && (await page.locator("#reset").isHidden()), await page.locator("#plan-table").textContent());
+  await toast().getByRole("button", { name: "Undo" }).click();
+  await page.waitForTimeout(250);
+  check(n("undo brings every course back"), (await rows()) === filled, `${await rows()} of ${filled}`);
+  await page.locator("#reset").click();
   await page.waitForTimeout(250);
   await toCourses();
   await page.fill("#search", "family business");
@@ -353,7 +368,7 @@ async function run(browserType, label, options) {
   await page.goto(url("/"));
   await page.waitForSelector("#courses .course");
   await toSummary();
-  await page.locator("#plan-table").getByRole("button", { name: "Start over" }).click();
+  await page.locator("#reset").click();
   await page.waitForTimeout(250);
   if (!phone) await page.mouse.move(800, 500);   /* the pointer off the list: a course under it would be previewed in the week */
   await page.waitForTimeout(250);
@@ -427,13 +442,9 @@ async function run(browserType, label, options) {
     await page.goto(BASE + "/course/2206-S1");
     await page.waitForSelector("#sheet-sections .tile");
     check(n("a link opens the course, with the shared price"), (await page.textContent("#course-view")).includes("from 90"), (await page.textContent("#course-view")).slice(0, 300));
-    await page.locator("#course-view summary", { hasText: "Rate this course" }).click();
-    for (const name of ["Overall", "Fair grading", "Organisation"]) await page.locator(`.rate-form [aria-label="${name}"] label`, { hasText: "4" }).click();
-    await page.locator('.rate-form input[name=workload_hours]').fill("6");
-    await page.locator('.rate-form [aria-label="Would take it again"] label', { hasText: "Yes" }).click();
-    await page.locator('.rate-form button[type=submit]').click();
-    await page.waitForTimeout(400);
-    check(n("a rating is thanked for"), (await toast().textContent()).includes("Thanks"), await toast().textContent());
+    /* LN07: the sheet shows what students say on Uni Feedback and links there; there is no form to rate while bidding */
+    check(n("the course sheet shows the rating from Uni Feedback"), /\d\.\d\s*of 5/.test(await page.textContent("#rating")) && (await page.locator('#rating a[href^="https://uni-feedback.com/en/courses/"]').count()) === 1
+      && (await page.locator("#course-view form").count()) === 0, await page.textContent("#rating"));
     check(n("and the course stays open at a simple address"), page.url().endsWith("/#2206-S1") && (await page.locator("#course-view").isVisible()), page.url());
     const file = await page.request.get(`${BASE}/plan.ics`);
     check(n("the calendar file downloads"), (await file.text()).includes("BEGIN:VCALENDAR"));

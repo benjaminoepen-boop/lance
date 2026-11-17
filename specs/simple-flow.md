@@ -32,7 +32,7 @@ Decisions taken from other tools, with what we changed:
 | Three buttons with the amount and one field. No slider | Catawiki, Yahoo, ESPN (Wharton went from a slider to a number) |
 | A few numbers in one place, red only when it goes wrong | Yahoo, AfterClass, Kellogg (ours sit on top of the bids) |
 | The answer first, the distribution on request | AfterClass (what to avoid), Catawiki |
-| Undo instead of "are you sure"; only start over asks | NUSMods |
+| Undo instead of "are you sure", also for *Reset* | NUSMods |
 | Say where planning ends and bidding starts | Biddit, eBay's final review |
 | Empty alternate list is a warning, with its own way in | Columbia, Kellogg |
 | Phone: one surface at a time, all five days in view | Biddit, Penn Course Plan, NUSMods' vertical mode |

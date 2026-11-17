@@ -1,4 +1,4 @@
-"""Business rules of Lance: clashes, prices, points, ratings, shared price data.
+"""Business rules of Lance: clashes, prices, points, shared price data.
 
 The rule ids (LN R1 ...) point to docs/product-brief.md. The clash check and the budget check grew out of
 the solo project Festival Architect: a stage became a student's week, an artist became a course section,
@@ -15,8 +15,10 @@ import db
 MAX_ECTS = 31.5            # LN R8: mandatory and elective courses per semester
 RECOMMENDED_ECTS = 28.0
 BONUS = 1.1                # LN R7: rank value of part of the students with 45 or more ECTS passed
-MIN_RATINGS_TO_SHOW = 3    # LN R9
-MIN_GRADES_TO_SHOW = 10    # LN R9
+# LN R16: two rough reference values from the team's own accounts, as (ECTS in mandatory courses, points).
+# Nova does not publish how it sets the points, so this is an estimate until the student types the real number.
+POINTS_AT = ((20, 140), (23, 120))
+RATING_PAGE = "https://uni-feedback.com/en/courses/"   # LN07: where a course's reviews can be read
 BID_MARGIN = {"exact": 1.00, "plus10": 1.10, "plus25": 1.25}   # on top of last round's cut-off
 WEEKDAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
@@ -84,9 +86,22 @@ def all_exams():
     return dict(grouped)
 
 
+@lru_cache(maxsize=1)
+def all_ratings():
+    """LN07: {course code: its rating on Uni Feedback}, with the address of its reviews there."""
+    return {row["code"]: {"rating": row["rating"], "reviews": row["reviews"], "workload": row["workload"],
+                          "url": RATING_PAGE + row["source_id"]}
+            for row in db.load_course_ratings()}
+
+
+def course_rating(code):
+    """LN07: what students say about a course on Uni Feedback, or None while nobody has reviewed it there."""
+    return all_ratings().get(code)
+
+
 def forget_catalogue():
     """Used by the tests after they rebuild the database."""
-    for function in (all_meetings, all_sessions, all_offerings, all_sections, all_exams):
+    for function in (all_meetings, all_sessions, all_offerings, all_sections, all_exams, all_ratings):
         function.cache_clear()
 
 
@@ -482,6 +497,45 @@ def default_plan_id(programme="", semester="Fall", points=0):
     return db.create_plan(programme, semester, points)
 
 
+def mandatory_ects(items):
+    """The ECTS of the mandatory courses among these entries. A course counts once, however many sections are listed."""
+    seen = {}
+    for item in items:
+        if item["list"] == "mandatory":
+            offering = all_offerings()[item["offering_id"]]
+            seen[offering["code"]] = offering["ects"]
+    return sum(seen.values())
+
+
+def estimated_points(ects):
+    """LN R16: the points a student gets for this many mandatory ECTS: a straight line through the two
+    reference values, because more mandatory courses leave fewer electives to bid on. Never below zero.
+    Without mandatory courses there is nothing to go by, so there is no estimate."""
+    if ects <= 0:
+        return 0
+    (first_ects, first_points), (second_ects, second_points) = POINTS_AT
+    per_ects = (second_points - first_points) / (second_ects - first_ects)
+    return max(0, round(first_points + (ects - first_ects) * per_ects))
+
+
+def points_with(plan, items):
+    """LN R16: the points of a plan that holds these entries: the number the student typed, otherwise the estimate."""
+    typed = db.load_plan(plan["id"])["points"]
+    return typed or estimated_points(mandatory_ects(items))
+
+
+def load_plan(plan_id):
+    """The plan as every page and every check uses it. LN R16: while the student has not typed their points,
+    'points' is the estimate from their mandatory courses and 'points_estimated' says so."""
+    plan = db.load_plan(plan_id)
+    if plan is None:
+        return None
+    typed = plan["points"]
+    plan["points"] = points_with(plan, plan_items(plan))
+    plan["points_estimated"] = typed == 0 and plan["points"] > 0
+    return plan
+
+
 def next_position(items, list_name):
     positions = [item["position"] for item in items if item["list"] == list_name]
     return max(positions) + 1 if positions else 1
@@ -575,7 +629,12 @@ def remove_course(plan, offering_id):
         return [], "This course is not in your plan."
     for row in rows:
         db.delete_item(row["id"])
-    return [{name: row[name] for name in ("offering_id", "section_id", "list", "position", "bid")} for row in rows], None
+    return undo_rows(rows), None
+
+
+def undo_rows(rows):
+    """What the browser keeps of removed entries, so that Undo can put them back."""
+    return [{name: row[name] for name in ("offering_id", "section_id", "list", "position", "bid")} for row in rows]
 
 
 def restore_items(plan, rows):
@@ -596,21 +655,26 @@ def restore_items(plan, rows):
             return "Unknown list."
         if not isinstance(row.get("position"), int):
             return "Unknown place."
-        bid = row.get("bid")
-        if bid is not None and (not isinstance(bid, int) or bid < 0 or bid > plan["points"]):
-            return "A bid cannot exceed your " + str(plan["points"]) + " points."
         if any(item["offering_id"] == offering["id"] for item in items):
             return "Already in your plan."
+    # LN R16: a mandatory course that comes back brings its points along, so the bids are held against the plan as it will be
+    points = points_with(plan, items + rows)
+    for row in rows:
+        bid = row.get("bid")
+        if bid is not None and (not isinstance(bid, int) or bid < 0 or bid > points):
+            return "A bid cannot exceed your " + str(points) + " points."
     for row in rows:
         db.insert_item(plan["id"], row["offering_id"], row.get("section_id"), row["list"], row["position"], row.get("bid"))
     return None
 
 
 def start_over(plan):
-    """LN R15: empty the semester on show. The programme, the points and the plan for the other semester stay."""
-    for item in plan_items(plan):
-        db.delete_item(item["id"])
-    return None
+    """LN R15: empty the semester on show and return what undo needs to put it all back.
+    The programme, the typed points and the plan for the other semester stay."""
+    rows = plan_items(plan)
+    for row in rows:
+        db.delete_item(row["id"])
+    return undo_rows(rows)
 
 
 def remove_from_plan(plan, item_id):
@@ -705,11 +769,14 @@ def move_item(plan, item_id, list_name=None, direction=None):
 
 
 def update_settings(plan, programme, semester, points, has_bonus):
-    """Save the plan's settings. Entries of another semester stay saved but do not show."""
+    """Save the plan's settings. Entries of another semester stay saved but do not show.
+    Points of None mean: not typed now, keep what is saved. Zero means: back to the estimate (LN R16)."""
     if programme and programme not in db.load_programmes():
         return "Unknown programme."
     if semester not in ("Fall", "Spring"):
         return "Unknown semester."
+    if points is None:
+        points = db.load_plan(plan["id"])["points"]
     try:
         value = int(points)
     except (TypeError, ValueError):
@@ -811,6 +878,7 @@ def state_of(plan):
         "plan": plan,
         "items": enriched,
         "ects": ects_summary(items),
+        "mandatory_ects": mandatory_ects(items),
         "reserved": reserved_points(items),
         "forecast": forecast(plan, items),
         "clashes": clashes,
@@ -894,67 +962,18 @@ def catalogue(plan):
                              "bids": price["bids"] if price else None})
         exam = next((e for e in regular_exams(offering) if e["kind"] == "exam"), None)
         prices = [r["min_rank_value"] for r in cut_rows[offering["code"]] if r["min_rank_value"] is not None]
+        rating = course_rating(offering["code"])
         rows.append({
             "id": offering["id"], "code": offering["code"], "name": offering["name"], "term": offering["term"],
             "ects": offering["ects"], "lecturers": offering["lecturers"], "kind": kinds.get(offering["id"], "outside"),
             "has_schedule": offering["has_schedule"], "sections": sections,
             "exam": day_label(exam["date"]) if exam else None,
             "cutoff_low": min(prices) if prices else None, "cutoff_high": max(prices) if prices else None,
+            "rating": rating["rating"] if rating else None, "reviews": rating["reviews"] if rating else 0,
         })
     order = {"mandatory": 0, "elective": 1, "outside": 2}
     rows.sort(key=lambda row: (order[row["kind"]], row["name"]))
     return rows
-
-
-# ---------- LN R9: ratings ----------
-
-def validate_rating(form):
-    """Check one rating form. Fixed criteria only: there is no free text about a lecturer anywhere."""
-    def whole(name, low, high):
-        value = int(form.get(name, ""))
-        if value < low or value > high:
-            raise ValueError(name)
-        return value
-    try:
-        rating = {
-            "overall": whole("overall", 1, 5),
-            "workload_hours": whole("workload_hours", 0, 60),
-            "fairness": whole("fairness", 1, 5),
-            "organisation": whole("organisation", 1, 5),
-            "again": whole("again", 0, 1),
-        }
-    except (TypeError, ValueError):
-        return None, "Please answer every question."
-    grade = form.get("grade", "")
-    rating["grade"] = None
-    if grade not in ("", None):
-        try:
-            rating["grade"] = float(grade)
-        except (TypeError, ValueError):
-            return None, "A grade is a number from 0 to 20."
-        if rating["grade"] < 0 or rating["grade"] > 20:
-            return None, "A grade is a number from 0 to 20."
-    return rating, None
-
-
-def rating_summary(code):
-    """LN R9: nothing shows below the minimum count, so a single answer can never be traced back."""
-    rows = db.load_ratings(code)
-    count = len(rows)
-    summary = {"count": count, "needed": MIN_RATINGS_TO_SHOW, "show": count >= MIN_RATINGS_TO_SHOW, "show_grade": False}
-    if summary["show"]:
-        summary["overall"] = round(sum(r["overall"] for r in rows) / count, 1)
-        summary["workload_hours"] = round(sum(r["workload_hours"] for r in rows) / count, 1)
-        summary["fairness"] = round(sum(r["fairness"] for r in rows) / count, 1)
-        summary["organisation"] = round(sum(r["organisation"] for r in rows) / count, 1)
-        summary["again_percent"] = round(100 * sum(r["again"] for r in rows) / count)
-    grades = [r["grade"] for r in rows if r["grade"] is not None]
-    summary["grades_needed"] = MIN_GRADES_TO_SHOW
-    summary["grades"] = len(grades)
-    if len(grades) >= MIN_GRADES_TO_SHOW:
-        summary["show_grade"] = True
-        summary["grade"] = round(sum(grades) / len(grades), 1)
-    return summary
 
 
 # ---------- LN R9: shared price data ----------
@@ -1110,7 +1129,7 @@ def course_page(offering_id, plan):
         "lowest_in_course": lowest_bid_in_course(offering["code"], offering["term"]), "exams": exams, "no_exam": no_exam,
         "syllabus": db.load_syllabus(offering["code"], offering["term"]),
         "syllabus_url": syllabus_url(offering["code"], offering["term"]),
-        "ratings": rating_summary(offering["code"]), "similar": similar_courses(offering), "other_terms": other_terms,
+        "rating": course_rating(offering["code"]), "similar": similar_courses(offering), "other_terms": other_terms,
         "kind": kind_for(plan, offering_id),
         "in_plan": {item["section_id"]: item["id"] for item in items if item["offering_id"] == offering_id},
     }

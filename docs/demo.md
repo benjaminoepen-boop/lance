@@ -1,4 +1,23 @@
-# The five minutes
+# The demonstration
+
+## Four minutes: one minute shown, three minutes for the audience to try (call of 17 Nov 2026)
+
+Open with the pain, before the first click: "The start at Nova is chaos: four systems, and nobody tells you what a seat costs or whether your week even works. Our first bidding went wrong for most of us." Then one of us clicks and talks:
+
+| Time | Do | Say |
+|---|---|---|
+| 0:00 | Choose *Management*. In *Mandatory*, *Pick* Advanced Strategy TXC, Advanced Financial Management TXC, Statistical Analysis TXC | "Three clicks for the sections Nova assigned me. No account, no login." |
+| 0:15 | Point at the head of the plan: *points left, estimated* | "My points appear by themselves: an estimate from my mandatory courses, until I type the real balance." |
+| 0:25 | Search *Asian Brands*: the row says *Clashes with Statistical Analysis TXC*. Press plus anyway, then *Remove* under the week | "It tells me before the click. Nova's platform would not have." |
+| 0:40 | Plus on *Introduction to Programming*, tab *Bids*, type a bid | "One bid per course, and last round's answer next to it: enough or too low." |
+| 0:50 | *Course details* of Introduction to Programming | "The course sheet: sections, exams, past prices, and what students say: 4.6 of 5 on Uni Feedback." |
+| 1:00 | *Reset*, then hand over | "Reset, and it is yours: try your own semester." |
+
+Clashes that are safe to show, all checked by the tests: Asian Brands against Statistical Analysis TXC (classes), Advanced Strategy TXC against Econometrics TXA (classes), Econometrics against the example plan (an exam, red). *Fits my week* hides every course that would clash.
+
+Questions we must be able to answer: how the estimate works (`estimated_points` in `logic.py`, LN R16), where the ratings come from (`scripts/fetch_ratings.py`, `docs/data.md`), why nobody rates inside Lance (advisor: who is bidding does not want to rate), what *Fits my week* does (`matches` in `static/planner.js`: hides courses whose every section clashes with the week or whose exam clashes).
+
+## The five minutes
 
 For the live demonstration at the deployed address. Press the buttons in this order; every number below is checked by `tests/` and `tests/browser/flow.cjs`.
 
@@ -18,4 +37,4 @@ For the live demonstration at the deployed address. Press the buttons in this or
 
 Keep a browser window with this plan open as a spare. Do not show the static preview: it is not the deployed app.
 
-Before the day: real rank lists from classmates (Laurin's card), at least three real answers on a few T1 courses, entered on the deployed database. No invented rows.
+Before the day: real rank lists from classmates (Laurin's card), entered on the deployed database. No invented rows. The ratings are real too: read from Uni Feedback on 17 Nov 2026.
