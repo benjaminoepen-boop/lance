@@ -205,6 +205,7 @@ def api_switch():
 def api_start_over():
     """Empties the semester on show and answers with what undo needs, like removing one course."""
     plan, _ = current_plan()
+    payload()
     return answer(plan, removed=logic.start_over(plan))
 
 
@@ -247,6 +248,7 @@ def api_settings():
 @app.route("/api/example", methods=["POST"])
 def api_example():
     plan, _ = current_plan()
+    payload()
     error = logic.load_example(plan)
     return answer(plan, error)
 

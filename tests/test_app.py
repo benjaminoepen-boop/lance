@@ -266,3 +266,14 @@ def test_brackets_nested_thousands_deep_are_refused_not_a_crash(client):
     response = client.post("/api/add", data=deep, content_type="application/json")
     assert response.status_code == 415
     assert response.get_json()["error"]
+
+
+def test_start_over_and_the_example_take_only_what_a_page_sends(client):
+    # a form on another website could empty a plan or swap its cookie: like every other change, these take JSON only
+    client.post("/api/add", json={"section_id": "2477-S1-TXB"})
+    response = client.post("/api/start-over", data={"x": "1"})
+    assert response.status_code == 415
+    assert "Set-Cookie" not in response.headers
+    assert client.post("/api/example", data={"x": "1"}).status_code == 415
+    assert client.post("/api/start-over").status_code == 415
+    assert len(state_of(client)["items"]) == 1
