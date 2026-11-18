@@ -230,9 +230,19 @@ def test_restoring_nonsense_is_refused_and_changes_nothing(plan):
 
 def test_start_over_empties_the_plan_and_keeps_the_settings(plan):
     add_all(plan, "2477-S1-TXB", "2277-T2-TXB")
-    assert logic.start_over(plan) is None
+    removed = logic.start_over(plan)
+    assert [row["section_id"] for row in removed] == ["2477-S1-TXB", "2277-T2-TXB"]
     assert db.load_items(plan["id"]) == []
     assert db.load_plan(plan["id"])["programme"] == plan["programme"]
+
+
+def test_start_over_can_be_undone_with_every_bid_and_place(plan):
+    add_all(plan, "2459-S1-TXC", "2477-S1-TXB", "2477-S1-TXA", "2277-T2-TXB")
+    bid_on(plan, "2477-S1", 90)
+    before = keep(sorted(db.load_items(plan["id"]), key=lambda row: (row["list"], row["position"])))
+    removed = logic.start_over(plan)
+    assert logic.restore_items(plan, removed) is None
+    assert keep(sorted(db.load_items(plan["id"]), key=lambda row: (row["list"], row["position"]))) == before
 
 
 def test_start_over_leaves_the_other_semester_alone(plan):
@@ -240,7 +250,7 @@ def test_start_over_leaves_the_other_semester_alone(plan):
     logic.update_settings(plan, plan["programme"], "Spring", plan["points"], False)
     spring = db.load_plan(plan["id"])
     assert logic.add_to_plan(spring, offering_id="2477-S2") is None
-    assert logic.start_over(spring) is None
+    assert [row["offering_id"] for row in logic.start_over(spring)] == ["2477-S2"]
     assert [item["offering_id"] for item in db.load_items(plan["id"])] == ["2477-S1"]
 
 

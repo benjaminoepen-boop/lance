@@ -25,10 +25,10 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 def current_plan():
     """Return this visitor's plan and whether it was just created."""
     plan_id = request.cookies.get(COOKIE, "")
-    plan = db.load_plan(plan_id) if plan_id else None
+    plan = logic.load_plan(plan_id) if plan_id else None
     if plan is not None:
         return plan, False
-    return db.load_plan(logic.default_plan_id()), True
+    return logic.load_plan(logic.default_plan_id()), True
 
 
 def remember(response, plan):
@@ -84,27 +84,13 @@ def course(offering_id):
     plan, is_new = current_plan()
     if logic.course_page(offering_id, plan) is None:
         abort(404)
-    return page("planner.html", plan, is_new, active="planner", open_course=offering_id, saved=request.args.get("saved"))
+    return page("planner.html", plan, is_new, active="planner", open_course=offering_id)
 
 
 @app.route("/nova")
 def nova():
     plan, is_new = current_plan()
     return page("nova.html", plan, is_new, active="nova", platform_list=logic.platform_list(plan))
-
-
-@app.route("/course/<offering_id>/rate", methods=["POST"])
-def rate(offering_id):
-    plan, _ = current_plan()
-    offering = logic.all_offerings().get(offering_id)
-    if offering is None:
-        abort(404)
-    rating, error = logic.validate_rating(request.form)
-    if error:
-        return remember(redirect(url_for("course", offering_id=offering_id, saved="error")), plan)
-    db.save_rating(plan["id"], offering["code"], rating["overall"], rating["workload_hours"], rating["fairness"],
-                   rating["organisation"], rating["again"], rating["grade"])
-    return remember(redirect(url_for("course", offering_id=offering_id, saved="yes")), plan)
 
 
 @app.route("/rules")
@@ -151,9 +137,11 @@ def calendar_rows():
 
 # ---------- what the pages ask for while you work ----------
 
-def answer(plan, error=None):
-    """Every change answers with the fresh state, so the page never has to guess."""
-    body = {"error": error, "state": logic.state_of(plan)}
+def answer(plan, error=None, **more):
+    """Every change answers with the fresh state, so the page never has to guess.
+    The plan is read again first: a change to the mandatory courses changes the estimated points."""
+    plan = logic.load_plan(plan["id"])
+    body = {"error": error, "state": logic.state_of(plan), **more}
     return remember(jsonify(body), plan)
 
 
@@ -192,8 +180,7 @@ def api_remove():
     data = payload()
     if data.get("offering_id"):
         removed, error = logic.remove_course(plan, data["offering_id"])
-        body = {"error": error, "removed": removed, "state": logic.state_of(plan)}
-        return remember(jsonify(body), plan)
+        return answer(plan, error, removed=removed)
     return answer(plan, logic.remove_from_plan(plan, data.get("item_id")))
 
 
@@ -211,8 +198,9 @@ def api_switch():
 
 @app.route("/api/start-over", methods=["POST"])
 def api_start_over():
+    """Empties the semester on show and answers with what undo needs, like removing one course."""
     plan, _ = current_plan()
-    return answer(plan, logic.start_over(plan))
+    return answer(plan, removed=logic.start_over(plan))
 
 
 @app.route("/api/sheet/<offering_id>")
@@ -247,15 +235,15 @@ def api_settings():
     plan, _ = current_plan()
     data = payload()
     error = logic.update_settings(plan, data.get("programme", plan["programme"]), data.get("semester", plan["semester"]),
-                                  data.get("points", plan["points"]), bool(data.get("has_bonus", plan["has_bonus"])))
-    return answer(db.load_plan(plan["id"]), error)
+                                  data.get("points"), bool(data.get("has_bonus", plan["has_bonus"])))
+    return answer(plan, error)
 
 
 @app.route("/api/example", methods=["POST"])
 def api_example():
     plan, _ = current_plan()
     error = logic.load_example(plan)
-    return answer(db.load_plan(plan["id"]), error)
+    return answer(plan, error)
 
 
 @app.route("/api/share", methods=["POST"])

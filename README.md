@@ -28,18 +28,18 @@ The tests run on a throwaway database built from the real data. `tests/test_real
 | File | What lives there |
 |---|---|
 | `app.py` | The screens: every address the browser can ask for |
-| `logic.py` | The rules: clashes, prices, points, ratings, shared price data |
+| `logic.py` | The rules: clashes, prices, points, shared price data |
 | `db.py` | Storage: one SQLite file, no rules |
 | `templates/`, `static/` | What the pages look like; JavaScript only draws what `logic.py` answers |
-| `seed/` | The content: courses, sections, sessions, exams and past prices |
-| `scripts/` | How the content is made from Nova's PDFs (`docs/data.md`) |
+| `seed/` | The content: courses, sections, sessions, exams, course ratings and past prices |
+| `scripts/` | How the content is made from Nova's PDFs and from Uni Feedback (`docs/data.md`) |
 | `tests/` | One test file per group of rules |
 | `docs/product-brief.md` | Requirements, rules and acceptance scenarios |
 | `docs/walkthrough.md` | Six clicks from the button to the database |
 | `docs/demo.md` | The five minutes of the live demonstration |
 | `docs/usability.md` | Who used it without help, and what changed because of it |
 
-Content and progress are separate: `seed/` is rebuilt into the database whenever it changes; plans, ratings and shared prices are never touched by that.
+Content and progress are separate: `seed/` is rebuilt into the database whenever it changes; plans and shared prices are never touched by that.
 
 ## Show it without a server
 

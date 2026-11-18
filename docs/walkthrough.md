@@ -8,7 +8,9 @@ Each member is asked about code they did not write. Six clicks, from the button 
 | Switch a section | `chooseSection` in `static/planner.js` | `api_switch` | `switch_section` | `update_item` | `test_switching_keeps_the_bid_the_list_and_the_position` | LN R12 |
 | Remove and undo | `removeCourse` in `static/planner.js` | `api_remove`, `api_restore` | `remove_course`, `restore_items` | `delete_item`, `insert_item` | `test_removing_a_course_can_be_undone_with_its_bids_and_its_place` | LN R15 |
 | A bid in a course's card | `saveLater` in `static/bids.js` | `api_bid` | `set_course_bid`, `checked_bid` | `update_item` | `test_a_refused_course_bid_changes_nothing` | LN R6, R10 |
-| Rate a course | form in `templates/_sheet.html` | `rate` | `validate_rating` | `save_rating` | `test_an_incomplete_rating_is_refused` | LN R9 |
+| Pick a mandatory section, the points appear | `chooseSection` in `static/planner.js` | `api_add`, then `answer` | `load_plan`, `estimated_points` | `load_plan` (the typed points stay 0) | `test_picking_mandatory_sections_fills_in_the_points` | LN R17 |
+| *Reset*, then *Undo* | `resetPlan` in `static/planner.js` | `api_start_over`, `api_restore` | `start_over`, `restore_items` | `delete_item`, `insert_item` | `test_start_over_can_be_undone_with_every_bid_and_place` | LN R15 |
+| Open a course: the rating | `showOpenCourse` in `static/planner.js` | `api_sheet` | `course_page`, `course_rating` | `load_course_ratings` | `test_the_course_sheet_names_the_rating_and_where_it_comes_from` | LN07 |
 | Share a rank list | `static/share.js` | `api_share` | `share_rank_lists`, `read_rank_list` | `save_price_data` | `test_rows_with_personal_columns_are_refused_whole` | LN R9 |
 
 What answers a click: every change returns the whole state (`answer` in `app.py`, `state_of` in `logic.py`), and `Lance.update` in `static/common.js` redraws from it. The page never works anything out for itself.

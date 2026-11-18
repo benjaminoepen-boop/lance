@@ -62,6 +62,14 @@ async function removeCourse(offeringId, name) {
   Lance.toast(`Removed ${name}`, { label: "Undo", run: () => Lance.send("/api/restore", { rows: answer.removed }) });
 }
 
+/* LN R15: everything out at once, so that nobody has to look for each course again. Undo puts it all back */
+async function resetPlan() {
+  const answer = await Lance.send("/api/start-over", {});
+  if (answer.error || !answer.removed || !answer.removed.length) return;
+  const courses = new Set(answer.removed.map((row) => row.offering_id)).size;
+  Lance.toast(`Removed ${courses === 1 ? "1 course" : `all ${courses} courses`}`, { label: "Undo", run: () => Lance.send("/api/restore", { rows: answer.removed }) });
+}
+
 async function chooseSection(course, section) {
   view.hot = null;
   bringForward(course);
@@ -316,7 +324,10 @@ function metaLine(course, first) {
       : ` · a seat took ${Math.ceil(course.cutoff_low)} to ${Math.ceil(course.cutoff_high)}`;
   /* a phone has no week beside the list, so a course with one section says its time here */
   const time = !first && course.sections.length === 1 ? el("span", { class: "time", text: ` · ${meetingsText(course.sections[0].meetings)}` }) : null;
-  return el("span", { class: "course-sub" }, `${course.term} · ${course.ects} ECTS`, chosen, time, price);
+  /* LN07: what students say on Uni Feedback, as one number; the course sheet has the rest */
+  const rating = course.rating === null ? null
+    : el("span", { title: `${course.rating.toFixed(1)} of 5 from ${course.reviews} ${course.reviews === 1 ? "review" : "reviews"} on Uni Feedback`, text: ` · ★ ${course.rating.toFixed(1)}` });
+  return el("span", { class: "course-sub" }, `${course.term} · ${course.ects} ECTS`, rating, chosen, time, price);
 }
 
 /* the one thing to know before adding, as a status line: an exam at the same time is worst, then a class, then the same course in the other half */
@@ -501,7 +512,7 @@ async function tryExample() {
   await Lance.send("/api/example", {});
   await loadCatalogue();
   Lance.update(Lance.state);
-  Lance.toast("An example: a real Management plan from Fall 2026.", { label: "Start over", run: () => Lance.send("/api/start-over", {}) });
+  Lance.toast("An example: a real Management plan from Fall 2026.", { label: "Reset", run: resetPlan });
 }
 
 /* ---- above the list, and the lines about clashes ---- */
@@ -563,7 +574,7 @@ function renderClashes(state) {
     box.append(el("button", { type: "button", class: "btn tertiary flush", onclick: () => { view.allClashes = true; renderClashes(Lance.state); } }, `${state.clashes.length - 2} more`));
   }
   /* a hard day, two exams one after the other: an orange line under the clashes, never counted as a clash */
-  state.exam_days.forEach((day) => box.append(el("div", { class: "clash-line" },
+  state.exam_days.forEach((day) => box.append(el("div", { class: "clash-line exam-day" },
     el("p", { class: "status warn" }, Lance.icon("warn"), el("span", {}, `Two exams on ${day.when}: `, el("b", { text: `${day.first} × ${day.second}` }), ". Nova allows it, but it is a long day.")))));
 }
 
@@ -590,7 +601,10 @@ function figuresOf(state, head) {
     tone ? Lance.icon(tone) : null, el("b", { class: "num", text: value }), ` ${label}`);
   return [
     figure(String(state.ects.total), ects.label, ects.tone, `Nova recommends ${state.ects.recommended} ECTS, the maximum is ${state.ects.maximum}`, "ects"),
-    points ? figure(String(left), "points left", left < 0 ? "bad" : null, `${state.reserved} of your ${points} points are in bids`)
+    /* LN R17: points nobody typed are an estimate from the mandatory courses, and "about" says so */
+    points ? figure(String(left), state.plan.points_estimated ? "points left, estimated" : "points left", left < 0 ? "bad" : null,
+      state.plan.points_estimated ? `About ${points} points for ${state.mandatory_ects} mandatory ECTS. Type your Balance in Bids to replace the estimate`
+        : `${state.reserved} of your ${points} points are in bids`)
       : electives ? Lance.status("warn", "No points yet") : el("span", { text: "No points yet" }),
     clashes ? figure(String(clashes), clashes === 1 ? "clash" : "clashes", exam ? "bad" : "warn") : el("span", { text: "No clash" }),
   ];
@@ -600,6 +614,7 @@ function renderHead(state) {
   const clashes = state.clashes.length;
   const exam = state.clashes.some((clash) => clash.kind === "exam");
   document.getElementById("figures").replaceChildren(...figuresOf(state, true));
+  document.getElementById("reset").hidden = state.items.length === 0;
   /* above the list only once there is something in the plan: then a + shows what it changed */
   const line = document.getElementById("list-figures");
   const shown = state.items.length > 0;
@@ -642,7 +657,7 @@ function planRow(entries, state, classClash, examClash) {
      The name stays a link for the keyboard, in ink like the names in the other lists */
   return el("tr", {
     class: `go-row${alternate ? " alt" : ""}`,
-    onclick: (event) => { if (!event.target.closest("a")) go(first.offering_id); },
+    onclick: (event) => { if (!event.target.closest("a, button")) go(first.offering_id); },
   },
     el("td", { class: "name" }, el("span", { class: "named" },
       Lance.dot(state, first.offering_id),
@@ -655,6 +670,11 @@ function planRow(entries, state, classClash, examClash) {
     el("td", { class: "opt" }, cellValue(exam ? exam.label : "–", examLevel === "exam" ? "bad" : examLevel ? "warn" : null, examLevel === "day" ? "Two exams on one day" : null)),
     el("td", { class: `r num${alternate ? " faint" : ""}` },
       first.list === "mandatory" ? "–" : bid === null ? cellValue("No bid", first.list === "primary" ? "warn" : null) : String(bid)),
+    /* out of the plan right here: nobody has to find the course in the list again */
+    el("td", { class: "act" }, el("button", {
+      type: "button", class: "icon-btn", title: `Remove ${first.name}`, "aria-label": `Remove ${first.name}`, html: Lance.icons.close,
+      onclick: () => removeCourse(first.offering_id, first.name),
+    })),
     el("td", { class: "chev" }, Lance.icon("next")));
 }
 
@@ -667,7 +687,7 @@ function totalsRow(state, counted, alternates) {
   const examClashes = state.clashes.filter((clash) => clash.kind !== "class");
   const ects = ectsWords(state.ects);
   const many = (count, word) => `${count} ${word}${count === 1 ? "" : word.endsWith("sh") ? "es" : "s"}`;
-  return el("tr", {}, el("td", { colspan: 7 }, el("div", { class: "plan-totals" },
+  return el("tr", {}, el("td", { colspan: 8 }, el("div", { class: "plan-totals" },
     el("span", {}, el("b", { class: "num", text: String(counted) }), counted === 1 ? " course" : " courses", alternates ? ` + ${alternates} alternate` : null),
     el("span", { class: "opt" }, classClashes ? cellValue(many(classClashes, "class clash"), "warn") : "No class clash"),
     el("span", { title: `Nova recommends ${state.ects.recommended} ECTS, the maximum is ${state.ects.maximum}` },
@@ -693,7 +713,7 @@ function renderPlanTable(state) {
   [["mandatory", "Mandatory"], ["primary", "Primary list"], ["alternate", "Alternate list"]].forEach(([list, title]) => {
     const ids = offerings.filter((id) => entriesOf(state, id)[0].list === list);
     if (!ids.length) return;
-    body.append(el("tr", { class: "plan-group" }, el("th", { colspan: 7, scope: "colgroup", text: title })));
+    body.append(el("tr", { class: "plan-group" }, el("th", { colspan: 8, scope: "colgroup", text: title })));
     ids.forEach((id) => body.append(planRow(entriesOf(state, id), state, classClash, examClash)));
   });
   const counted = offerings.filter((id) => entriesOf(state, id)[0].list !== "alternate").length;
@@ -701,13 +721,9 @@ function renderPlanTable(state) {
   box.replaceChildren(
     el("table", { class: "plan-table" },
       el("thead", {}, el("tr", {}, head("Course"), head("Section", "opt"), head("Time", "opt"), head("ECTS", "r"), head("Exam", "opt"), head("Bid", "r"),
-        el("th", { class: "chev" }, el("span", { class: "sr", text: "Open" })))),
+        el("th", { class: "act" }, el("span", { class: "sr", text: "Remove" })), el("th", { class: "chev" }, el("span", { class: "sr", text: "Open" })))),
       body,
-      el("tfoot", {}, totalsRow(state, counted, offerings.length - counted))),
-    el("button", {
-      type: "button", class: "btn plan-reset",
-      onclick: () => { if (window.confirm(`Remove every ${state.plan.semester} course from your plan?`)) Lance.send("/api/start-over", {}); },
-    }, "Start over"));
+      el("tfoot", {}, totalsRow(state, counted, offerings.length - counted))));
 }
 
 /* ---- wiring ---- */
@@ -763,6 +779,7 @@ document.getElementById("fits").addEventListener("click", (event) => {
   event.currentTarget.setAttribute("aria-pressed", view.fits ? "true" : "false");
   if (Lance.state) renderList(Lance.state);
 });
+document.getElementById("reset").addEventListener("click", resetPlan);
 document.getElementById("set-programme").addEventListener("change", (event) => changeSetting({ programme: event.target.value }));
 document.getElementById("set-semester").addEventListener("change", (event) => changeSetting({ semester: event.target.value }));
 document.addEventListener("keydown", (event) => {
@@ -798,7 +815,5 @@ document.getElementById("plan-tabs").addEventListener("keydown", (event) => {
   else if (view.tab !== "week" && !location.hash) {
     try { history.replaceState(null, "", `#${view.tab}`); } catch (error) { /* a sandboxed preview keeps its address */ }
   }
-  if (planner.dataset.saved === "yes") Lance.toast("Thanks, your answers are in.");
-  if (planner.dataset.saved === "error") Lance.toast("Please answer every question.");
   route();
 })();

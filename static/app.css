@@ -125,7 +125,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
 /* ---- one state system: a pointing hand on everything clickable and nowhere else, one focus ring, one disabled look.
    Hover only for a real mouse, so every :hover sits in @media (hover: hover): after a tap nothing stays lit. Focus is for everyone ---- */
-button, select, summary, label.check, .scale label { cursor: pointer; }
+button, select, summary, label.check { cursor: pointer; }
 /* a redraw never moves the page by itself: planner.js keeps the row that was clicked in its place (Chrome would otherwise jump) */
 html, body { overflow-anchor: none; }
 :focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
@@ -162,7 +162,7 @@ a { color: var(--blue); text-decoration: underline; text-decoration-thickness: 1
    primary (filled blue, one per screen), secondary (white with a border), tertiary (blue words for small extras) ---- */
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: var(--h); padding: 0 14px; border: 1px solid var(--line-2); border-radius: var(--r-ctl); background: var(--card); color: var(--ink); font-size: 15px; font-weight: 500; white-space: nowrap; text-decoration: none; }
 /* one hover for every outlined control: the border turns blue */
-@media (hover: hover) { .btn:hover:not(:disabled), .tile:hover, .scale label:hover span, .add-card:hover { border-color: var(--blue); color: var(--blue-deep); } }
+@media (hover: hover) { .btn:hover:not(:disabled), .tile:hover, .add-card:hover { border-color: var(--blue); color: var(--blue-deep); } }
 .btn.primary { background: var(--blue); border-color: var(--blue); color: var(--on-blue); }
 @media (hover: hover) { .btn.primary:hover:not(:disabled) { background: var(--blue-deep); border-color: var(--blue-deep); color: var(--on-blue); } }
 .btn.tertiary { border-color: transparent; background: none; color: var(--blue); padding: 0 10px; }
@@ -189,7 +189,6 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 .num-field .unit { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: 13px; color: var(--ink-3); pointer-events: none; }
 .num-field.small input { min-height: var(--h-sm); width: 80px; padding-right: 31px; font-size: 13px; }
 .num-field.small .unit { right: 9px; }
-.num-input { width: 84px; text-align: right; font-variant-numeric: tabular-nums; }
 
 /* ---- status: how something stands, one component everywhere. The verdict first, a small icon, never a button ---- */
 .status { display: inline-flex; align-items: flex-start; gap: 6px; min-width: 0; font-size: 13px; color: var(--ink-2); }
@@ -333,22 +332,18 @@ details.about[open] > summary { display: none; }
 .figure b { font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .clamp { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .stat-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.stat-grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .stat { background: var(--paper); border-radius: var(--r-ctl); padding: 7px 9px; }
 .stat b { display: block; font-size: 17px; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.2; }
 .stat span { font-size: 12px; font-weight: 500; color: var(--ink-3); }
-.rate-form { display: flex; flex-direction: column; gap: 10px; }
-.rate-q { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 12px; align-items: center; }
-.scale { display: inline-flex; gap: 4px; }
-.scale label { position: relative; }
-.scale input { position: absolute; opacity: 0; }
-.scale span { display: grid; place-items: center; min-width: var(--h); height: var(--h); padding: 0 10px; border: 1px solid var(--line-2); border-radius: var(--r-ctl); background: var(--card); font-weight: 500; color: var(--ink); }
-.scale input:checked + span { background: var(--blue-soft); border-color: var(--blue); color: var(--blue-deep); }
-.scale input:focus-visible + span { outline: 2px solid var(--blue); outline-offset: 2px; }
 
 /* ---- the right half: where you stand on top, then Week, Bids and Summary ---- */
 .plan { min-height: 0; display: flex; flex-direction: column; padding: 0; }
 .plan-head { flex: none; display: flex; flex-direction: column; gap: 4px; padding: 12px 18px 0; border-bottom: 1px solid var(--line); }
 .plan-title { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 16px; min-height: 32px; }
+/* the title on the left, where you stand and Reset on the right; Reset ends on the edge of the text below it */
+.plan-title h2 { margin-right: auto; }
+#reset { margin-right: -10px; }
 /* the figures: the number dark and 600, the word grey; colour and an icon only when something needs a look */
 .figures { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 20px; color: var(--ink-2); }
 .figures > span { white-space: nowrap; }
@@ -467,6 +462,7 @@ details.about[open] > summary { display: none; }
 .go-row > td:last-child { border-radius: 0 8px 8px 0; }
 @media (hover: hover) { .go-row:hover > td { background: var(--hover); } .go-row:hover .i-next { color: var(--ink); } }
 .plan-table .chev { width: 12px; padding-left: 0; padding-right: 10px; }
+.plan-table .act { width: var(--h-icon); padding-top: 0; padding-bottom: 0; padding-right: 0; }
 .plan-table td.chev .i { vertical-align: middle; }
 /* the dot before the name, the name over its facts (a phone shows them under the name) */
 .named { display: flex; align-items: flex-start; gap: 8px; min-width: 0; }
@@ -482,7 +478,6 @@ details.about[open] > summary { display: none; }
 .plan-totals b { color: var(--ink); }
 .plan-totals .status { font-size: inherit; font-weight: 600; }
 .plan-totals .status b { color: inherit; }
-.plan-reset { margin-top: 16px; }
 
 /* ---- step 3 and the quiet pages ---- */
 .narrow { max-width: 860px; margin: 0 auto; display: flex; flex-direction: column; gap: var(--gap); }
@@ -553,6 +548,7 @@ ul.plain { margin: 0; padding-left: 18px; display: flex; flex-direction: column;
   .tile { min-height: 62px; }
   .time { display: inline; }
   .plan-head { padding: 10px 12px 10px; }
+  .plan-title .figures { order: 3; flex-basis: 100%; }   /* a phone: title and Reset on one line, the figures under them */
   .plan-title { min-height: 0; }
   .figures { gap: 2px 14px; font-size: 13px; }
   .tabs { display: none; }

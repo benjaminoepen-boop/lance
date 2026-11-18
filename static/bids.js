@@ -114,13 +114,15 @@ const Bids = (() => {
       part(el("b", { class: "num", text: whole(f.left) }), " back afterwards")];
   }
 
-  /* missing points or a budget spent twice: one line with its icon */
+  /* missing points or a budget spent twice: one line with its icon. LN R17: points nobody typed are an estimate, and a line says so */
   function pointsNote(state) {
     const points = state.plan.points;
-    if (!state.items.some((item) => item.list === "primary")) return [];
+    const estimate = state.plan.points_estimated
+      ? [el("p", { class: "meta", id: "points-estimate", text: `Estimated from your ${state.mandatory_ects} mandatory ECTS. Type the Balance from Nova's platform to replace it.` })] : [];
+    if (!state.items.some((item) => item.list === "primary")) return estimate;
     if (!points) return [Lance.status("warn", "Enter your points: they are the Balance on Nova's platform.")];
-    if (state.reserved > points) return [Lance.status("bad", `Your bids hold ${state.reserved} points, you have ${points}.`)];
-    return [];
+    if (state.reserved > points) return [Lance.status("bad", `Your bids hold ${state.reserved} points, you have ${points}.`), ...estimate];
+    return estimate;
   }
 
   /* the small print, once, under the lists */

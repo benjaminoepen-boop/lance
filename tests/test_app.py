@@ -117,48 +117,6 @@ def test_the_list_for_the_platform_keeps_the_order(client):
     assert "TXB 10, TXA 10" in text
 
 
-# ---------- A7: ratings stay anonymous ----------
-
-RATING = {"overall": "4", "workload_hours": "6", "fairness": "4", "organisation": "5", "again": "1", "grade": "16"}
-
-
-def rate_as(count, code="2477"):
-    for number in range(count):
-        db.save_rating(f"plan-{number}", code, 4, 6, 4, 5, 1, 16.0)
-
-
-def test_ratings_stay_hidden_below_three():
-    rate_as(2)
-    assert logic.rating_summary("2477")["show"] is False
-
-
-def test_ratings_show_from_three_but_grades_only_from_ten():
-    rate_as(3)
-    summary = logic.rating_summary("2477")
-    assert summary["show"] is True and summary["overall"] == 4
-    assert summary["show_grade"] is False
-    rate_as(10)
-    assert logic.rating_summary("2477")["show_grade"] is True
-
-
-def test_one_visitor_counts_once(client):
-    client.post("/course/2477-S1/rate", data=RATING)
-    client.post("/course/2477-S1/rate", data=dict(RATING, overall="1"))
-    rows = db.load_ratings("2477")
-    assert len(rows) == 1 and rows[0]["overall"] == 1
-
-
-def test_an_incomplete_rating_is_refused(client):
-    client.post("/course/2477-S1/rate", data={"overall": "9"})
-    assert db.load_ratings("2477") == []
-
-
-def test_ratings_have_no_field_for_free_text():
-    rating, error = logic.validate_rating(dict(RATING, comment="Prof X is terrible"))
-    assert error is None
-    assert "comment" not in rating
-
-
 # ---------- A8: shared price data keeps no personal data ----------
 
 ROWS = [{"final": 120.0, "bid": 120, "allocated": True}, {"final": 110.0, "bid": 100, "allocated": True},

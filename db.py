@@ -2,7 +2,7 @@
 
 Two kinds of data, as in the course:
   content   what Nova publishes: courses, sections, sessions, exams. Rebuilt from seed/ whenever seed/ changes.
-  progress  what people do here: plans, bids, ratings, shared price data. Never touched by a rebuild.
+  progress  what people do here: plans, bids, shared price data. Never touched by a rebuild.
 """
 import csv
 import hashlib
@@ -82,6 +82,13 @@ CREATE TABLE syllabi (
     weights    TEXT NOT NULL,        -- JSON: [{"label": "Final exam", "percent": 60}, ...]
     PRIMARY KEY (code, term)
 );
+CREATE TABLE course_ratings (         -- what students say on Uni Feedback, an independent review site
+    code      TEXT PRIMARY KEY,
+    rating    REAL NOT NULL,         -- the average of all reviews, 1 to 5
+    reviews   INTEGER NOT NULL,      -- how many reviews the average rests on
+    workload  TEXT NOT NULL,         -- Very light, Light, Moderate, Heavy, Very heavy
+    source_id TEXT NOT NULL          -- the course's number on uni-feedback.com, for the link to its reviews
+);
 CREATE INDEX sessions_by_section ON sessions (section_id);
 CREATE INDEX meetings_by_section ON meetings (section_id);
 CREATE INDEX sections_by_offering ON sections (offering_id);
@@ -92,7 +99,7 @@ CREATE TABLE IF NOT EXISTS plans (
     id         TEXT PRIMARY KEY,
     programme  TEXT NOT NULL,
     semester   TEXT NOT NULL,
-    points     INTEGER NOT NULL,
+    points     INTEGER NOT NULL,     -- the Balance the student typed; 0 while they have not (then LN R17 estimates)
     has_bonus  INTEGER NOT NULL,     -- 1 when the student expects the 10 % rank bonus
     created_at TEXT NOT NULL
 );
@@ -107,18 +114,6 @@ CREATE TABLE IF NOT EXISTS plan_items (
     UNIQUE (plan_id, offering_id, section_id)
 );
 CREATE INDEX IF NOT EXISTS items_by_plan ON plan_items (plan_id);
-CREATE TABLE IF NOT EXISTS ratings (
-    plan_id        TEXT NOT NULL,    -- one rating per plan and course; never shown to anyone
-    code           TEXT NOT NULL,
-    overall        INTEGER NOT NULL,
-    workload_hours INTEGER NOT NULL,
-    fairness       INTEGER NOT NULL,
-    organisation   INTEGER NOT NULL,
-    again          INTEGER NOT NULL,
-    grade          REAL,             -- optional, shown only as an average of many
-    created_at     TEXT NOT NULL,
-    PRIMARY KEY (plan_id, code)
-);
 -- Past prices. Only totals per section: no row here can point to a student.
 CREATE TABLE IF NOT EXISTS cutoffs (
     code           TEXT NOT NULL,
@@ -150,7 +145,8 @@ CREATE TABLE IF NOT EXISTS bid_histogram (
 );
 """
 
-CONTENT_TABLES = ["offerings", "sections", "meetings", "sessions", "exams", "programme_offerings", "calendar", "syllabi"]
+CONTENT_TABLES = ["offerings", "sections", "meetings", "sessions", "exams", "programme_offerings", "calendar", "syllabi",
+                  "course_ratings"]
 
 
 def connect():
@@ -330,6 +326,11 @@ def load_all_syllabi():
         return rows_as_dicts(connection.execute("SELECT code, term, synopsis FROM syllabi"))
 
 
+def load_course_ratings():
+    with closing(connect()) as connection:
+        return rows_as_dicts(connection.execute("SELECT * FROM course_ratings"))
+
+
 # ---------- past prices ----------
 
 def load_cutoffs(code=None):
@@ -431,22 +432,6 @@ def update_item(item_id, **fields):
     with closing(connect()) as connection:
         connection.execute(f"UPDATE plan_items SET {assignments} WHERE id = ?", values + [item_id])
         connection.commit()
-
-
-# ---------- ratings ----------
-
-def save_rating(plan_id, code, overall, workload_hours, fairness, organisation, again, grade):
-    with closing(connect()) as connection:
-        connection.execute("""
-            INSERT OR REPLACE INTO ratings (plan_id, code, overall, workload_hours, fairness, organisation, again, grade, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                           (plan_id, code, overall, workload_hours, fairness, organisation, again, grade, now()))
-        connection.commit()
-
-
-def load_ratings(code):
-    with closing(connect()) as connection:
-        return rows_as_dicts(connection.execute("SELECT * FROM ratings WHERE code = ?", (code,)))
 
 
 def now():
