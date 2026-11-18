@@ -19,7 +19,10 @@ async function run(browserType, label, options) {
   const page = await context.newPage();
   const errors = [];
   page.on("pageerror", (error) => errors.push(`${error.message} @ ${page.url()}`));
-  page.on("console", (message) => { if (message.type() === "error" && !message.text().includes("status of 400")) errors.push(message.text()); });
+  /* WebKit's own video controls log "Button failed to load, iconName = …-placard" for every <video controls>, also on a
+     bare page without Lance's code or policy (tried 18 Nov 2026): that is the browser, not a script of Lance */
+  const browserOwn = (text) => text.startsWith("Button failed to load, iconName =");
+  page.on("console", (message) => { if (message.type() === "error" && !message.text().includes("status of 400") && !browserOwn(message.text())) errors.push(message.text()); });
   page.on("dialog", (dialog) => dialog.accept());
   const phone = Boolean(options.isMobile);
   const n = (text) => `${label}: ${text}`;
