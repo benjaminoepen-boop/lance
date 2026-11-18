@@ -338,6 +338,9 @@ function noteLine(course, state) {
   if (clash) return Lance.status("warn", clash, { cls: "course-note" });
   const twin = state.items.find((item) => item.code === course.code && item.offering_id !== course.id);
   if (twin) return Lance.status("warn", `In your plan in ${twin.term}`, { cls: "course-note" });
+  /* two exams on one day are no clash, but a hard day: said last, because the other notes block or double the course */
+  const day = state.day_warnings[course.id];
+  if (day) return Lance.status("warn", `Exam on the same day as ${day.join(", ")}`, { cls: "course-note" });
   return null;
 }
 
@@ -570,6 +573,9 @@ function renderClashes(state) {
   if (state.clashes.length > 2 && !view.allClashes) {
     box.append(el("button", { type: "button", class: "btn tertiary flush", onclick: () => { view.allClashes = true; renderClashes(Lance.state); } }, `${state.clashes.length - 2} more`));
   }
+  /* a hard day, two exams one after the other: an orange line under the clashes, never counted as a clash */
+  state.exam_days.forEach((day) => box.append(el("div", { class: "clash-line" },
+    el("p", { class: "status warn" }, Lance.icon("warn"), el("span", {}, `Two exams on ${day.when}: `, el("b", { text: `${day.first} × ${day.second}` }), ". Nova allows it, but it is a long day.")))));
 }
 
 /* ---- the head of your plan: where you stand, whatever tab is open ---- */
@@ -595,7 +601,7 @@ function figuresOf(state, head) {
     tone ? Lance.icon(tone) : null, el("b", { class: "num", text: value }), ` ${label}`);
   return [
     figure(String(state.ects.total), ects.label, ects.tone, `Nova recommends ${state.ects.recommended} ECTS, the maximum is ${state.ects.maximum}`, "ects"),
-    /* LN R16: points nobody typed are an estimate from the mandatory courses, and "about" says so */
+    /* LN R17: points nobody typed are an estimate from the mandatory courses, and "about" says so */
     points ? figure(String(left), state.plan.points_estimated ? "points left, estimated" : "points left", left < 0 ? "bad" : null,
       state.plan.points_estimated ? `About ${points} points for ${state.mandatory_ects} mandatory ECTS. Type your Balance in Bids to replace the estimate`
         : `${state.reserved} of your ${points} points are in bids`)
@@ -644,7 +650,7 @@ function planRow(entries, state, classClash, examClash) {
   const backups = entries.slice(1).map((item) => item.section).filter(Boolean);
   const exam = state.exams.find((item) => item.offering_id === first.offering_id && item.kind === "exam");
   const clash = classClash.get(first.id);
-  const examLevel = examClash.get(first.offering_id);
+  const examLevel = examClash.get(first.offering_id) || (state.exam_days.some((day) => day.offerings.includes(first.offering_id)) ? "day" : null);
   const bid = entries.some((item) => item.bid !== null) ? Math.max(...entries.map((item) => item.bid || 0)) : null;
   const time = first.section ? meetingsText(first.meetings) : "Not published";
   /* like every list: the whole row opens the course on the left, the chevron at the right edge says so.
@@ -661,7 +667,7 @@ function planRow(entries, state, classClash, examClash) {
     el("td", { class: "opt" }, first.section || "–", backups.length ? el("span", { class: "faint", title: `If full: ${backups.join(", ")}`, text: ` +${backups.length}` }) : null),
     el("td", { class: "opt" }, clash ? cellValue(`${first.term} · ${time}`, "warn", `Clashes: ${clash}`) : el("span", { class: "faint", text: `${first.term} · ` }), clash ? null : time),
     el("td", { class: `r num${alternate ? " faint" : ""}`, title: alternate ? "The alternate list does not count" : null, text: alternate ? `(${first.ects})` : String(first.ects) }),
-    el("td", { class: "opt" }, cellValue(exam ? exam.label : "–", examLevel === "exam" ? "bad" : examLevel ? "warn" : null)),
+    el("td", { class: "opt" }, cellValue(exam ? exam.label : "–", examLevel === "exam" ? "bad" : examLevel ? "warn" : null, examLevel === "day" ? "Two exams on one day" : null)),
     el("td", { class: `r num${alternate ? " faint" : ""}` },
       first.list === "mandatory" ? "–" : bid === null ? cellValue("No bid", first.list === "primary" ? "warn" : null) : String(bid)),
     /* out of the plan right here: nobody has to find the course in the list again */

@@ -114,7 +114,7 @@ const Bids = (() => {
       part(el("b", { class: "num", text: whole(f.left) }), " back afterwards")];
   }
 
-  /* missing points or a budget spent twice: one line with its icon. LN R16: points nobody typed are an estimate, and a line says so */
+  /* missing points or a budget spent twice: one line with its icon. LN R17: points nobody typed are an estimate, and a line says so */
   function pointsNote(state) {
     const points = state.plan.points;
     const estimate = state.plan.points_estimated

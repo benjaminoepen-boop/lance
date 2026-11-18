@@ -71,3 +71,63 @@ def test_a_midterm_during_a_class_is_reported():
     assert logic.add_to_plan(plan, offering_id="2337-T2") is None
     assert logic.add_to_plan(plan, section_id=evening) is None
     assert any(clash["kind"] == "midterm" for clash in logic.exam_clashes(db.load_items(plan["id"])))
+
+
+# ---------- LN R16: two exams on one day ----------
+
+def same_day_pair(term="T1"):
+    """Two courses of one term with an exam on the same date, one after the other, taken from the real calendar."""
+    exams = [e for e in db.load_exams() if e["kind"] == "exam" and e["term"] == term and e["date"]]
+    for i, a in enumerate(exams):
+        for b in exams[i + 1:]:
+            if a["code"] != b["code"] and a["date"] == b["date"] and not logic.overlaps(a["start"], a["end"], b["start"], b["end"]):
+                return a, b
+    raise AssertionError("no such pair in the calendar")
+
+
+def test_two_exams_on_one_day_are_a_hard_day_and_not_a_clash(plan):
+    a, b = same_day_pair()
+    for exam in (a, b):
+        assert logic.add_to_plan(plan, offering_id=f"{exam['code']}-T1") is None
+    items = db.load_items(plan["id"])
+    days = logic.exam_days(items)
+    assert len(days) == 1
+    assert days[0]["when"] == logic.day_label(a["date"])
+    assert {days[0]["first"], days[0]["second"]} == {logic.all_offerings()[f"{a['code']}-T1"]["name"], logic.all_offerings()[f"{b['code']}-T1"]["name"]}
+    assert not any(clash["kind"] == "exam" for clash in logic.exam_clashes(items))
+
+
+def test_exams_on_different_days_say_nothing(plan):
+    a, _ = same_day_pair()
+    other = next(e for e in db.load_exams() if e["kind"] == "exam" and e["term"] == "T1" and e["date"] and e["date"] != a["date"] and e["code"] != a["code"])
+    for exam in (a, other):
+        assert logic.add_to_plan(plan, offering_id=f"{exam['code']}-T1") is None
+    assert logic.exam_days(db.load_items(plan["id"])) == []
+
+
+def test_exams_in_one_slot_are_a_clash_and_not_a_hard_day(plan):
+    exams = [e for e in db.load_exams() if e["kind"] == "exam" and e["term"] == "T2"]
+    pair = next((a, b) for i, a in enumerate(exams) for b in exams[i + 1:]
+                if a["code"] != b["code"] and a["date"] == b["date"] and a["start"] == b["start"])
+    for exam in pair:
+        assert logic.add_to_plan(plan, offering_id=f"{exam['code']}-T2") is None
+    items = db.load_items(plan["id"])
+    assert any(clash["kind"] == "exam" for clash in logic.exam_clashes(items))
+    assert logic.exam_days(items) == []
+
+
+def test_a_course_not_yet_in_the_plan_warns_about_the_hard_day(plan):
+    a, b = same_day_pair()
+    assert logic.add_to_plan(plan, offering_id=f"{a['code']}-T1") is None
+    warnings = logic.exam_day_warnings(db.load_items(plan["id"]), "Fall")
+    assert logic.all_offerings()[f"{a['code']}-T1"]["name"] in warnings[f"{b['code']}-T1"]
+    assert f"{a['code']}-T1" not in warnings
+
+
+def test_the_state_carries_the_hard_days_and_leaves_the_clash_count_alone(client):
+    a, b = same_day_pair()
+    for exam in (a, b):
+        client.post("/api/add", json={"offering_id": f"{exam['code']}-T1"})
+    state = client.get("/api/state").get_json()["state"]
+    assert len(state["exam_days"]) == 1
+    assert state["clashes"] == []

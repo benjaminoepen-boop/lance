@@ -208,7 +208,7 @@ async function run(browserType, label, options) {
   await page.goto(url("/bids"));
   await page.waitForSelector("#bid-lists input");
   await noSideways("the bids");
-  /* LN R16: nobody typed points yet, so they are an estimate from the one mandatory course picked above (7 ECTS), and a line says so */
+  /* LN R17: nobody typed points yet, so they are an estimate from the one mandatory course picked above (7 ECTS), and a line says so */
   check(n("a new plan estimates the points from the mandatory courses"), (await page.inputValue("#set-points")) === "227"
     && (await page.locator("#points-estimate").textContent()).includes("Estimated from your 7 mandatory ECTS"), await page.locator("#summary").textContent());
   const bid = page.locator('input[aria-label="Bid on Introduction to Programming"]');
