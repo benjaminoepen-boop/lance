@@ -99,7 +99,7 @@ CREATE TABLE IF NOT EXISTS plans (
     id         TEXT PRIMARY KEY,
     programme  TEXT NOT NULL,
     semester   TEXT NOT NULL,
-    points     INTEGER NOT NULL,     -- the Balance the student typed; 0 while they have not (then LN R16 estimates)
+    points     INTEGER NOT NULL,     -- the Balance the student typed; 0 while they have not (then LN R17 estimates)
     has_bonus  INTEGER NOT NULL,     -- 1 when the student expects the 10 % rank bonus
     created_at TEXT NOT NULL
 );

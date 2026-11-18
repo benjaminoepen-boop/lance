@@ -15,7 +15,7 @@ import db
 MAX_ECTS = 31.5            # LN R8: mandatory and elective courses per semester
 RECOMMENDED_ECTS = 28.0
 BONUS = 1.1                # LN R7: rank value of part of the students with 45 or more ECTS passed
-# LN R16: two rough reference values from the team's own accounts, as (ECTS in mandatory courses, points).
+# LN R17: two rough reference values from the team's own accounts, as (ECTS in mandatory courses, points).
 # Nova does not publish how it sets the points, so this is an estimate until the student types the real number.
 POINTS_AT = ((20, 140), (23, 120))
 RATING_PAGE = "https://uni-feedback.com/en/courses/"   # LN07: where a course's reviews can be read
@@ -257,6 +257,42 @@ def exam_clashes(items):
                         })
     clashes.extend(midterm_class_clashes(items))
     return clashes
+
+
+def exam_days(items):
+    """LN R16: two exams of different courses on one date, one after the other. The platform allows it, so it is not
+    a clash and is not counted as one; it is a hard day, and Lance says so. Midterms and presentations do not count."""
+    offerings = [all_offerings()[offering_id] for offering_id in sorted({item["offering_id"] for item in items})]
+    days = []
+    for i, first in enumerate(offerings):
+        for second in offerings[i + 1:]:
+            for exam_a in regular_exams(first):
+                for exam_b in regular_exams(second):
+                    if exam_a["kind"] == "exam" and exam_b["kind"] == "exam" and exam_a["date"] == exam_b["date"] \
+                            and not overlaps(exam_a["start"], exam_a["end"], exam_b["start"], exam_b["end"]):
+                        days.append({"offerings": [first["id"], second["id"]], "first": first["name"], "second": second["name"],
+                                     "date": exam_a["date"], "when": day_label(exam_a["date"])})
+    return sorted(days, key=lambda day: day["date"])
+
+
+def exam_day_warnings(items, semester):
+    """LN R16 before adding: {course not in the plan: the names of the week's courses it would share an exam day with}."""
+    planned = {item["offering_id"] for item in items}
+    week = [all_offerings()[item["offering_id"]] for item in week_items(items)]
+    warnings = {}
+    for offering_id, offering in all_offerings().items():
+        if offering["semester"] != semester or offering_id in planned:
+            continue
+        names = set()
+        for other in week:
+            for exam_a in regular_exams(offering):
+                for exam_b in regular_exams(other):
+                    if exam_a["kind"] == "exam" and exam_b["kind"] == "exam" and exam_a["date"] == exam_b["date"] \
+                            and not overlaps(exam_a["start"], exam_a["end"], exam_b["start"], exam_b["end"]):
+                        names.add(other["name"])
+        if names:
+            warnings[offering_id] = sorted(names)
+    return warnings
 
 
 def midterm_class_clashes(items):
@@ -508,7 +544,7 @@ def mandatory_ects(items):
 
 
 def estimated_points(ects):
-    """LN R16: the points a student gets for this many mandatory ECTS: a straight line through the two
+    """LN R17: the points a student gets for this many mandatory ECTS: a straight line through the two
     reference values, because more mandatory courses leave fewer electives to bid on. Never below zero.
     Without mandatory courses there is nothing to go by, so there is no estimate."""
     if ects <= 0:
@@ -519,13 +555,13 @@ def estimated_points(ects):
 
 
 def points_with(plan, items):
-    """LN R16: the points of a plan that holds these entries: the number the student typed, otherwise the estimate."""
+    """LN R17: the points of a plan that holds these entries: the number the student typed, otherwise the estimate."""
     typed = db.load_plan(plan["id"])["points"]
     return typed or estimated_points(mandatory_ects(items))
 
 
 def load_plan(plan_id):
-    """The plan as every page and every check uses it. LN R16: while the student has not typed their points,
+    """The plan as every page and every check uses it. LN R17: while the student has not typed their points,
     'points' is the estimate from their mandatory courses and 'points_estimated' says so."""
     plan = db.load_plan(plan_id)
     if plan is None:
@@ -657,7 +693,7 @@ def restore_items(plan, rows):
             return "Unknown place."
         if any(item["offering_id"] == offering["id"] for item in items):
             return "Already in your plan."
-    # LN R16: a mandatory course that comes back brings its points along, so the bids are held against the plan as it will be
+    # LN R17: a mandatory course that comes back brings its points along, so the bids are held against the plan as it will be
     points = points_with(plan, items + rows)
     for row in rows:
         bid = row.get("bid")
@@ -770,7 +806,7 @@ def move_item(plan, item_id, list_name=None, direction=None):
 
 def update_settings(plan, programme, semester, points, has_bonus):
     """Save the plan's settings. Entries of another semester stay saved but do not show.
-    Points of None mean: not typed now, keep what is saved. Zero means: back to the estimate (LN R16)."""
+    Points of None mean: not typed now, keep what is saved. Zero means: back to the estimate (LN R17)."""
     if programme and programme not in db.load_programmes():
         return "Unknown programme."
     if semester not in ("Fall", "Spring"):
@@ -884,6 +920,8 @@ def state_of(plan):
         "clashes": clashes,
         "section_warnings": per_section,
         "exam_warnings": per_offering,
+        "exam_days": exam_days(week),
+        "day_warnings": exam_day_warnings(items, plan["semester"]),
         "exams": exams,
         "warnings": warnings_for(plan, items),
         "next_deadline": next_deadline(),

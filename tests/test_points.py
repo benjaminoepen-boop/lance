@@ -1,4 +1,4 @@
-"""LN R16: without typed points, the points are an estimate from the mandatory courses in the plan."""
+"""LN R17: without typed points, the points are an estimate from the mandatory courses in the plan."""
 import pytest
 
 import db

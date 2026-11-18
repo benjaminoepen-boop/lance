@@ -65,7 +65,7 @@ def test_without_a_timetable_a_mandatory_course_is_added_without_a_section(visit
     assert answer["error"] is None
     item = answer["state"]["items"][0]
     assert item["list"] == "mandatory" and item["section_id"] is None
-    # LN R16: it counts for the estimated points like any mandatory course
+    # LN R17: it counts for the estimated points like any mandatory course
     assert answer["state"]["plan"]["points"] == logic.estimated_points(7)
 
 

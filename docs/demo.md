@@ -15,7 +15,7 @@ Open with the pain, before the first click: "The start at Nova is chaos: four sy
 
 Clashes that are safe to show, all checked by the tests: Asian Brands against Statistical Analysis TXC (classes), Advanced Strategy TXC against Econometrics TXA (classes), Econometrics against the example plan (an exam, red). *Fits my week* hides every course that would clash.
 
-Questions we must be able to answer: how the estimate works (`estimated_points` in `logic.py`, LN R16), where the ratings come from (`scripts/fetch_ratings.py`, `docs/data.md`), why nobody rates inside Lance (advisor: who is bidding does not want to rate), what *Fits my week* does (`matches` in `static/planner.js`: hides courses whose every section clashes with the week or whose exam clashes).
+Questions we must be able to answer: how the estimate works (`estimated_points` in `logic.py`, LN R17), where the ratings come from (`scripts/fetch_ratings.py`, `docs/data.md`), why nobody rates inside Lance (advisor: who is bidding does not want to rate), what *Fits my week* does (`matches` in `static/planner.js`: hides courses whose every section clashes with the week or whose exam clashes).
 
 ## The five minutes
 
