@@ -135,6 +135,34 @@ const Lance = {
   },
 };
 
+/* the switch in the top bar: system, light, dark. The choice sits in localStorage (it outlives the visit, unlike remember),
+   and a small script in the head applies it before the page paints, so a dark page never flashes white. */
+(() => {
+  const button = document.getElementById("theme");
+  if (!button) return;
+  const modes = ["system", "light", "dark"];
+  const pages = { light: "#ffffff", dark: "#121214" };
+  const metas = [...document.querySelectorAll('meta[name="theme-color"]')].map((meta) => [meta, meta.content]);
+  const show = (mode) => {
+    button.dataset.mode = mode;
+    const text = `Colour theme: ${mode}`;
+    button.title = text;
+    button.setAttribute("aria-label", `${text}. Press to change.`);
+    /* the bar of a phone follows the choice; with "system" it goes back to the two values of the page */
+    metas.forEach(([meta, original]) => { meta.content = pages[mode] || original; });
+  };
+  show(document.documentElement.dataset.theme || "system");
+  button.addEventListener("click", () => {
+    const mode = modes[(modes.indexOf(button.dataset.mode) + 1) % modes.length];
+    const root = document.documentElement;
+    root.classList.add("theming");
+    if (mode === "system") delete root.dataset.theme; else root.dataset.theme = mode;
+    try { if (mode === "system") localStorage.removeItem("lance-theme"); else localStorage.setItem("lance-theme", mode); } catch (error) { /* private window */ }
+    show(mode);
+    setTimeout(() => root.classList.remove("theming"), 400);
+  });
+})();
+
 document.addEventListener("pointerdown", () => { Lance.pressed = true; }, true);
 const released = () => {
   Lance.pressed = false;
