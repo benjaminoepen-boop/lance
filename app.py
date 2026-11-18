@@ -19,7 +19,8 @@ app = Flask(__name__)
 # the private link starts with https. On http://localhost there is no such header, so nothing changes there.
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
 # A real export is a few hundred KB at most. A larger body is refused with 413 before it is read.
-app.config["MAX_CONTENT_LENGTH"] = 512 * 1024
+MAX_BODY_KB = 512
+app.config["MAX_CONTENT_LENGTH"] = MAX_BODY_KB * 1024
 db.init_db()
 
 COOKIE = "lance_plan"
@@ -39,7 +40,8 @@ def current_plan():
 
 
 def remember(response, plan):
-    """The plan id is the whole key to a plan: scripts cannot read its cookie, and over HTTPS it never leaves without it."""
+    """The plan id is the whole key to a plan: scripts cannot read its cookie, and a cookie set over HTTPS is sent back
+    over HTTPS only."""
     response.set_cookie(COOKIE, plan["id"], max_age=ONE_YEAR, httponly=True, samesite="Lax", secure=request.is_secure)
     return response
 
@@ -291,7 +293,7 @@ def not_json(_):
 
 @app.errorhandler(413)
 def too_large(_):
-    return jsonify({"error": "This is too large: Lance takes at most 512 KB at once.", "stored": 0}), 413
+    return jsonify({"error": f"This is too large: Lance takes at most {MAX_BODY_KB} KB at once.", "stored": 0}), 413
 
 
 @app.errorhandler(404)

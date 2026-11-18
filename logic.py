@@ -659,7 +659,8 @@ def first_fitting_section(items, offering_id):
 
 
 def add_to_plan(plan, section_id=None, offering_id=None, list_name=None):
-    """Add a section, or a whole course: then LN R11 picks the section. Returns an error text or None."""
+    """Add a section, or a whole course: then LN R11 picks the section. A semester holds at most MAX_ENTRIES (LN02).
+    Returns an error text or None."""
     section_id, offering_id = checked_id(section_id), checked_id(offering_id)
     items = db.load_items(plan["id"])
     if section_id:
