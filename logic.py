@@ -244,6 +244,42 @@ def exam_clashes(items):
     return clashes
 
 
+def exam_days(items):
+    """LN R16: two exams of different courses on one date, one after the other. The platform allows it, so it is not
+    a clash and is not counted as one; it is a hard day, and Lance says so. Midterms and presentations do not count."""
+    offerings = [all_offerings()[offering_id] for offering_id in sorted({item["offering_id"] for item in items})]
+    days = []
+    for i, first in enumerate(offerings):
+        for second in offerings[i + 1:]:
+            for exam_a in regular_exams(first):
+                for exam_b in regular_exams(second):
+                    if exam_a["kind"] == "exam" and exam_b["kind"] == "exam" and exam_a["date"] == exam_b["date"] \
+                            and not overlaps(exam_a["start"], exam_a["end"], exam_b["start"], exam_b["end"]):
+                        days.append({"offerings": [first["id"], second["id"]], "first": first["name"], "second": second["name"],
+                                     "date": exam_a["date"], "when": day_label(exam_a["date"])})
+    return sorted(days, key=lambda day: day["date"])
+
+
+def exam_day_warnings(items, semester):
+    """LN R16 before adding: {course not in the plan: the names of the week's courses it would share an exam day with}."""
+    planned = {item["offering_id"] for item in items}
+    week = [all_offerings()[item["offering_id"]] for item in week_items(items)]
+    warnings = {}
+    for offering_id, offering in all_offerings().items():
+        if offering["semester"] != semester or offering_id in planned:
+            continue
+        names = set()
+        for other in week:
+            for exam_a in regular_exams(offering):
+                for exam_b in regular_exams(other):
+                    if exam_a["kind"] == "exam" and exam_b["kind"] == "exam" and exam_a["date"] == exam_b["date"] \
+                            and not overlaps(exam_a["start"], exam_a["end"], exam_b["start"], exam_b["end"]):
+                        names.add(other["name"])
+        if names:
+            warnings[offering_id] = sorted(names)
+    return warnings
+
+
 def midterm_class_clashes(items):
     """LN R2: a midterm of one course during a class of another. The platform does not check these either."""
     clashes = []
@@ -816,6 +852,8 @@ def state_of(plan):
         "clashes": clashes,
         "section_warnings": per_section,
         "exam_warnings": per_offering,
+        "exam_days": exam_days(week),
+        "day_warnings": exam_day_warnings(items, plan["semester"]),
         "exams": exams,
         "warnings": warnings_for(plan, items),
         "next_deadline": next_deadline(),
