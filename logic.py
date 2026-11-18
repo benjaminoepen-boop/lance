@@ -5,6 +5,7 @@ the solo project Festival Architect: a stage became a student's week, an artist 
 a fee became a bid and the festival budget became the points balance.
 """
 import math
+import re
 import sqlite3
 from collections import defaultdict
 from datetime import date, datetime, timezone
@@ -1062,9 +1063,37 @@ def read_rows(rows):
 
 
 def round_name(year, term):
-    """The bidding round of a rank list: academic year '2026/2027' and term S1 mean 'Fall 2026'."""
-    first, second = (year or "2026/2027").split("/")
-    return ("Fall " + first) if term in ("S1", "T1", "T2") else ("Spring " + second)
+    """The bidding round of a rank list: academic year '2026/2027' and term S1 mean 'Fall 2026', term S2 'Spring 2027'.
+    None when the year is not written the way the platform writes it."""
+    match = re.fullmatch(r"(\d{4})/(\d{4})", year, re.ASCII)
+    if match is None or int(match[2]) != int(match[1]) + 1:
+        return None
+    return ("Fall " + match[1]) if term in ("S1", "T1", "T2") else ("Spring " + match[2])
+
+
+def shared_rounds(today=None):
+    """LN R18: the rounds a shared rank list may come from. Rank lists exist only once a round is over, so these are
+    the rounds of the calendar's academic year that have closed, and the two rounds of the year before."""
+    fall = next((row for row in db.load_calendar() if row["key"] == "fall-bidding"), None)
+    if fall is None:
+        return set()
+    year = int(fall["first_day"][:4])
+    rounds = {f"Fall {year - 1}", f"Spring {year}"}
+    for semester, name in (("Fall", f"Fall {year}"), ("Spring", f"Spring {year + 1}")):
+        round_ = round_of(semester, today)
+        if round_ is not None and round_["status"] == "closed":
+            rounds.add(name)
+    return rounds
+
+
+def known_section(code, term, section):
+    """LN R18: a shared list counts for a section of Lance's catalogue only, so no free text reaches the course sheet.
+    While a course has no timetable Lance knows none of its sections: then the name must be one Nova uses (TXA, TXB ...)."""
+    offering = all_offerings().get(code + "-" + term)
+    if offering is None:
+        return False
+    names = {row["section"] for row in all_sections().values() if row["offering_id"] == offering["id"]}
+    return section in (names or {row["section"] for row in all_sections().values()})
 
 
 def read_rank_list(payload):
@@ -1077,18 +1106,19 @@ def read_rank_list(payload):
         return None, NOT_A_LIST
     if has_personal_columns(payload):
         return None, PERSONAL
-    try:
-        code = str(payload["code"]).strip()
-        term = str(payload["term"]).strip()
-        section = str(payload["section"]).strip()
-        list_name = str(payload.get("list", "primary")).strip()
-        rows = payload["rows"]
-    except (KeyError, TypeError, ValueError):
+    texts = [payload.get("code"), payload.get("term"), payload.get("section"), payload.get("list", "primary"),
+             payload.get("year", "2026/2027")]
+    if not all(isinstance(text, str) for text in texts) or "rows" not in payload:
         return None, NOT_A_LIST
-    if not code.isdigit() or term not in ("S1", "T1", "T2", "S2", "T3", "T4") or not section:
-        return None, "Course, term or section is missing."
+    code, term, section, list_name, year = (text.strip() for text in texts)
+    rows = payload["rows"]
+    if not known_section(code, term, section):
+        return None, "Lance does not know this course or section."
     if list_name not in ("primary", "alternate"):
         return None, "Unknown list."
+    round_ = round_name(year, term)
+    if round_ not in shared_rounds():
+        return None, "Lance takes rank lists only from the last rounds that are over."
     seats = plain_number(payload.get("seats"), MAX_SEATS, whole=True)
     if seats is None or seats < (0 if list_name == "alternate" else 1):   # an alternate list can have no seat left
         return None, "The number of seats could not be read."
@@ -1101,7 +1131,7 @@ def read_rank_list(payload):
         return None, "A row of the rank list could not be read."
     allocated = [row for row in clean if row["allocated"]]
     cutoff = {
-        "code": code, "term": term, "section": section, "round": round_name(str(payload.get("year", "2026/2027")), term), "list": list_name,
+        "code": code, "term": term, "section": section, "round": round_, "list": list_name,
         "seats": int(seats), "bids": len(clean), "allocated": len(allocated),
         "min_rank_value": min((row["final"] for row in allocated), default=None),
         "max_rank_value": max((row["final"] for row in allocated), default=None),

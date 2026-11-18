@@ -9,6 +9,7 @@ import json
 import pytest
 
 import db
+import logic
 
 ROWS = [{"final": 120.0, "bid": 120, "allocated": True}, {"final": 110.0, "bid": 100, "allocated": True},
         {"final": 90.0, "bid": 90, "allocated": False}, {"final": 0.0, "bid": 0, "allocated": False}]
@@ -99,3 +100,50 @@ def test_a_share_holds_at_most_60_lists(client):
     assert share(client, *[BANKING] * 61).status_code == 400
     assert banking_rows() == []
     assert share(client, *[BANKING] * 60).status_code == 200
+
+
+# ---------- a section of the catalogue, from a round that is over ----------
+
+@pytest.mark.parametrize("place", [{"code": "2477", "section": "TXZ"}, {"section": "Prof. X is unfair, student 51234"},
+                                   {"section": "TXA <b>x</b>"}, {"section": "Z" * 1000}, {"code": "9999"}, {"code": "\uff12\uff12\uff10\uff16"},
+                                   {"term": "T1"}, {"code": 2206}, {"section": ["TXA"]}, {"list": "secret"}])
+def test_only_a_section_of_the_catalogue_counts(client, place):
+    # LN R9: no free text about lecturers or students can reach the course sheet through the section's name
+    before = db.load_cutoffs()
+    assert share(client, dict(BANKING, **place)).status_code == 400
+    assert db.load_cutoffs() == before
+
+
+def test_a_made_up_section_cannot_change_what_programming_costs(client):
+    # A1: 165 points, Programming TXB with 164 pays (164 + 100) / 2 = 132 and keeps 33
+    client.post("/api/add", json={"section_id": "2477-S1-TXB"})
+    client.post("/api/bid", json={"offering_id": "2477-S1", "bid": 164})
+    share(client, dict(BANKING, code="2477", section="TXD", seats=1, rows=[{"final": 0.0, "bid": 0, "allocated": True}]))
+    forecast = client.get("/api/state").get_json()["state"]["forecast"]
+    assert (forecast["rows"][0]["price"], forecast["left"]) == (132, 33)
+
+
+def test_a_course_without_a_timetable_takes_the_section_names_nova_uses(client):
+    spring = dict(BANKING, term="S2", year="2025/2026")
+    assert share(client, dict(spring, section="TXZ")).status_code == 400
+    assert share(client, spring).get_json()["stored"] == 1
+
+
+@pytest.mark.parametrize("year", ["1999/2000", "0000/0001", "2024/2025", "2027/2028", "2026/2028", "2026", "2026/2027/2028",
+                                  "abc", "", "\uff12\uff10\uff12\uff16/\uff12\uff10\uff12\uff17", None, 2026])
+def test_only_a_round_that_is_over_counts(client, year):
+    assert share(client, dict(BANKING, year=year)).status_code == 400
+    assert banking_rows() == []
+
+
+def test_the_rounds_that_are_over_come_from_the_calendar():
+    # the calendar holds 2026/2027: the fall round was in July 2026, the spring round is from 18 to 20 January 2027
+    assert logic.shared_rounds(today="2026-11-18") == {"Fall 2025", "Spring 2026", "Fall 2026"}
+    assert logic.shared_rounds(today="2027-01-21") == {"Fall 2025", "Spring 2026", "Fall 2026", "Spring 2027"}
+
+
+def test_made_up_years_cannot_blow_up_a_course_sheet(client):
+    # every year used to add a round, and every price row drew the bars of all of them
+    lists = [dict(BANKING, code="2477", year=f"{year}/{year + 1}", rows=ROWS * 5) for year in range(1960, 2020)]
+    assert share(client, *lists).status_code == 400
+    assert len(client.get("/api/sheet/2477-S1").get_data()) < 100_000
