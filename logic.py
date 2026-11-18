@@ -7,6 +7,7 @@ a fee became a bid and the festival budget became the points balance.
 import math
 import sqlite3
 from collections import defaultdict
+from contextlib import contextmanager
 from datetime import date, datetime, timezone
 from functools import lru_cache
 
@@ -825,9 +826,10 @@ def update_settings(plan, programme, semester, points, has_bonus):
     return None
 
 
-def relist_for_programme(plan):
-    """What is mandatory depends on the programme: a course follows its new status. An alternate stays an alternate."""
-    for item in db.load_items(plan["id"]):
+def relist_for_programme(plan, items=None):
+    """What is mandatory depends on the programme: a course follows its new status. An alternate stays an alternate.
+    Without entries named, all entries of the plan follow."""
+    for item in db.load_items(plan["id"]) if items is None else items:
         mandatory = kind_for(plan, item["offering_id"]) == "mandatory"
         if item["list"] == "mandatory" and not mandatory:
             move_item(plan, item["id"], list_name="primary")
@@ -882,6 +884,61 @@ def load_example(plan):
     return None
 
 
+# ---------- LN R19: the arrows, one step back and forward again ----------
+
+MAX_STEPS = 50   # how many changes the left arrow can take back, per plan and semester
+STEP_FIELDS = ("id", "offering_id", "section_id", "list", "position", "bid")   # what a step keeps of each entry
+
+
+def entries_by_semester(plan_id):
+    """The entries of a plan as a step keeps them: one list per semester, in the order they came into the plan."""
+    entries = {"Fall": [], "Spring": []}
+    for item in sorted(db.load_items(plan_id), key=lambda item: item["id"]):
+        semester = all_offerings()[item["offering_id"]]["semester"]
+        entries[semester].append({name: item[name] for name in STEP_FIELDS})
+    return entries
+
+
+@contextmanager
+def undoable(plan):
+    """LN R19: what happens inside is one change, which the left arrow can take back.
+
+    The entries are copied first. A semester whose entries are different afterwards keeps the copy as its newest step,
+    and what could be done again there is dropped. A refused change leaves the entries alone, so it leaves no step.
+    Settings never come through here: the programme, the semester, typed points and the bonus are no change."""
+    before = entries_by_semester(plan["id"])
+    yield
+    after = entries_by_semester(plan["id"])
+    for semester, entries in before.items():
+        if after[semester] != entries:
+            db.push_step(plan["id"], semester, "undo", entries, MAX_STEPS)
+            db.clear_steps(plan["id"], semester, "redo")
+
+
+def undo(plan):
+    """LN R19: one step back in the semester on show. Returns an error text or None."""
+    return take_step(plan, "undo", "redo", "Nothing to undo.")
+
+
+def redo(plan):
+    """LN R19: one step forward again, after an undo. Returns an error text or None."""
+    return take_step(plan, "redo", "undo", "Nothing to redo.")
+
+
+def take_step(plan, way, back, nothing):
+    """Put back the newest step kept for `way` and keep the entries as they are now as a step for `back`,
+    so that the other arrow can return to them. Only the semester on show changes.
+    The programme is not part of a step: a course that comes back takes the list its programme gives it now."""
+    entries = db.pop_step(plan["id"], plan["semester"], way)
+    if entries is None:
+        return nothing
+    now = entries_by_semester(plan["id"])[plan["semester"]]
+    db.push_step(plan["id"], plan["semester"], back, now, MAX_STEPS)
+    db.replace_items(plan["id"], [entry["id"] for entry in now], entries)
+    relist_for_programme(plan, plan_items(plan))
+    return None
+
+
 def state_of(plan):
     """Everything the planner and the bids page show, as one dict."""
     items = plan_items(plan)
@@ -910,6 +967,7 @@ def state_of(plan):
             exams.append({"offering_id": offering_id, "name": offering["name"], "kind": exam["kind"], "date": exam["date"], "start": exam["start"],
                           "end": exam["end"], "label": day_label(exam["date"]), "note": exam["note"]})
     exams.sort(key=lambda exam: (exam["date"], exam["start"]))
+    steps = db.count_steps(plan["id"], plan["semester"])
     return {
         "plan": plan,
         "items": enriched,
@@ -928,6 +986,9 @@ def state_of(plan):
         "round": round_of(plan["semester"]),
         "known_prices": known_prices(plan["semester"]),
         "platform_list": platform_list(plan),
+        # LN R19: an arrow is switched off when there is nothing to take back or to do again
+        "can_undo": steps["undo"] > 0,
+        "can_redo": steps["redo"] > 0,
     }
 
 

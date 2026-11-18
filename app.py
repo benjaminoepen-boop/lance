@@ -165,11 +165,15 @@ def api_catalogue():
     return remember(jsonify(logic.catalogue(plan)), plan)
 
 
+# Each change to the entries of a plan runs inside logic.undoable: one click, one step the left arrow can take back (LN R19).
+# The answer comes after that block, so that the state it carries already counts the step.
+
 @app.route("/api/add", methods=["POST"])
 def api_add():
     plan, _ = current_plan()
     data = payload()
-    error = logic.add_to_plan(plan, section_id=data.get("section_id"), offering_id=data.get("offering_id"), list_name=data.get("list"))
+    with logic.undoable(plan):
+        error = logic.add_to_plan(plan, section_id=data.get("section_id"), offering_id=data.get("offering_id"), list_name=data.get("list"))
     return answer(plan, error)
 
 
@@ -179,28 +183,39 @@ def api_remove():
     plan, _ = current_plan()
     data = payload()
     if data.get("offering_id"):
-        removed, error = logic.remove_course(plan, data["offering_id"])
+        with logic.undoable(plan):
+            removed, error = logic.remove_course(plan, data["offering_id"])
         return answer(plan, error, removed=removed)
-    return answer(plan, logic.remove_from_plan(plan, data.get("item_id")))
+    with logic.undoable(plan):
+        error = logic.remove_from_plan(plan, data.get("item_id"))
+    return answer(plan, error)
 
 
 @app.route("/api/restore", methods=["POST"])
 def api_restore():
     plan, _ = current_plan()
-    return answer(plan, logic.restore_items(plan, payload().get("rows")))
+    rows = payload().get("rows")
+    with logic.undoable(plan):
+        error = logic.restore_items(plan, rows)
+    return answer(plan, error)
 
 
 @app.route("/api/switch", methods=["POST"])
 def api_switch():
     plan, _ = current_plan()
-    return answer(plan, logic.switch_section(plan, payload().get("section_id")))
+    section_id = payload().get("section_id")
+    with logic.undoable(plan):
+        error = logic.switch_section(plan, section_id)
+    return answer(plan, error)
 
 
 @app.route("/api/start-over", methods=["POST"])
 def api_start_over():
     """Empties the semester on show and answers with what undo needs, like removing one course."""
     plan, _ = current_plan()
-    return answer(plan, removed=logic.start_over(plan))
+    with logic.undoable(plan):
+        removed = logic.start_over(plan)
+    return answer(plan, removed=removed)
 
 
 @app.route("/api/sheet/<offering_id>")
@@ -217,21 +232,26 @@ def api_sheet(offering_id):
 def api_bid():
     plan, _ = current_plan()
     data = payload()
-    if data.get("offering_id"):
-        return answer(plan, logic.set_course_bid(plan, data["offering_id"], data.get("bid")))
-    return answer(plan, logic.set_bid(plan, data.get("item_id"), data.get("bid")))
+    with logic.undoable(plan):
+        if data.get("offering_id"):
+            error = logic.set_course_bid(plan, data["offering_id"], data.get("bid"))
+        else:
+            error = logic.set_bid(plan, data.get("item_id"), data.get("bid"))
+    return answer(plan, error)
 
 
 @app.route("/api/move", methods=["POST"])
 def api_move():
     plan, _ = current_plan()
     data = payload()
-    error = logic.move_item(plan, data.get("item_id"), list_name=data.get("list"), direction=data.get("direction"))
+    with logic.undoable(plan):
+        error = logic.move_item(plan, data.get("item_id"), list_name=data.get("list"), direction=data.get("direction"))
     return answer(plan, error)
 
 
 @app.route("/api/settings", methods=["POST"])
 def api_settings():
+    """Programme, semester, points and the bonus are settings, not changes: the arrows leave them alone (LN R19)."""
     plan, _ = current_plan()
     data = payload()
     error = logic.update_settings(plan, data.get("programme", plan["programme"]), data.get("semester", plan["semester"]),
@@ -242,8 +262,25 @@ def api_settings():
 @app.route("/api/example", methods=["POST"])
 def api_example():
     plan, _ = current_plan()
-    error = logic.load_example(plan)
+    with logic.undoable(plan):
+        error = logic.load_example(plan)
     return answer(plan, error)
+
+
+@app.route("/api/undo", methods=["POST"])
+def api_undo():
+    """LN R19: the left arrow. One step back in the semester on show, answered like every change."""
+    plan, _ = current_plan()
+    payload()
+    return answer(plan, logic.undo(plan))
+
+
+@app.route("/api/redo", methods=["POST"])
+def api_redo():
+    """LN R19: the right arrow. One step forward again."""
+    plan, _ = current_plan()
+    payload()
+    return answer(plan, logic.redo(plan))
 
 
 @app.route("/api/share", methods=["POST"])
