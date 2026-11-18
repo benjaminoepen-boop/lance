@@ -89,6 +89,7 @@ code,rating,reviews,workload,source_id
 2588,3.0,1,Light,1699
 2590,4.5,4,Moderate,1700
 2592,4.5,2,Light,1768
+2606,4.0,1,Moderate,1315
 2609,3.0,1,Moderate,1309
 2613,1.5,2,Light,1683
 2616,3.3,3,Moderate,1727
@@ -135,6 +136,7 @@ code,rating,reviews,workload,source_id
 2755,3.5,6,Light,1442
 2762,3.0,2,Moderate,1286
 2766,3.0,1,Moderate,1290
+2767,5.0,1,Heavy,1310
 2768,2.4,7,Light,1411
 2771,3.2,5,Heavy,1291
 2772,2.0,3,Heavy,1436
