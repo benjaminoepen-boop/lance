@@ -574,7 +574,7 @@ function renderClashes(state) {
     box.append(el("button", { type: "button", class: "btn tertiary flush", onclick: () => { view.allClashes = true; renderClashes(Lance.state); } }, `${state.clashes.length - 2} more`));
   }
   /* a hard day, two exams one after the other: an orange line under the clashes, never counted as a clash */
-  state.exam_days.forEach((day) => box.append(el("div", { class: "clash-line" },
+  state.exam_days.forEach((day) => box.append(el("div", { class: "clash-line exam-day" },
     el("p", { class: "status warn" }, Lance.icon("warn"), el("span", {}, `Two exams on ${day.when}: `, el("b", { text: `${day.first} × ${day.second}` }), ". Nova allows it, but it is a long day.")))));
 }
 

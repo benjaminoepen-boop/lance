@@ -381,7 +381,10 @@ async function run(browserType, label, options) {
   check(n("the ECTS figure shows 28 recommended for the example plan"), /ECTS · 28 recommended$/.test(await page.locator("#ects").textContent())
     && (await page.locator("#plan-table tfoot").textContent()).includes("ECTS · 28 recommended"), `${await page.locator("#ects").textContent()} / ${await page.locator("#plan-table tfoot").textContent()}`);
   await toWeek();
-  check(n("the real plan has no clash"), (await page.locator("#clashes .clash-line").count()) === 0);
+  check(n("the real plan has no clash"), (await page.locator("#clashes .clash-line:not(.exam-day)").count()) === 0);
+  /* LN R16: two of its exams fall on one day, which is no clash but a hard day, said in one orange line */
+  check(n("the hard exam day of the example is one line"), (await page.locator("#clashes .clash-line.exam-day").count()) === 1
+    && (await page.locator("#clashes .clash-line.exam-day").textContent()).includes("Two exams on"), await page.locator("#clashes").textContent());
   /* a course keeps one colour: its block in the week, the dot before its name in the list and in its bid card */
   const colourIn = (node, property) => node.evaluate((element, name) => getComputedStyle(element)[name], property);
   const inWeek = await colourIn(page.locator("#week .block", { hasText: "Introduction to Programming" }).first(), "borderLeftColor");
