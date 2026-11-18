@@ -172,9 +172,9 @@ a { color: var(--blue); text-decoration: underline; text-decoration-thickness: 1
 .btn.flush { margin-left: -10px; align-self: flex-start; }   /* a tertiary button whose words line up with the text above */
 /* a filter that stays pressed: the same pale blue as a selected section */
 .toggle[aria-pressed=true], .toggle[aria-pressed=true]:hover:not(:disabled) { background: var(--blue-soft); border-color: var(--blue); color: var(--blue-deep); }
-/* × and ?: the only buttons without words, so they always carry a title */
+/* ×, ?, the two arrows and the theme switch: the only buttons without words, so they always carry a title */
 .icon-btn { display: inline-grid; place-items: center; flex: none; width: var(--h-icon); height: var(--h-icon); padding: 0; border: 0; border-radius: var(--r-ctl); background: none; color: var(--ink-3); text-decoration: none; }
-@media (hover: hover) { .icon-btn:hover { background: var(--hover); color: var(--ink); } }
+@media (hover: hover) { .icon-btn:hover:not(:disabled) { background: var(--hover); color: var(--ink); } }
 
 /* ---- fields: white, a grey border that darkens under the mouse, the height of a button ---- */
 .field { min-height: var(--h); min-width: 0; padding: 0 10px; border: 1px solid var(--line-2); border-radius: var(--r-ctl); background: var(--card); color: var(--ink); font-size: 15px; }

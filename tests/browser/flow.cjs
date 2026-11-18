@@ -82,6 +82,41 @@ async function run(browserType, label, options) {
   check(n("the section it took is marked"), (await row("Introduction to Programming").locator(".tile.on").textContent()).includes("TXA"));
   await toWeek();
   check(n("the course is in the week"), await page.locator("#week .block", { hasText: "Introduction to Programming" }).first().isVisible());
+
+  /* ---- LN R19: the left arrow in the top bar takes the course out again, the right arrow puts it back.
+     The static preview has no server to keep the steps, so there the arrows stay switched off ---- */
+  if (!PREVIEW) {
+    const blocks = () => page.locator('#week .block:not(.ghost)[data-section="2477-S1-TXA"]').count();   /* the course open in the list waits there as ghosts */
+    const ticked = async () => (await row("Introduction to Programming").locator(".pick").getAttribute("aria-pressed")) === "true";
+    check(n("after a change the left arrow is on and the right one off"), (await page.locator("#undo").isEnabled()) && (await page.locator("#redo").isDisabled()));
+    await page.locator("#undo").click();
+    await page.waitForTimeout(300);
+    check(n("the left arrow takes the course out of the week"), (await blocks()) === 0 && (await toast().textContent()) === "Undone", `${await blocks()} blocks, toast ${await toast().textContent()}`);
+    await toCourses();
+    check(n("and out of the list"), !(await ticked()) && (await row("Introduction to Programming").locator(".tile.on").count()) === 0);
+    check(n("now the right arrow is on and the left one off"), (await page.locator("#redo").isEnabled()) && (await page.locator("#undo").isDisabled()));
+    await page.locator("#redo").click();
+    await page.waitForTimeout(300);
+    const chosen = row("Introduction to Programming").locator(".tile.on");
+    check(n("the right arrow puts it back in the list, in TXA"), (await ticked()) && (await chosen.count()) === 1 && (await chosen.textContent()).includes("TXA"));
+    await toWeek();
+    check(n("and in the week"), (await blocks()) > 0, await blocks());
+    await toCourses();
+    /* the keys, once each. Not while typing in a field: the search keeps its own undo, which may change the list,
+       so the plan is read from its ECTS in the head */
+    const ects = async () => (await page.locator("#ects").textContent()).split(" ")[0];
+    await page.locator("#search").focus();
+    await page.keyboard.press("ControlOrMeta+z");
+    await page.waitForTimeout(300);
+    check(n("Cmd+Z in the search leaves the plan alone"), (await ects()) === "7", await ects());
+    await page.locator("#search").blur();
+    await page.keyboard.press("ControlOrMeta+z");
+    await page.waitForTimeout(300);
+    check(n("Cmd+Z takes the course out"), (await ects()) === "0", await ects());
+    await page.keyboard.press("ControlOrMeta+Shift+z");
+    await page.waitForTimeout(300);
+    check(n("Shift+Cmd+Z puts it back"), (await ects()) === "7", await ects());
+  }
   await toCourses();
   await page.fill("#search", "");
   await page.waitForTimeout(120);

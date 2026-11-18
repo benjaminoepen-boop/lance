@@ -23,6 +23,14 @@ const Bids = (() => {
   window.addEventListener("pagehide", () => {
     if (pending) fetch("/api/bid", { method: "POST", keepalive: true, headers: { "Content-Type": "application/json" }, body: JSON.stringify(pending.body) });
   });
+  /* the arrows in the top bar save a waiting bid at once, so that it counts as the last change (LN R19) */
+  async function flush() {
+    if (!pending) return;
+    clearTimeout(pending.timer);
+    const { body } = pending;
+    pending = null;
+    await Lance.send("/api/bid", body);
+  }
 
   /* a number in its field with the unit inside: the same field for your points, a course's bid and, smaller, each section's bid.
      The unit lets clicks through, so a click on "pts" still lands in the field. */
@@ -444,5 +452,5 @@ const Bids = (() => {
   Lance.onChange(render);
   if (Lance.state) render(Lance.state);
 
-  return { problem };
+  return { problem, flush };
 })();

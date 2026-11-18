@@ -726,9 +726,47 @@ function renderPlanTable(state) {
       el("tfoot", {}, totalsRow(state, counted, offerings.length - counted))));
 }
 
+/* ---- LN R19: the two arrows in the top bar. The server keeps the steps; the page asks for one step back or
+   forward and redraws from the answer, as after any other change ---- */
+
+let stepping = false;   /* one step at a time: a second press waits until the first has its answer */
+async function takeStep(way) {
+  const possible = Lance.state && (way === "undo" ? Lance.state.can_undo : Lance.state.can_redo);
+  if (stepping || !possible) return;
+  stepping = true;
+  try {
+    /* a bid still waiting to be saved is the last change, so it goes first */
+    if (typeof Bids !== "undefined") await Bids.flush();
+    const answer = await Lance.send(`/api/${way}`, {});
+    if (!answer.error) Lance.toast(way === "undo" ? "Undone" : "Redone");
+  } finally {
+    stepping = false;
+  }
+}
+
+/* an arrow is switched off when there is nothing to take back or to do again */
+function renderArrows(state) {
+  document.getElementById("undo").disabled = !state.can_undo;
+  document.getElementById("redo").disabled = !state.can_redo;
+}
+
+/* a field keeps its own undo: Cmd+Z while typing in the search, a number or a menu is not meant for your plan */
+const inField = (node) => node instanceof Element && node.matches("input:not([type=checkbox]), textarea, select");
+
+/* the keys: Cmd+Z or Ctrl+Z one step back; with Shift, or Ctrl+Y, forward again */
+function arrowKeys(event) {
+  if (!(event.metaKey || event.ctrlKey) || event.altKey || inField(event.target)) return;
+  const key = event.key.toLowerCase();
+  const way = key === "z" ? (event.shiftKey ? "redo" : "undo") : key === "y" && event.ctrlKey && !event.shiftKey ? "redo" : null;
+  if (!way) return;
+  event.preventDefault();
+  takeStep(way);
+}
+
 /* ---- wiring ---- */
 
 function render(state) {
+  renderArrows(state);
   renderTabs(state);
   renderHead(state);
   renderList(state);
@@ -780,6 +818,9 @@ document.getElementById("fits").addEventListener("click", (event) => {
   if (Lance.state) renderList(Lance.state);
 });
 document.getElementById("reset").addEventListener("click", resetPlan);
+document.getElementById("undo").addEventListener("click", () => takeStep("undo"));
+document.getElementById("redo").addEventListener("click", () => takeStep("redo"));
+document.addEventListener("keydown", arrowKeys);
 document.getElementById("set-programme").addEventListener("change", (event) => changeSetting({ programme: event.target.value }));
 document.getElementById("set-semester").addEventListener("change", (event) => changeSetting({ semester: event.target.value }));
 document.addEventListener("keydown", (event) => {
