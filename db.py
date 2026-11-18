@@ -2,7 +2,7 @@
 
 Two kinds of data, as in the course:
   content   what Nova publishes: courses, sections, sessions, exams. Rebuilt from seed/ whenever seed/ changes.
-  progress  what people do here: plans, bids, shared price data. Never touched by a rebuild.
+  progress  what people do here: plans, bids, the steps of undo and redo, shared price data. Never touched by a rebuild.
 """
 import csv
 import hashlib
@@ -114,6 +114,15 @@ CREATE TABLE IF NOT EXISTS plan_items (
     UNIQUE (plan_id, offering_id, section_id)
 );
 CREATE INDEX IF NOT EXISTS items_by_plan ON plan_items (plan_id);
+-- LN R19: what the arrows can go back and forth to. A step is a copy of the entries of one semester of one plan.
+CREATE TABLE IF NOT EXISTS plan_steps (
+    id       INTEGER PRIMARY KEY AUTOINCREMENT,   -- the newest step has the highest id
+    plan_id  TEXT NOT NULL REFERENCES plans (id),
+    semester TEXT NOT NULL,                       -- Fall or Spring: each semester has steps of its own
+    kind     TEXT NOT NULL,                       -- undo: the entries before a change; redo: what an undo took back
+    entries  TEXT NOT NULL                        -- JSON: [{"id": 7, "offering_id": "2477-S1", "section_id": ..., "list": ..., "position": 1, "bid": 120}, ...]
+);
+CREATE INDEX IF NOT EXISTS steps_by_plan ON plan_steps (plan_id, semester, kind);
 -- Past prices. Only totals per section: no row here can point to a student.
 CREATE TABLE IF NOT EXISTS cutoffs (
     code           TEXT NOT NULL,
@@ -419,6 +428,15 @@ def insert_item(plan_id, offering_id, section_id, list_name, position, bid=None)
         return cursor.lastrowid
 
 
+def insert_items(plan_id, rows):
+    """Several entries in one go: all of them, or none if one fails. Undo never leaves half a plan behind."""
+    with closing(connect()) as connection:
+        connection.executemany(
+            "INSERT INTO plan_items (plan_id, offering_id, section_id, list, position, bid) VALUES (?, ?, ?, ?, ?, ?)",
+            [(plan_id, row["offering_id"], row.get("section_id"), row["list"], row["position"], row.get("bid")) for row in rows])
+        connection.commit()
+
+
 def delete_item(item_id):
     with closing(connect()) as connection:
         connection.execute("DELETE FROM plan_items WHERE id = ?", (item_id,))
@@ -432,6 +450,59 @@ def update_item(item_id, **fields):
     with closing(connect()) as connection:
         connection.execute(f"UPDATE plan_items SET {assignments} WHERE id = ?", values + [item_id])
         connection.commit()
+
+
+def replace_items(plan_id, old_ids, rows):
+    """Take these entries out and put those in, each with its own id, so that a course keeps its colour.
+    One transaction: if anything fails, nothing has changed."""
+    with closing(connect()) as connection:
+        connection.executemany("DELETE FROM plan_items WHERE id = ? AND plan_id = ?", [(item_id, plan_id) for item_id in old_ids])
+        connection.executemany(
+            "INSERT INTO plan_items (id, plan_id, offering_id, section_id, list, position, bid) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            [(row["id"], plan_id, row["offering_id"], row["section_id"], row["list"], row["position"], row["bid"]) for row in rows])
+        connection.commit()
+
+
+# ---------- steps: what the arrows go back and forth to (LN R19) ----------
+
+def push_step(plan_id, semester, kind, entries, keep):
+    """Save the entries of one semester as the newest step of its kind. Only the newest `keep` steps stay."""
+    with closing(connect()) as connection:
+        connection.execute("INSERT INTO plan_steps (plan_id, semester, kind, entries) VALUES (?, ?, ?, ?)",
+                           (plan_id, semester, kind, json.dumps(entries)))
+        connection.execute("""
+            DELETE FROM plan_steps WHERE plan_id = ? AND semester = ? AND kind = ? AND id NOT IN (
+                SELECT id FROM plan_steps WHERE plan_id = ? AND semester = ? AND kind = ? ORDER BY id DESC LIMIT ?)""",
+                           (plan_id, semester, kind, plan_id, semester, kind, keep))
+        connection.commit()
+
+
+def pop_step(plan_id, semester, kind):
+    """Take the newest step of its kind out and return its entries, or None when there is none."""
+    with closing(connect()) as connection:
+        row = connection.execute("SELECT id, entries FROM plan_steps WHERE plan_id = ? AND semester = ? AND kind = ? ORDER BY id DESC LIMIT 1",
+                                 (plan_id, semester, kind)).fetchone()
+        if row is None:
+            return None
+        connection.execute("DELETE FROM plan_steps WHERE id = ?", (row["id"],))
+        connection.commit()
+    return json.loads(row["entries"])
+
+
+def clear_steps(plan_id, semester, kind):
+    with closing(connect()) as connection:
+        connection.execute("DELETE FROM plan_steps WHERE plan_id = ? AND semester = ? AND kind = ?", (plan_id, semester, kind))
+        connection.commit()
+
+
+def count_steps(plan_id, semester):
+    """{'undo': how many steps back, 'redo': how many forward} for one semester of a plan."""
+    with closing(connect()) as connection:
+        rows = connection.execute("SELECT kind, COUNT(*) AS steps FROM plan_steps WHERE plan_id = ? AND semester = ? GROUP BY kind",
+                                  (plan_id, semester)).fetchall()
+    counts = {"undo": 0, "redo": 0}
+    counts.update({row["kind"]: row["steps"] for row in rows})
+    return counts
 
 
 def now():
