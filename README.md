@@ -38,6 +38,7 @@ The tests run on a throwaway database built from the real data. `tests/test_real
 | `docs/walkthrough.md` | Six clicks from the button to the database |
 | `docs/demo.md` | The five minutes of the live demonstration |
 | `docs/usability.md` | Who used it without help, and what changed because of it |
+| `docs/tests.md` | What the tests check, what they do not, and how much of the code runs in a test |
 
 Content and progress are separate: `seed/` is rebuilt into the database whenever it changes; plans, ratings and shared prices are never touched by that.
 
