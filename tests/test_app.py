@@ -213,3 +213,14 @@ def test_a_round_that_is_over_is_offered_as_practice(client):
     assert lance.semester_option("Fall", today="2026-11-07") == "Fall · practice"
     assert lance.semester_option("Spring", today="2026-11-07") == "Spring · opens 18 Jan"
     assert lance.semester_option("Spring", today="2027-01-19") == "Spring · open now"
+
+
+# ---------- requests no page sends ----------
+
+def test_a_body_larger_than_any_export_is_refused_unread(client):
+    # a real export is a few hundred KB at most; three uploads of 47 MB once held 1.3 GB of memory
+    response = client.post("/api/share", data=json.dumps({"export": "x" * 512 * 1024}), content_type="application/json")
+    assert response.status_code == 413
+    assert response.get_json()["error"]
+    assert client.post("/api/restore", data=json.dumps({"rows": ["x" * 600 * 1024]}), content_type="application/json").status_code == 413
+    assert share(client, EXPORT).status_code == 200

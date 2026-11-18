@@ -13,6 +13,8 @@ import db
 import logic
 
 app = Flask(__name__)
+# A real export is a few hundred KB at most. A larger body is refused with 413 before it is read.
+app.config["MAX_CONTENT_LENGTH"] = 512 * 1024
 db.init_db()
 
 COOKIE = "lance_plan"
@@ -260,6 +262,11 @@ def api_share():
     if error:
         return jsonify({"error": error, "stored": 0}), 400
     return jsonify({"error": None, "stored": stored, "coverage": logic.coverage()})
+
+
+@app.errorhandler(413)
+def too_large(_):
+    return jsonify({"error": "This is too large: Lance takes at most 512 KB at once.", "stored": 0}), 413
 
 
 @app.errorhandler(404)
