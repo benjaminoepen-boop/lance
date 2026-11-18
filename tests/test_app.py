@@ -277,3 +277,30 @@ def test_start_over_and_the_example_take_only_what_a_page_sends(client):
     assert client.post("/api/example", data={"x": "1"}).status_code == 415
     assert client.post("/api/start-over").status_code == 415
     assert len(state_of(client)["items"]) == 1
+
+
+# ---------- running behind the host's HTTPS proxy ----------
+
+def test_behind_https_the_plan_cookie_is_secure_and_hsts_is_sent(client):
+    # the proxy speaks HTTPS to the browser and says so in X-Forwarded-Proto; plain http://localhost stays as it was
+    secure = client.get("/", headers={"X-Forwarded-Proto": "https"})
+    assert "Secure" in secure.headers["Set-Cookie"]
+    assert secure.headers["Strict-Transport-Security"] == "max-age=31536000"
+    plain = client.get("/")
+    assert "Secure" not in plain.headers["Set-Cookie"]
+    assert "Strict-Transport-Security" not in plain.headers
+
+
+def test_behind_https_the_private_link_is_https(client):
+    page = client.get("/nova", headers={"X-Forwarded-Proto": "https", "X-Forwarded-Host": "lance.example.org"})
+    assert 'data-link="https://lance.example.org/p/' in page.get_data(as_text=True)
+
+
+def test_the_container_runs_as_its_own_user_with_threads():
+    import os
+    import re
+    with open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "Dockerfile"), encoding="utf-8") as file:
+        text = file.read()
+    assert re.search(r"^USER (?!root\b)\w+", text, re.MULTILINE)
+    assert re.search(r"uv==\d+\.\d+\.\d+", text)
+    assert '"--worker-class", "gthread"' in text and '"--threads"' in text

@@ -8,11 +8,16 @@ from datetime import date
 from urllib.parse import quote
 
 from flask import Flask, Response, abort, jsonify, make_response, redirect, render_template, request, url_for
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 import db
 import logic
 
 app = Flask(__name__)
+# Deployed, the host's proxy speaks HTTPS to the browser and passes each request on over plain HTTP. Trusting that one
+# proxy's X-Forwarded-Proto and X-Forwarded-Host lets the app see HTTPS: then the plan cookie is Secure, HSTS is sent and
+# the private link starts with https. On http://localhost there is no such header, so nothing changes there.
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
 # A real export is a few hundred KB at most. A larger body is refused with 413 before it is read.
 app.config["MAX_CONTENT_LENGTH"] = 512 * 1024
 db.init_db()
@@ -34,7 +39,8 @@ def current_plan():
 
 
 def remember(response, plan):
-    response.set_cookie(COOKIE, plan["id"], max_age=ONE_YEAR, httponly=True, samesite="Lax")
+    """The plan id is the whole key to a plan: scripts cannot read its cookie, and over HTTPS it never leaves without it."""
+    response.set_cookie(COOKIE, plan["id"], max_age=ONE_YEAR, httponly=True, samesite="Lax", secure=request.is_secure)
     return response
 
 
@@ -63,6 +69,8 @@ def safe_headers(response):
     response.headers["Content-Security-Policy"] = (
         "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; "
         "script-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'self'")
+    if request.is_secure:      # the browser then stays on HTTPS for a year, so the plan id never goes out in plain text
+        response.headers["Strict-Transport-Security"] = "max-age=31536000"
     return response
 
 
