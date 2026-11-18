@@ -1122,7 +1122,7 @@ def known_section(code, term, section):
 
 
 def read_rank_list(payload):
-    """Check one shared rank list and boil it down to totals. Nothing about a single student is kept.
+    """LN R9 and LN R18: check one shared rank list and boil it down to totals. Nothing about a single student is kept.
 
     Only totals per section leave this function. A field beyond the ones the bookmarklet writes rejects the whole
     upload, so a broken export can never store personal data by accident.
@@ -1184,7 +1184,8 @@ def from_our_own_data(cutoff):
 
 
 def share_rank_lists(payload):
-    """Store a whole export: one or more rank lists. Returns (how many were new or better, error)."""
+    """LN08 and LN R18: store a whole export, one or more rank lists. Every list is checked before anything is stored,
+    so one that does not count refuses the whole share. Returns (how many were new or better, error)."""
     if isinstance(payload, dict) and "lists" in payload:
         if set(payload) != {"lists"}:      # LN R9: nothing travels beside the lists
             return 0, PERSONAL

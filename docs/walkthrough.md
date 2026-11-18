@@ -11,7 +11,7 @@ Each member is asked about code they did not write. Six clicks, from the button 
 | Pick a mandatory section, the points appear | `chooseSection` in `static/planner.js` | `api_add`, then `answer` | `load_plan`, `estimated_points` | `load_plan` (the typed points stay 0) | `test_picking_mandatory_sections_fills_in_the_points` | LN R17 |
 | *Reset*, then *Undo* | `resetPlan` in `static/planner.js` | `api_start_over`, `api_restore` | `start_over`, `restore_items` | `delete_item`, `insert_item` | `test_start_over_can_be_undone_with_every_bid_and_place` | LN R15 |
 | Open a course: the rating | `showOpenCourse` in `static/planner.js` | `api_sheet` | `course_page`, `course_rating` | `load_course_ratings` | `test_the_course_sheet_names_the_rating_and_where_it_comes_from` | LN07 |
-| Share a rank list | `static/share.js` | `api_share` | `share_rank_lists`, `read_rank_list` | `save_price_data` | `test_rows_with_personal_columns_are_refused_whole` | LN R9 |
+| Share a rank list | `static/share.js` | `api_share` | `share_rank_lists`, `read_rank_list` | `save_price_data` | `test_rows_with_personal_columns_are_refused_whole` | LN R9, R18 |
 
 What answers a click: every change returns the whole state (`answer` in `app.py`, `state_of` in `logic.py`), and `Lance.update` in `static/common.js` redraws from it. The page never works anything out for itself.
 
