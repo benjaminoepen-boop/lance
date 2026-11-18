@@ -1014,9 +1014,13 @@ def catalogue(plan):
     return rows
 
 
-# ---------- LN R9: shared price data ----------
+# ---------- LN R9 and LN R18: shared price data ----------
 
-FORBIDDEN_FIELDS = {"student", "student_number", "number", "id", "ects", "ects_sum", "name", "email"}
+# LN R18: exactly what the bookmarklet writes (static/share-bookmarklet.js). Anything else that comes along refuses the
+# whole share (LN R9): a list of forbidden names missed the platform's own "Ects Sum", a list of allowed ones misses nothing.
+LIST_KEYS = {"code", "term", "section", "list", "seats", "year", "rows"}
+ROW_KEYS = {"final", "bid", "allocated"}
+PERSONAL = "This export contains personal columns. Nothing was stored."
 
 
 def round_name(year, term):
@@ -1028,9 +1032,13 @@ def round_name(year, term):
 def read_rank_list(payload):
     """Check one shared rank list and boil it down to totals. Nothing about a single student is kept.
 
-    Only totals per section leave this function. A field that could identify someone rejects the whole
+    Only totals per section leave this function. A field beyond the ones the bookmarklet writes rejects the whole
     upload, so a broken export can never store personal data by accident.
     """
+    if not isinstance(payload, dict):
+        return None, "This does not look like a rank list from the export."
+    if set(payload) - LIST_KEYS:
+        return None, PERSONAL
     try:
         code = str(payload["code"]).strip()
         term = str(payload["term"]).strip()
@@ -1048,8 +1056,8 @@ def read_rank_list(payload):
         return None, "The rank list is empty."
     clean = []
     for row in rows:
-        if not isinstance(row, dict) or FORBIDDEN_FIELDS & {key.lower() for key in row}:
-            return None, "This export contains personal columns. Nothing was stored."
+        if not isinstance(row, dict) or set(row) - ROW_KEYS:
+            return None, PERSONAL
         try:
             clean.append({"final": float(row["final"]), "bid": float(row["bid"]), "allocated": bool(row["allocated"])})
         except (KeyError, TypeError, ValueError):
@@ -1079,8 +1087,11 @@ def read_rank_list(payload):
 
 def share_rank_lists(payload):
     """Store a whole export: one or more rank lists. Returns (how many were new or better, error)."""
-    lists = payload.get("lists") if isinstance(payload, dict) else None
-    if lists is None:
+    if isinstance(payload, dict) and "lists" in payload:
+        if set(payload) != {"lists"}:      # LN R9: nothing travels beside the lists
+            return 0, PERSONAL
+        lists = payload["lists"]
+    else:
         lists = [payload]
     if not isinstance(lists, list) or not lists:
         return 0, "This does not look like a rank list from the export."
