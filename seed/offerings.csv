@@ -41,6 +41,7 @@ id,code,name,term,semester,ects,lecturers,has_schedule
 2226-T3,2226,Hedge Funds,T3,Spring,3.5,Carlos Almeida,0
 2226-T4,2226,Hedge Funds,T4,Spring,3.5,Afonso Januário,0
 2229-S1,2229,Investments,S1,Fall,7.0,"Ertunç Aydogdu, Martijn Boons, Nicholas Hirschey",1
+2229-S2,2229,Investments,S2,Spring,7.0,,0
 2232-S1,2232,Applied Corporate Finance,S1,Fall,7.0,Paulo Pinho,1
 2232-S2,2232,Applied Corporate Finance,S2,Spring,7.0,"Luís Barbosa, Pranav Desai, Rui Silva",0
 2233-T1,2233,Macroeconomics of Financial Markets,T1,Fall,3.5,André de Castro Silva,1
@@ -83,6 +84,7 @@ id,code,name,term,semester,ects,lecturers,has_schedule
 2334-T3,2334,Global Human Resources Management,T3,Spring,3.5,Filipa Rodrigues,0
 2336-T1,2336,Human Resources Management,T1,Fall,3.5,Filipa Rodrigues,1
 2336-T2,2336,Human Resources Management,T2,Fall,3.5,Filipa Rodrigues,1
+2336-T3,2336,Human Resources Management,T3,Spring,3.5,,0
 2337-T1,2337,Integrated Marketing Communications,T1,Fall,3.5,Jorge Velosa,1
 2337-T2,2337,Integrated Marketing Communications,T2,Fall,3.5,Jorge Velosa,1
 2337-T3,2337,Integrated Marketing Communications,T3,Spring,3.5,Jorge Velosa,0
@@ -108,6 +110,7 @@ id,code,name,term,semester,ects,lecturers,has_schedule
 2389-T3,2389,Customer Relationship Management,T3,Spring,3.5,Elizabete Cardoso,0
 2397-T4,2397,Innovation Management,T4,Spring,3.5,António Marinho Torres,0
 2414-S1,2414,Financial Management,S1,Fall,7.0,"Gonçalo Rocha, Luís Barbosa",1
+2414-S2,2414,Financial Management,S2,Spring,7.0,,0
 2416-T1,2416,Family Business,T1,Fall,3.5,Alexandre Dias da Cunha,1
 2416-T3,2416,Family Business,T3,Spring,3.5,Alexandre Dias da Cunha,0
 2417-T4,2417,Management of Non-Profit Organizations,T4,Spring,3.5,Silvia Herrero,0
@@ -115,6 +118,7 @@ id,code,name,term,semester,ects,lecturers,has_schedule
 2421-S1,2421,Applied Entrepreneurship,S1,Fall,7.0,Miguel Muñoz Duarte,1
 2421-S2,2421,Applied Entrepreneurship,S2,Spring,7.0,Leif Brandle,0
 2431-S1,2431,Marketing Management,S1,Fall,7.0,"Daniela Schmitt, Fan Zhang, Miguel Pinto Fernandes",1
+2431-S2,2431,Marketing Management,S2,Spring,7.0,,0
 2437-S2,2437,Luxury and Fashion Marketing,S2,Spring,7.0,Catherine da Silveira,0
 2438-S2,2438,Cross-Cultural Issues for Marketing,S2,Spring,7.0,Carmen Lages,0
 2440-T2,2440,Big Data Analysis,T2,Fall,3.5,Arash Laghaie,1
@@ -131,9 +135,11 @@ id,code,name,term,semester,ects,lecturers,has_schedule
 2454-T1,2454,Doing Business in China,T1,Fall,3.5,Andrew Harrison,1
 2458-T4,2458,Talent Development,T4,Spring,3.5,Filipa Rodrigues,0
 2459-S1,2459,Advanced Strategy,S1,Fall,7.0,"José Campino, Marco Galo",1
+2459-S2,2459,Advanced Strategy,S2,Spring,7.0,,0
 2460-S1,2460,Strategy Consulting,S1,Fall,7.0,Constança Casquinho,1
 2460-S2,2460,Strategy Consulting,S2,Spring,7.0,Constança Casquinho,0
 2463-T2,2463,Advanced Topics in Human Resources Management,T2,Fall,3.5,Jan Corstjens,1
+2463-T3,2463,Advanced Topics in Human Resources Management,T3,Spring,3.5,,0
 2465-T3,2465,Open Innovation,T3,Spring,3.5,Paolo Leone,0
 2465-T4,2465,Open Innovation,T4,Spring,3.5,Paolo Leone,0
 2468-T1,2468,Technology Strategy,T1,Fall,3.5,Adam Tatarynowicz,1
@@ -163,14 +169,17 @@ id,code,name,term,semester,ects,lecturers,has_schedule
 2500-T4,2500,Performance and Progress,T4,Spring,3.5,Marco Berti,0
 2580-S2,2580,Value-Based Health Care,S2,Spring,7.0,João Marques Gomes,0
 2581-S1,2581,Advanced Financial Management,S1,Fall,7.0,António Freitas Miguel,1
+2581-S2,2581,Advanced Financial Management,S2,Spring,7.0,,0
 2582-S1,2582,Competitive Strategy: An Analytical Approach,S1,Fall,7.0,Vasco Santos,1
 2584-S1,2584,Strategy,S1,Fall,7.0,Afonso Almeida Costa,1
+2584-S2,2584,Strategy,S2,Spring,7.0,,0
 2585-S2,2585,Evidence-Based Practices for Wellbeing,S2,Spring,7.0,Sofia Kousi,0
 2588-T2,2588,Science-Based Entrepreneurship and Innovation,T2,Fall,3.5,Nuno Arantes e Oliveira,1
 2588-T4,2588,Science-Based Entrepreneurship and Innovation,T4,Spring,3.5,Nuno Arantes e Oliveira,0
 2590-T4,2590,Leading Social Enterprises with Impact in International Development,T4,Spring,3.5,Filipe Alfaiate,0
 2592-T4,2592,Strategy Implementation,T4,Spring,3.5,João Silveira Lobo,0
 2599-T1,2599,Project scoping,T1,Fall,3.5,Lénia Mestrinho,1
+2606-T3,2606,Data Ecosystems and Governance in Organizations,T3,Spring,3.5,,0
 2609-T2,2609,Data Visualization for Business Analytics,T2,Fall,3.5,Filipa Baptista,1
 2610-S2,2610,Business Analytics Special Project,S2,Spring,7.0,Patrícia Xufre,0
 2612-T3,2612,Advanced Programming for Data Science,T3,Spring,3.5,Luís Guimarãis,0
@@ -234,15 +243,19 @@ id,code,name,term,semester,ects,lecturers,has_schedule
 2698-S2,2698,Management Consulting,S2,Spring,7.0,Marco Berti,0
 2699-T3,2699,Sports Club Management,T3,Spring,3.5,Luís Vilar,0
 2708-T4,2708,Sports Marketing,T4,Spring,3.5,Luís Vilar,0
+2710-T4,2710,Data Science for Impact,T4,Spring,3.5,,0
 2715-T3,2715,Sustainable Tourism,T3,Spring,3.5,Graham Miller,0
 2716-T4,2716,Regenerative Business,T4,Spring,3.5,Graham Miller,0
 2737-T4,2737,Private Sector Development,T4,Spring,3.5,Roberto Rocha,0
 2738-T2,2738,Development Economics I,T2,Fall,3.5,Pedro Vicente,1
+2739-T3,2739,Development Economics II,T3,Spring,3.5,,0
 2740-T1,2740,International Relations and Organizations,T1,Fall,3.5,"Ana Grifo, Madalena Resende",1
 2741-T1,2741,Markets Incentives and Behavior,T1,Fall,3.5,Pedro Pires,1
 2743-T2,2743,Policy Appraisal,T2,Fall,3.5,Sónia Félix,1
+2744-T3,2744,Policy Evaluation for Public Policy,T3,Spring,3.5,,0
 2745-T2,2745,Politics for Policy,T2,Fall,3.5,José Tavares,1
 2746-T2,2746,Public Policy I,T2,Fall,3.5,Ana Cláudia Gouveia,1
+2747-T3,2747,Public Policy II,T3,Spring,3.5,,0
 2748-T1,2748,Statistics for Policy Action,T1,Fall,3.5,"Maria João Braga, Márcia Pereira",1
 2749-T4,2749,Management in the Public Sector,T4,Spring,3.5,Adolfo Mesquita Nunes,0
 2750-T1,2750,Management,T1,Fall,3.5,António Nogueira Leite,1
@@ -252,11 +265,16 @@ id,code,name,term,semester,ects,lecturers,has_schedule
 2752-T4,2752,Team Dynamics in Organizations,T4,Spring,3.5,Sai Kalvapalle,0
 2753-T4,2753,Tourism & Hospitality Consulting,T4,Spring,3.5,Miguel Bello,0
 2755-T4,2755,Advanced Financial Transactions in M&A,T4,Spring,3.5,Silvina Rubio,0
+2756-S2,2756,Entrepreneurial Project,S2,Spring,7.0,,0
 2757-T4,2757,Hotel Asset Management,T4,Spring,3.5,Duarte Pimentel,0
 2758-T4,2758,Advanced Topics in Machine Learning,T4,Spring,3.5,Qiwei Han,0
+2761-T3,2761,Digital Experimentation & Causal Analysis,T3,Spring,3.5,,0
 2762-T1,2762,Digital Strategy and Markets,T1,Fall,3.5,Rodrigo Belo,1
 2763-T2,2763,Entrepreneurial Mindset,T2,Fall,3.5,Miguel Alves Martins,1
+2763-T3,2763,Entrepreneurial Mindset,T3,Spring,3.5,,0
+2765-S2,2765,Innovation Project,S2,Spring,7.0,,0
 2766-T1,2766,Introduction to Python for Data Analysis,T1,Fall,3.5,Yufei Shen,1
+2767-T3,2767,Machine Learning,T3,Spring,3.5,,0
 2768-T1,2768,Personal Finance,T1,Fall,3.5,Vinay Pranjivan,1
 2768-T3,2768,Personal Finance,T3,Spring,3.5,Vinay Pranjivan,0
 2768-T4,2768,Personal Finance,T4,Spring,3.5,Vinay Pranjivan,0
@@ -275,6 +293,8 @@ id,code,name,term,semester,ects,lecturers,has_schedule
 2784-S2,2784,Curricular Internship - Semestral,S2,Spring,7.0,João Loureiro Rodrigues Open Area,0
 2785-T2,2785,Product Management in Technology,T2,Fall,3.5,Sam Reha,1
 2786-T2,2786,Research Methods in Management,T2,Fall,3.5,"Filipa Rodrigues, Irene Consiglio",1
+2786-T3,2786,Research Methods in Management,T3,Spring,3.5,,0
+2786-T4,2786,Research Methods in Management,T4,Spring,3.5,,0
 2788-T4,2788,Aviation Management,T4,Spring,3.5,Jonathan Eccles,0
 2789-T1,2789,Firms and Markets,T1,Fall,3.5,Roberto Rocha,1
 2790-T1,2790,Financial Management for Entrepreneurs,T1,Fall,3.5,Fábio Santos,1

@@ -109,6 +109,7 @@ Business Analytics,2588-T2,elective
 Business Analytics,2588-T4,elective
 Business Analytics,2590-T4,outside
 Business Analytics,2599-T1,elective
+Business Analytics,2606-T3,mandatory
 Business Analytics,2609-T2,mandatory
 Business Analytics,2610-S2,elective
 Business Analytics,2612-T3,elective
@@ -152,8 +153,10 @@ Business Analytics,2752-T3,outside
 Business Analytics,2752-T4,outside
 Business Analytics,2757-T4,outside
 Business Analytics,2758-T4,elective
+Business Analytics,2761-T3,mandatory
 Business Analytics,2762-T1,mandatory
 Business Analytics,2766-T1,mandatory
+Business Analytics,2767-T3,mandatory
 Business Analytics,2770-T3,outside
 Business Analytics,2770-T4,outside
 Business Analytics,2771-T1,mandatory
@@ -182,6 +185,8 @@ Economics,2138-T3,elective
 Economics,2141-T4,elective
 Economics,2145-T3,elective
 Economics,2158-T4,elective
+Economics,2165-S2,mandatory
+Economics,2168-S2,mandatory
 Economics,2173-T3,elective
 Economics,2174-S1,mandatory
 Economics,2175-S1,mandatory
@@ -413,6 +418,7 @@ Finance,2225-T4,elective
 Finance,2226-T3,elective
 Finance,2226-T4,elective
 Finance,2229-S1,mandatory
+Finance,2229-S2,mandatory
 Finance,2232-S1,elective
 Finance,2232-S2,elective
 Finance,2233-T1,elective
@@ -789,6 +795,7 @@ Impact Entrepreneurship,2698-S1,elective
 Impact Entrepreneurship,2698-S2,elective
 Impact Entrepreneurship,2699-T3,elective
 Impact Entrepreneurship,2708-T4,elective
+Impact Entrepreneurship,2710-T4,mandatory
 Impact Entrepreneurship,2715-T3,elective
 Impact Entrepreneurship,2716-T4,elective
 Impact Entrepreneurship,2749-T4,elective
@@ -798,8 +805,11 @@ Impact Entrepreneurship,2752-T3,elective
 Impact Entrepreneurship,2752-T4,elective
 Impact Entrepreneurship,2753-T4,elective
 Impact Entrepreneurship,2755-T4,elective
+Impact Entrepreneurship,2756-S2,mandatory
 Impact Entrepreneurship,2757-T4,elective
 Impact Entrepreneurship,2763-T2,mandatory
+Impact Entrepreneurship,2763-T3,mandatory
+Impact Entrepreneurship,2765-S2,mandatory
 Impact Entrepreneurship,2768-T1,elective
 Impact Entrepreneurship,2768-T3,elective
 Impact Entrepreneurship,2768-T4,elective
@@ -893,6 +903,7 @@ Management,2332-T4,elective
 Management,2334-T3,elective
 Management,2336-T1,mandatory
 Management,2336-T2,mandatory
+Management,2336-T3,mandatory
 Management,2337-T1,elective
 Management,2337-T2,elective
 Management,2337-T3,elective
@@ -918,6 +929,7 @@ Management,2389-T1,elective
 Management,2389-T3,elective
 Management,2397-T4,elective
 Management,2414-S1,mandatory
+Management,2414-S2,mandatory
 Management,2416-T1,elective
 Management,2416-T3,elective
 Management,2417-T4,elective
@@ -925,6 +937,7 @@ Management,2418-T4,elective
 Management,2421-S1,elective
 Management,2421-S2,elective
 Management,2431-S1,mandatory
+Management,2431-S2,mandatory
 Management,2437-S2,elective
 Management,2438-S2,elective
 Management,2440-T2,elective
@@ -940,9 +953,11 @@ Management,2451-T3,elective
 Management,2454-T1,elective
 Management,2458-T4,elective
 Management,2459-S1,mandatory
+Management,2459-S2,mandatory
 Management,2460-S1,elective
 Management,2460-S2,elective
 Management,2463-T2,mandatory
+Management,2463-T3,mandatory
 Management,2465-T3,elective
 Management,2465-T4,elective
 Management,2468-T1,elective
@@ -971,8 +986,10 @@ Management,2498-T2,elective
 Management,2500-T4,elective
 Management,2580-S2,elective
 Management,2581-S1,mandatory
+Management,2581-S2,mandatory
 Management,2582-S1,elective
 Management,2584-S1,mandatory
+Management,2584-S2,mandatory
 Management,2585-S2,elective
 Management,2588-T2,elective
 Management,2588-T4,elective
@@ -1048,6 +1065,8 @@ Management,2784-S1,outside
 Management,2784-S2,outside
 Management,2785-T2,elective
 Management,2786-T2,mandatory
+Management,2786-T3,mandatory
+Management,2786-T4,mandatory
 Management,2788-T4,elective
 Management,2791-T2,elective
 Management,2792-T1,elective
@@ -1127,11 +1146,14 @@ Public Policy,2688-T4,elective
 Public Policy,2694-T2,elective
 Public Policy,2737-T4,elective
 Public Policy,2738-T2,mandatory
+Public Policy,2739-T3,mandatory
 Public Policy,2740-T1,mandatory
 Public Policy,2741-T1,mandatory
 Public Policy,2743-T2,mandatory
+Public Policy,2744-T3,mandatory
 Public Policy,2745-T2,mandatory
 Public Policy,2746-T2,mandatory
+Public Policy,2747-T3,mandatory
 Public Policy,2748-T1,mandatory
 Public Policy,2749-T4,elective
 Public Policy,2750-T1,mandatory
