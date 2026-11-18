@@ -1023,6 +1023,7 @@ LIST_KEYS = {"code", "term", "section", "list", "seats", "year", "rows"}
 ROW_KEYS = {"final", "bid", "allocated"}
 PERSONAL = "This export contains personal columns. Nothing was stored."
 NOT_A_LIST = "This does not look like a rank list from the export."
+SHARED = "shared rank list"   # the source of every list that came in through the share page
 # LN R18: how big the numbers of a real rank list can be, with room to spare.
 MAX_BID = 5000             # a plan takes at most 2000 points (update_settings)
 MAX_RANK_VALUE = 5500      # the highest bid with the rank bonus of LN R7
@@ -1137,7 +1138,7 @@ def read_rank_list(payload):
         "max_rank_value": max((row["final"] for row in allocated), default=None),
         "min_bid": min((row["bid"] for row in allocated), default=None),
         "zero_bids": sum(1 for row in clean if row["bid"] == 0),
-        "source": "shared rank list",
+        "source": SHARED,
     }
     buckets = defaultdict(lambda: {"bids": 0, "allocated": 0})
     for row in clean:
@@ -1148,6 +1149,14 @@ def read_rank_list(payload):
                   "bucket_from": low, "bucket_to": low + 20, "bids": value["bids"], "allocated": value["allocated"]}
                  for low, value in sorted(buckets.items())]
     return (cutoff, histogram), None
+
+
+def from_our_own_data(cutoff):
+    """LN R18: does Lance hold a list for this section, round and list from its own seed data? A shared list never
+    replaces it: that one was read from a real account, a pasted one could be made up."""
+    key = ("term", "section", "round", "list")
+    return any(row["source"] != SHARED and all(row[name] == cutoff[name] for name in key)
+               for row in db.load_cutoffs(cutoff["code"]))
 
 
 def share_rank_lists(payload):
@@ -1170,7 +1179,7 @@ def share_rank_lists(payload):
         prepared.append(result)
     stored = 0
     for cutoff, histogram in prepared:
-        if db.save_price_data(cutoff, histogram):
+        if not from_our_own_data(cutoff) and db.save_price_data(cutoff, histogram):
             stored += 1
     return stored, None
 

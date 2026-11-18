@@ -147,3 +147,24 @@ def test_made_up_years_cannot_blow_up_a_course_sheet(client):
     lists = [dict(BANKING, code="2477", year=f"{year}/{year + 1}", rows=ROWS * 5) for year in range(1960, 2020)]
     assert share(client, *lists).status_code == 400
     assert len(client.get("/api/sheet/2477-S1").get_data()) < 100_000
+
+
+# ---------- the lists Lance read from a real account stay ----------
+
+def test_a_shared_list_never_replaces_a_list_from_our_own_account(client):
+    # 299 made-up bids for Programming TXB, five winning at 240 and up: one more than our own list of 298
+    rows = [{"final": 240.0 + n, "bid": 240, "allocated": True} for n in range(5)] + [{"final": 10.0, "bid": 10, "allocated": False}] * 294
+    assert share(client, dict(BANKING, code="2477", section="TXB", seats=72, rows=rows)).get_json()["stored"] == 0
+    row = next(r for r in db.load_cutoffs("2477") if r["section"] == "TXB")
+    assert (row["min_rank_value"], row["seats"], row["bids"], row["source"]) == (115.5, 72, 298, "rank list, one account")
+    client.post("/api/add", json={"section_id": "2477-S1-TXB"})
+    client.post("/api/bid", json={"offering_id": "2477-S1", "bid": 164})
+    forecast = client.get("/api/state").get_json()["state"]["forecast"]
+    assert (forecast["rows"][0]["status"], forecast["rows"][0]["price"], forecast["left"]) == ("seat", 132, 33)
+
+
+def test_a_shared_list_still_replaces_a_shorter_shared_one(client):
+    # A8 stays as it was between shared lists
+    share(client, dict(BANKING, rows=ROWS[:2]))
+    assert share(client, BANKING).get_json()["stored"] == 1
+    assert banking_rows()[0]["bids"] == 4
