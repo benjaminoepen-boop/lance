@@ -396,14 +396,37 @@ def reserved_points(items):
     return sum(highest.values())
 
 
+def round_order(name):
+    """LN R18: when a round ran, to tell the newest. 'Spring 2026' ran in January 2026, 'Fall 2026' in July 2026.
+    A name Lance does not write itself counts as the oldest."""
+    season, _, year = name.partition(" ")
+    if season not in ("Spring", "Fall") or not (year.isascii() and year.isdigit()):
+        return (0, 0)
+    return (int(year), 0 if season == "Spring" else 1)
+
+
+def last_round(rows):
+    """LN04 and LN R18: only the newest round is last round. A list of an older year stays stored but never mixes in."""
+    newest = max((round_order(row["round"]) for row in rows), default=None)
+    return [row for row in rows if round_order(row["round"]) == newest]
+
+
+def last_rounds(rows):
+    """last_round for each course, term and list on its own."""
+    groups = defaultdict(list)
+    for row in rows:
+        groups[(row["code"], row["term"], row["list"])].append(row)
+    return [row for group in groups.values() for row in last_round(group)]
+
+
 def past_prices(code, term, list_name="primary"):
-    """The cut-offs known for a course: this term first, otherwise any other term as a rough hint.
+    """The cut-offs of last round for a course: this term first, otherwise any other term as a rough hint.
 
     Returns (rows, exact) where exact is False when the numbers come from another term.
     """
     rows = [row for row in db.load_cutoffs(code) if row["list"] == list_name]
     same_term = [row for row in rows if row["term"] == term]
-    return (same_term, True) if same_term else (rows, False)
+    return (last_round(same_term), True) if same_term else (last_round(rows), False)
 
 
 def lowest_bid_in_course(code, term):
@@ -959,7 +982,8 @@ def round_of(semester, today=None):
 
 def known_prices(semester="Fall"):
     """What we know so far, as an anchor for sections without a past price."""
-    prices = [row["min_rank_value"] for row in db.load_cutoffs() if row["list"] == "primary" and row["min_rank_value"] is not None]
+    prices = [row["min_rank_value"] for row in last_rounds(db.load_cutoffs())
+              if row["list"] == "primary" and row["min_rank_value"] is not None]
     if not prices:
         return None
     return {"sections": len(prices), "total": coverage("Fall")["total"], "low": math.floor(min(prices)), "high": math.ceil(max(prices))}
@@ -982,7 +1006,7 @@ def catalogue(plan):
     """The course list of one semester for one programme, ready to send to the page."""
     kinds = db.load_programme_kinds(plan["programme"])
     cut_rows = defaultdict(list)
-    for row in db.load_cutoffs():
+    for row in last_rounds(db.load_cutoffs()):     # LN R18: each term's newest round only
         if row["list"] == "primary":
             cut_rows[row["code"]].append(row)
     sections_by_offering = defaultdict(list)
@@ -1241,10 +1265,10 @@ def course_page(offering_id, plan):
     histograms = defaultdict(list)
     for row in db.load_histograms(offering["code"]):
         if row["list"] == prices_list:
-            histograms[(row["term"], row["section"])].append(row)
+            histograms[(row["term"], row["section"], row["round"])].append(row)    # each price row draws its own round
     prices = []
     for row in rows:
-        prices.append(dict(row, histogram=histograms.get((row["term"], row["section"]), [])))
+        prices.append(dict(row, histogram=histograms.get((row["term"], row["section"], row["round"]), [])))
     exams = [dict(exam, label=day_label(exam["date"])) for exam in all_exams().get((offering["code"], offering["term"]), []) if exam["date"]]
     no_exam = any(exam["kind"] == "none" for exam in all_exams().get((offering["code"], offering["term"]), []))
     other_terms = [row for row in db.load_offerings_by_code(offering["code"]) if row["id"] != offering_id]

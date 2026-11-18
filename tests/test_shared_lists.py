@@ -168,3 +168,31 @@ def test_a_shared_list_still_replaces_a_shorter_shared_one(client):
     share(client, dict(BANKING, rows=ROWS[:2]))
     assert share(client, BANKING).get_json()["stored"] == 1
     assert banking_rows()[0]["bids"] == 4
+
+
+# ---------- last round is the newest round ----------
+
+def test_an_older_round_never_hides_the_newest(client):
+    # a list for 2025/2026 is real and stays stored, but last round for Programming is still Fall 2026 (A1)
+    sheet_before = client.get("/api/sheet/2477-S1").get_data(as_text=True)
+    older = [dict(BANKING, code="2477", section=section, seats=1, year="2025/2026", rows=[{"final": 1.0, "bid": 0, "allocated": True}])
+             for section in ("TXA", "TXB")]
+    assert share(client, *older).get_json()["stored"] == 2
+    client.post("/api/add", json={"section_id": "2477-S1-TXB"})
+    client.post("/api/bid", json={"offering_id": "2477-S1", "bid": 164})
+    state = client.get("/api/state").get_json()["state"]
+    analysis = state["items"][0]["analysis"]
+    assert (analysis["round"], analysis["cutoff"], analysis["lowest_in_course"]) == ("Fall 2026", 115.5, 100)
+    assert (state["forecast"]["rows"][0]["price"], state["forecast"]["left"]) == (132, 33)
+    assert state["known_prices"]["low"] == 40
+    course = next(c for c in client.get("/api/catalogue").get_json() if c["id"] == "2477-S1")
+    assert (course["cutoff_low"], next(s for s in course["sections"] if s["section"] == "TXA")["cutoff"]) == (109, 120)
+    sheet = client.get("/api/sheet/2477-S1").get_data(as_text=True)
+    assert "Fall 2025" not in sheet
+    assert sheet.count('class="won"') == sheet_before.count('class="won"')
+
+
+def test_the_newest_round_is_the_one_that_ran_last():
+    # a spring round runs in January, a fall round in July; a name Lance never writes counts as the oldest
+    names = ["Fall 2026", "Spring 2027", "Fall Prof. X", "Spring 2026", "Fall 2025"]
+    assert sorted(names, key=logic.round_order) == ["Fall Prof. X", "Fall 2025", "Spring 2026", "Fall 2026", "Spring 2027"]
