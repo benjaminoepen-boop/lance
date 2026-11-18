@@ -3,6 +3,7 @@
 Run:  uv run flask --app app run --port 8770
 """
 import json
+import mimetypes
 import os
 from datetime import date
 from urllib.parse import quote
@@ -14,6 +15,9 @@ import db
 import logic
 
 app = Flask(__name__)
+# The captions of the share video: with nosniff on, a browser ignores them unless they come as text/vtt,
+# and a slim server image may not know the type.
+mimetypes.add_type("text/vtt", ".vtt")
 # Deployed, the host's proxy speaks HTTPS to the browser and passes each request on over plain HTTP. Trusting that one
 # proxy's X-Forwarded-Proto and X-Forwarded-Host lets the app see HTTPS: then the plan cookie is Secure, HSTS is sent and
 # the private link starts with https. On http://localhost there is no such header, so nothing changes there.

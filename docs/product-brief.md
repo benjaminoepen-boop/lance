@@ -25,7 +25,7 @@ Three steps. **Courses:** a student chooses their programme, says which sections
 | LN05 | Read past prices | Cut-off, seats, number of bids and the distribution of bids per section. |
 | LN06 | Course sheet | Lecturers, sections, exams, past prices, the rating, what counts for the grade, Nova's own sheet, similar courses. |
 | LN07 | See a course's rating | The average rating, the number of reviews and the workload from Uni Feedback, an independent review site, in the list and on the course sheet, with a link to the reviews. Lance collects no ratings itself: nobody wants to rate while they bid. |
-| LN08 | Share rank lists | A bookmarklet reads the student's own rank lists on the platform, without the personal columns. Pasted into Lance, they become totals per section. |
+| LN08 | Share rank lists | A bookmarklet reads the student's own rank lists on the platform, without the personal columns. Pasted into Lance, they become totals per section. A video of 40 seconds on the share page shows the five steps, with captions. |
 | LN09 | Rules and dates | The rules as short questions, Nova's wording one click deeper, the calendar. The last step says what is missing and has a checklist. |
 | LN10 | Take it along | A calendar file with every class on its real date; the list to type into the platform. |
 | LN11 | Come back | The plan is saved without an account. A private link continues it on another device. |

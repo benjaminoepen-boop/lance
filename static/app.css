@@ -516,6 +516,10 @@ blockquote cite { display: block; font-style: normal; font-size: 12px; font-weig
 .pay b { font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; text-align: right; }
 .date-row { display: flex; justify-content: space-between; gap: 12px; padding: 3px 0; }
 .date-row.past { opacity: .5; }
+/* the share page: the video of the five steps, as wide as the cards under it */
+.howto { padding: 0; overflow: hidden; }
+.howto video { display: block; width: 100%; height: auto; background: #000; }
+kbd { display: inline-block; min-width: 18px; padding: 0 4px; border-radius: 4px; background: var(--chip); color: var(--ink-2); font: inherit; font-size: 12px; text-align: center; }
 .three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gap); }
 .three .card { display: flex; flex-direction: column; gap: 6px; }
 .three .card > h2 { margin-bottom: 0; }
