@@ -32,6 +32,8 @@
   --bar: #dcdce1; --bar-fill: #8e8e93;
   /* the toast is the one dark note in the light scheme */
   --toast: #1d1d1f;
+  /* the seal of the logo: white, a little softer on dark. The envelope keeps its own two blues in both schemes */
+  --seal: #ffffff;
   /* three control heights, two radii (rows take 10, pills are round); a phone makes every control finger-sized */
   --h-sm: 30px; --h: 36px; --h-icon: 32px;
   --control: 48px;   /* the column at the right edge of a course row that holds its plus, tick or Pick */
@@ -72,6 +74,7 @@
   --petrol: #5fb4cb; --petrol-soft: #142a31; --petrol-line: #274a56;
   --bar: #34343a; --bar-fill: #9a9aa0;
   --toast: #38383e;
+  --seal: #f2f2f4;
 }
 :root[data-theme="dark"] select.field { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='%239a9aa0' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5'/%3E%3C/svg%3E"); }
 @media (prefers-color-scheme: dark) {
@@ -92,6 +95,7 @@
     --petrol: #5fb4cb; --petrol-soft: #142a31; --petrol-line: #274a56;
     --bar: #34343a; --bar-fill: #9a9aa0;
     --toast: #38383e;
+    --seal: #f2f2f4;
   }
   :root:not([data-theme="light"]) select.field { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='%239a9aa0' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5'/%3E%3C/svg%3E"); }
 }
@@ -239,7 +243,9 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 .topbar { position: sticky; top: 0; z-index: 30; height: var(--top); display: flex; align-items: center; gap: 18px; padding: 0 var(--gap); background: var(--card); border-bottom: 1px solid var(--line); }
 .brand { display: flex; align-items: center; gap: 9px; margin-left: -8px; padding: 4px 8px; border-radius: var(--r-ctl); font-weight: 600; font-size: 17px; color: var(--ink); text-decoration: none; }
 @media (hover: hover) { .brand:hover { background: var(--hover); color: var(--ink); } }
-.brand i { width: 24px; height: 24px; border-radius: var(--r-ctl); background: var(--blue); display: grid; place-items: center; color: var(--on-blue); }
+/* the logo draws its own tile in base.html; only its seal follows the colour scheme */
+.brand .logo { flex: none; }
+.brand .seal { fill: var(--seal); }
 .brand small { font-size: 12px; font-weight: 500; color: var(--ink-3); margin-left: 1px; }
 .top-right { margin-left: auto; display: flex; align-items: center; gap: 6px; }
 .main { padding: var(--gap); min-width: 0; }
