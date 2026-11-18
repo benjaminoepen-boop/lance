@@ -1,6 +1,8 @@
 """Scenarios A5 to A8, through the same requests the browser sends."""
 import json
 
+import pytest
+
 import db
 import logic
 
@@ -213,3 +215,92 @@ def test_a_round_that_is_over_is_offered_as_practice(client):
     assert lance.semester_option("Fall", today="2026-11-07") == "Fall · practice"
     assert lance.semester_option("Spring", today="2026-11-07") == "Spring · opens 18 Jan"
     assert lance.semester_option("Spring", today="2027-01-19") == "Spring · open now"
+
+
+# ---------- requests no page sends ----------
+
+def test_a_body_larger_than_any_export_is_refused_unread(client):
+    # a real export is a few hundred KB at most; three uploads of 47 MB once held 1.3 GB of memory
+    response = client.post("/api/share", data=json.dumps({"export": "x" * 512 * 1024}), content_type="application/json")
+    assert response.status_code == 413
+    assert response.get_json()["error"]
+    assert client.post("/api/restore", data=json.dumps({"rows": ["x" * 600 * 1024]}), content_type="application/json").status_code == 413
+    assert share(client, EXPORT).status_code == 200
+
+
+ROW = {"offering_id": "2477-S1", "section_id": None, "list": "primary", "position": 1, "bid": None}
+
+
+@pytest.mark.parametrize("path, body", [
+    ("/api/add", {"section_id": ["2477-S1-TXA"]}), ("/api/add", {"offering_id": {"a": 1}}),
+    ("/api/switch", {"section_id": ["2477-S1-TXA"]}), ("/api/remove", {"item_id": []}), ("/api/remove", {"item_id": {"a": 1}}),
+    ("/api/remove", {"offering_id": ["2477-S1"]}), ("/api/bid", {"item_id": 10 ** 30, "bid": 1}),
+    ("/api/bid", {"offering_id": ["2477-S1"], "bid": 1}), ("/api/move", {"item_id": "\ud800", "direction": "up"}),
+    ("/api/move", {"item_id": True, "direction": "down"}), ("/api/settings", {"points": float("inf")}),
+    ("/api/settings", {"points": float("nan")}), ("/api/settings", {"programme": None}), ("/api/settings", {"programme": 0}),
+    ("/api/restore", {"rows": [dict(ROW, offering_id=["2477-S1"])]}), ("/api/restore", {"rows": [dict(ROW, section_id=[])]}),
+])
+def test_a_value_of_the_wrong_kind_is_a_bad_request_not_a_crash(client, path, body):
+    # lists or objects as ids, Infinity or NaN as points, no programme: no page sends that, so it is answered with 400
+    client.post("/api/add", json={"section_id": "2477-S1-TXB"})
+    client.post("/api/add", json={"section_id": "2277-T2-TXA"})
+    before = state_of(client)
+    response = client.post(path, data=json.dumps(body), content_type="application/json")
+    assert response.status_code == 400
+    assert response.get_json()["error"]
+    after = state_of(client)
+    assert (after["plan"], after["items"]) == (before["plan"], before["items"])
+
+
+@pytest.mark.parametrize("body", ["[1]", '"x"', "5", "true", "null", "[" * 100_000 + "]" * 100_000])
+def test_a_share_that_is_not_an_object_is_refused_not_a_crash(client, body):
+    response = client.post("/api/share", data=body, content_type="application/json")
+    assert response.status_code == 400
+    assert response.get_json()["error"]
+    nested = client.post("/api/share", data=json.dumps({"export": body}), content_type="application/json")
+    assert nested.status_code == 400
+
+
+def test_brackets_nested_thousands_deep_are_refused_not_a_crash(client):
+    deep = "[" * 100_000 + "]" * 100_000
+    response = client.post("/api/add", data=deep, content_type="application/json")
+    assert response.status_code == 415
+    assert response.get_json()["error"]
+
+
+def test_start_over_and_the_example_take_only_what_a_page_sends(client):
+    # a form on another website could empty a plan or swap its cookie: like every other change, these take JSON only
+    client.post("/api/add", json={"section_id": "2477-S1-TXB"})
+    response = client.post("/api/start-over", data={"x": "1"})
+    assert response.status_code == 415
+    assert "Set-Cookie" not in response.headers
+    assert client.post("/api/example", data={"x": "1"}).status_code == 415
+    assert client.post("/api/start-over").status_code == 415
+    assert len(state_of(client)["items"]) == 1
+
+
+# ---------- running behind the host's HTTPS proxy ----------
+
+def test_behind_https_the_plan_cookie_is_secure_and_hsts_is_sent(client):
+    # the proxy speaks HTTPS to the browser and says so in X-Forwarded-Proto; plain http://localhost stays as it was
+    secure = client.get("/", headers={"X-Forwarded-Proto": "https"})
+    assert "Secure" in secure.headers["Set-Cookie"]
+    assert secure.headers["Strict-Transport-Security"] == "max-age=31536000"
+    plain = client.get("/")
+    assert "Secure" not in plain.headers["Set-Cookie"]
+    assert "Strict-Transport-Security" not in plain.headers
+
+
+def test_behind_https_the_private_link_is_https(client):
+    page = client.get("/nova", headers={"X-Forwarded-Proto": "https", "X-Forwarded-Host": "lance.example.org"})
+    assert 'data-link="https://lance.example.org/p/' in page.get_data(as_text=True)
+
+
+def test_the_container_runs_as_its_own_user_with_threads():
+    import os
+    import re
+    with open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "Dockerfile"), encoding="utf-8") as file:
+        text = file.read()
+    assert re.search(r"^USER (?!root\b)\w+", text, re.MULTILINE)
+    assert re.search(r"uv==\d+\.\d+\.\d+", text)
+    assert '"--worker-class", "gthread"' in text and '"--threads"' in text

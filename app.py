@@ -8,11 +8,19 @@ from datetime import date
 from urllib.parse import quote
 
 from flask import Flask, Response, abort, jsonify, make_response, redirect, render_template, request, url_for
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 import db
 import logic
 
 app = Flask(__name__)
+# Deployed, the host's proxy speaks HTTPS to the browser and passes each request on over plain HTTP. Trusting that one
+# proxy's X-Forwarded-Proto and X-Forwarded-Host lets the app see HTTPS: then the plan cookie is Secure, HSTS is sent and
+# the private link starts with https. On http://localhost there is no such header, so nothing changes there.
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
+# A real export is a few hundred KB at most. A larger body is refused with 413 before it is read.
+MAX_BODY_KB = 512
+app.config["MAX_CONTENT_LENGTH"] = MAX_BODY_KB * 1024
 db.init_db()
 
 COOKIE = "lance_plan"
@@ -32,7 +40,9 @@ def current_plan():
 
 
 def remember(response, plan):
-    response.set_cookie(COOKIE, plan["id"], max_age=ONE_YEAR, httponly=True, samesite="Lax")
+    """The plan id is the whole key to a plan: scripts cannot read its cookie, and a cookie set over HTTPS is sent back
+    over HTTPS only."""
+    response.set_cookie(COOKIE, plan["id"], max_age=ONE_YEAR, httponly=True, samesite="Lax", secure=request.is_secure)
     return response
 
 
@@ -61,6 +71,8 @@ def safe_headers(response):
     response.headers["Content-Security-Policy"] = (
         "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; "
         "script-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'self'")
+    if request.is_secure:      # the browser then stays on HTTPS for a year, so the plan id never goes out in plain text
+        response.headers["Strict-Transport-Security"] = "max-age=31536000"
     return response
 
 
@@ -147,7 +159,10 @@ def answer(plan, error=None, **more):
 
 def payload():
     """The JSON a page sent. Refusing anything else keeps other websites from posting here."""
-    data = request.get_json(silent=True)
+    try:
+        data = request.get_json(silent=True)
+    except RecursionError:      # brackets nested thousands deep: no page sends that
+        data = None
     if not isinstance(data, dict):
         abort(415)
     return data
@@ -213,6 +228,7 @@ def api_switch():
 def api_start_over():
     """Empties the semester on show and answers with what undo needs, like removing one course."""
     plan, _ = current_plan()
+    payload()
     with logic.undoable(plan):
         removed = logic.start_over(plan)
     return answer(plan, removed=removed)
@@ -262,6 +278,7 @@ def api_settings():
 @app.route("/api/example", methods=["POST"])
 def api_example():
     plan, _ = current_plan()
+    payload()
     with logic.undoable(plan):
         error = logic.load_example(plan)
     return answer(plan, error)
@@ -286,10 +303,11 @@ def api_redo():
 @app.route("/api/share", methods=["POST"])
 def api_share():
     """A rank-list export. The rules keep totals only; the rows themselves are never written anywhere."""
-    text = (request.get_json(silent=True) or {}).get("export", "")
     try:
+        data = request.get_json(silent=True)
+        text = data.get("export") if isinstance(data, dict) else None
         export = json.loads(text) if isinstance(text, str) else None
-    except ValueError:
+    except (ValueError, RecursionError):     # not JSON at all, or brackets nested thousands deep
         export = None
     if export is None:
         return jsonify({"error": "This does not look like what the button copies.", "stored": 0}), 400
@@ -297,6 +315,22 @@ def api_share():
     if error:
         return jsonify({"error": error, "stored": 0}), 400
     return jsonify({"error": None, "stored": stored, "coverage": logic.coverage()})
+
+
+@app.errorhandler(logic.Malformed)
+def malformed(error):
+    """A value of the wrong kind, like a list where an id belongs: refused with a short sentence before any rule ran."""
+    return jsonify({"error": str(error)}), 400
+
+
+@app.errorhandler(415)
+def not_json(_):
+    return jsonify({"error": "Lance takes only what its pages send: a JSON object."}), 415
+
+
+@app.errorhandler(413)
+def too_large(_):
+    return jsonify({"error": f"This is too large: Lance takes at most {MAX_BODY_KB} KB at once.", "stored": 0}), 413
 
 
 @app.errorhandler(404)

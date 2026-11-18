@@ -428,6 +428,15 @@ def insert_item(plan_id, offering_id, section_id, list_name, position, bid=None)
         return cursor.lastrowid
 
 
+def insert_items(plan_id, rows):
+    """Several entries in one go: all of them, or none if one fails. Undo never leaves half a plan behind."""
+    with closing(connect()) as connection:
+        connection.executemany(
+            "INSERT INTO plan_items (plan_id, offering_id, section_id, list, position, bid) VALUES (?, ?, ?, ?, ?, ?)",
+            [(plan_id, row["offering_id"], row.get("section_id"), row["list"], row["position"], row.get("bid")) for row in rows])
+        connection.commit()
+
+
 def delete_item(item_id):
     with closing(connect()) as connection:
         connection.execute("DELETE FROM plan_items WHERE id = ?", (item_id,))

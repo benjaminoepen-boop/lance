@@ -5,6 +5,7 @@ the solo project Festival Architect: a stage became a student's week, an artist 
 a fee became a bid and the festival budget became the points balance.
 """
 import math
+import re
 import sqlite3
 from collections import defaultdict
 from contextlib import contextmanager
@@ -15,6 +16,10 @@ import db
 
 MAX_ECTS = 31.5            # LN R8: mandatory and elective courses per semester
 RECOMMENDED_ECTS = 28.0
+# LN02: what a plan holds in one semester. LN R8 leaves room for 9 courses of 3.5 ECTS on the mandatory and primary
+# lists; 40 entries add backup sections and a long alternate list, and keep every answer fast.
+MAX_ENTRIES = 40
+FULL = f"A plan holds at most {MAX_ENTRIES} entries in a semester."
 BONUS = 1.1                # LN R7: rank value of part of the students with 45 or more ECTS passed
 # LN R17: two rough reference values from the team's own accounts, as (ECTS in mandatory courses, points).
 # Nova does not publish how it sets the points, so this is an estimate until the student types the real number.
@@ -22,6 +27,34 @@ POINTS_AT = ((20, 140), (23, 120))
 RATING_PAGE = "https://uni-feedback.com/en/courses/"   # LN07: where a course's reviews can be read
 BID_MARGIN = {"exact": 1.00, "plus10": 1.10, "plus25": 1.25}   # on top of last round's cut-off
 WEEKDAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+
+
+# ---------- requests no page sends ----------
+
+class Malformed(ValueError):
+    """A request no page of Lance sends, like a list where an id belongs or Infinity as points. It is refused before
+    anything is written, and app.py answers it with 400 and this sentence, where it used to fail with 500."""
+
+
+def checked_id(value):
+    """Course and section ids arrive as text, or not at all."""
+    if value is None or isinstance(value, str):
+        return value
+    raise Malformed("An id is text.")
+
+
+def checked_entry(value):
+    """An entry is named by its number from the state. True is no number here, and SQLite holds at most 2**63 - 1."""
+    if value is None or (type(value) is int and 0 < value < 2 ** 63):
+        return value
+    raise Malformed("An entry is named by its number.")
+
+
+def checked_points(value):
+    """Points arrive as typed, as text or as a number, or not at all. Infinity and NaN are no points."""
+    if value is None or isinstance(value, str) or type(value) is int or (type(value) is float and math.isfinite(value)):
+        return value
+    raise Malformed("Points are a number.")
 
 
 # ---------- times (from Festival Architect) ----------
@@ -396,14 +429,37 @@ def reserved_points(items):
     return sum(highest.values())
 
 
+def round_order(name):
+    """LN R18: when a round ran, to tell the newest. 'Spring 2026' ran in January 2026, 'Fall 2026' in July 2026.
+    A name Lance does not write itself counts as the oldest."""
+    season, _, year = name.partition(" ")
+    if season not in ("Spring", "Fall") or not (year.isascii() and year.isdigit()):
+        return (0, 0)
+    return (int(year), 0 if season == "Spring" else 1)
+
+
+def last_round(rows):
+    """LN04 and LN R18: only the newest round is last round. A list of an older year stays stored but never mixes in."""
+    newest = max((round_order(row["round"]) for row in rows), default=None)
+    return [row for row in rows if round_order(row["round"]) == newest]
+
+
+def last_rounds(rows):
+    """last_round for each course, term and list on its own."""
+    groups = defaultdict(list)
+    for row in rows:
+        groups[(row["code"], row["term"], row["list"])].append(row)
+    return [row for group in groups.values() for row in last_round(group)]
+
+
 def past_prices(code, term, list_name="primary"):
-    """The cut-offs known for a course: this term first, otherwise any other term as a rough hint.
+    """The cut-offs of last round for a course: this term first, otherwise any other term as a rough hint.
 
     Returns (rows, exact) where exact is False when the numbers come from another term.
     """
     rows = [row for row in db.load_cutoffs(code) if row["list"] == list_name]
     same_term = [row for row in rows if row["term"] == term]
-    return (same_term, True) if same_term else (rows, False)
+    return (last_round(same_term), True) if same_term else (last_round(rows), False)
 
 
 def lowest_bid_in_course(code, term):
@@ -573,6 +629,11 @@ def load_plan(plan_id):
     return plan
 
 
+def in_semester(items, semester):
+    """The entries among these that belong to one semester."""
+    return [item for item in items if all_offerings()[item["offering_id"]]["semester"] == semester]
+
+
 def next_position(items, list_name):
     positions = [item["position"] for item in items if item["list"] == list_name]
     return max(positions) + 1 if positions else 1
@@ -599,7 +660,9 @@ def first_fitting_section(items, offering_id):
 
 
 def add_to_plan(plan, section_id=None, offering_id=None, list_name=None):
-    """Add a section, or a whole course: then LN R11 picks the section. Returns an error text or None."""
+    """Add a section, or a whole course: then LN R11 picks the section. A semester holds at most MAX_ENTRIES (LN02).
+    Returns an error text or None."""
+    section_id, offering_id = checked_id(section_id), checked_id(offering_id)
     items = db.load_items(plan["id"])
     if section_id:
         section = all_sections().get(section_id)
@@ -629,6 +692,8 @@ def add_to_plan(plan, section_id=None, offering_id=None, list_name=None):
             list_name = "mandatory"
         else:
             list_name = "primary"
+    if len(in_semester(items, plan["semester"])) >= MAX_ENTRIES:
+        return FULL
     bid = same_course[0]["bid"] if same_course else None   # LN R14: only the highest is held anyway (LN R6)
     try:
         db.insert_item(plan["id"], offering_id, section_id, list_name, next_position(items, list_name), bid)
@@ -642,7 +707,7 @@ def switch_section(plan, section_id):
 
     If it was a backup, the two change places and the bids stay with the places: TXB 164, TXA 100 becomes TXA 164, TXB 100.
     """
-    section = all_sections().get(section_id)
+    section = all_sections().get(checked_id(section_id))
     if section is None:
         return "Unknown section."
     same_course = sorted((item for item in db.load_items(plan["id"]) if item["offering_id"] == section["offering_id"]),
@@ -661,6 +726,7 @@ def switch_section(plan, section_id):
 
 def remove_course(plan, offering_id):
     """LN R15: take a whole course out. Returns what undo needs to put it back, and an error text or None."""
+    checked_id(offering_id)
     rows = [item for item in db.load_items(plan["id"]) if item["offering_id"] == offering_id]
     if not rows:
         return [], "This course is not in your plan."
@@ -675,33 +741,48 @@ def undo_rows(rows):
 
 
 def restore_items(plan, rows):
-    """LN R15: put back what remove_course took out. The rows come from the browser, so each one is checked first."""
+    """LN R15: put back what remove_course took out. The rows come from the browser, so each one is checked first,
+    and then they are written all together or not at all."""
     if not isinstance(rows, list) or not rows:
         return "Nothing to put back."
     items = db.load_items(plan["id"])
+    if len(in_semester(items, plan["semester"])) + len(rows) > MAX_ENTRIES:     # LN02
+        return FULL
+    seen = set()
     for row in rows:
         if not isinstance(row, dict):
             return "Nothing to put back."
-        offering = all_offerings().get(row.get("offering_id"))
-        section = all_sections().get(row.get("section_id")) if row.get("section_id") else None
+        offering_id, section_id = checked_id(row.get("offering_id")), checked_id(row.get("section_id"))
+        offering = all_offerings().get(offering_id)
+        section = all_sections().get(section_id) if section_id else None
         if offering is None or offering["semester"] != plan["semester"]:
             return "Unknown course."
-        if row.get("section_id") and (section is None or section["offering_id"] != offering["id"]):
+        if section_id and (section is None or section["offering_id"] != offering["id"]):
             return "Unknown section."
         if row.get("list") not in ("mandatory", "primary", "alternate"):
             return "Unknown list."
-        if not isinstance(row.get("position"), int):
+        # positions only grow while you click (removing does not count them again): 2**31 is far beyond that,
+        # and far below what SQLite holds. True is no place, although Python counts it as 1.
+        position = row.get("position")
+        if type(position) is not int or not 1 <= position < 2 ** 31:
             return "Unknown place."
         if any(item["offering_id"] == offering["id"] for item in items):
             return "Already in your plan."
+        if (offering["id"], section_id) in seen:
+            return "The same entry is in the list twice."
+        seen.add((offering["id"], section_id))
     # LN R17: a mandatory course that comes back brings its points along, so the bids are held against the plan as it will be
     points = points_with(plan, items + rows)
     for row in rows:
         bid = row.get("bid")
-        if bid is not None and (not isinstance(bid, int) or bid < 0 or bid > points):
+        if bid is not None and type(bid) is not int:
+            return "A bid is a whole number."
+        if bid is not None and not 0 <= bid <= points:
             return "A bid cannot exceed your " + str(points) + " points."
-    for row in rows:
-        db.insert_item(plan["id"], row["offering_id"], row.get("section_id"), row["list"], row["position"], row.get("bid"))
+    try:
+        db.insert_items(plan["id"], rows)
+    except sqlite3.IntegrityError:     # the same undo twice, faster than the check above
+        return "Already in your plan."
     return None
 
 
@@ -715,7 +796,7 @@ def start_over(plan):
 
 
 def remove_from_plan(plan, item_id):
-    item = db.load_item(item_id)
+    item = db.load_item(checked_entry(item_id))
     if item is None or item["plan_id"] != plan["id"]:
         return "This entry is not in your plan."
     db.delete_item(item_id)
@@ -743,7 +824,7 @@ def checked_bid(plan, bid):
 
 def set_bid(plan, item_id, bid):
     """The bid of one section."""
-    item = db.load_item(item_id)
+    item = db.load_item(checked_entry(item_id))
     if item is None or item["plan_id"] != plan["id"]:
         return "This entry is not in your plan."
     if item["list"] == "mandatory":
@@ -757,6 +838,7 @@ def set_bid(plan, item_id, bid):
 
 def set_course_bid(plan, offering_id, bid):
     """One bid for all sections of a course: only the highest counts anyway (LN R6), so this is the normal case."""
+    checked_id(offering_id)
     rows = [item for item in db.load_items(plan["id"]) if item["offering_id"] == offering_id]
     if not rows:
         return "This course is not in your plan."
@@ -772,7 +854,7 @@ def set_course_bid(plan, offering_id, bid):
 
 def move_item(plan, item_id, list_name=None, direction=None):
     """Move an entry to the other list, or up and down inside its list. Sections of a course move together."""
-    item = db.load_item(item_id)
+    item = db.load_item(checked_entry(item_id))
     if item is None or item["plan_id"] != plan["id"]:
         return "This entry is not in your plan."
     items = db.load_items(plan["id"])
@@ -808,6 +890,9 @@ def move_item(plan, item_id, list_name=None, direction=None):
 def update_settings(plan, programme, semester, points, has_bonus):
     """Save the plan's settings. Entries of another semester stay saved but do not show.
     Points of None mean: not typed now, keep what is saved. Zero means: back to the estimate (LN R17)."""
+    if not isinstance(programme, str):
+        raise Malformed("The programme is text.")
+    points = checked_points(points)
     if programme and programme not in db.load_programmes():
         return "Unknown programme."
     if semester not in ("Fall", "Spring"):
@@ -839,7 +924,7 @@ def relist_for_programme(plan, items=None):
 
 def plan_items(plan):
     """The entries of this plan that belong to its semester."""
-    return [item for item in db.load_items(plan["id"]) if all_offerings()[item["offering_id"]]["semester"] == plan["semester"]]
+    return in_semester(db.load_items(plan["id"]), plan["semester"])
 
 
 def warnings_for(plan, items):
@@ -1019,7 +1104,8 @@ def round_of(semester, today=None):
 
 def known_prices(semester="Fall"):
     """What we know so far, as an anchor for sections without a past price."""
-    prices = [row["min_rank_value"] for row in db.load_cutoffs() if row["list"] == "primary" and row["min_rank_value"] is not None]
+    prices = [row["min_rank_value"] for row in last_rounds(db.load_cutoffs())
+              if row["list"] == "primary" and row["min_rank_value"] is not None]
     if not prices:
         return None
     return {"sections": len(prices), "total": coverage("Fall")["total"], "low": math.floor(min(prices)), "high": math.ceil(max(prices))}
@@ -1042,7 +1128,7 @@ def catalogue(plan):
     """The course list of one semester for one programme, ready to send to the page."""
     kinds = db.load_programme_kinds(plan["programme"])
     cut_rows = defaultdict(list)
-    for row in db.load_cutoffs():
+    for row in last_rounds(db.load_cutoffs()):     # LN R18: each term's newest round only
         if row["list"] == "primary":
             cut_rows[row["code"]].append(row)
     sections_by_offering = defaultdict(list)
@@ -1075,57 +1161,130 @@ def catalogue(plan):
     return rows
 
 
-# ---------- LN R9: shared price data ----------
+# ---------- LN R9 and LN R18: shared price data ----------
 
-FORBIDDEN_FIELDS = {"student", "student_number", "number", "id", "ects", "ects_sum", "name", "email"}
+# LN R18: exactly what the bookmarklet writes (static/share-bookmarklet.js). Anything else that comes along refuses the
+# whole share (LN R9): a list of forbidden names missed the platform's own "Ects Sum", a list of allowed ones misses nothing.
+LIST_KEYS = {"code", "term", "section", "list", "seats", "year", "rows"}
+ROW_KEYS = {"final", "bid", "allocated"}
+PERSONAL = "This export contains personal columns. Nothing was stored."
+NOT_A_LIST = "This does not look like a rank list from the export."
+SHARED = "shared rank list"   # the source of every list that came in through the share page
+# LN R18: how big the numbers of a real rank list can be, with room to spare.
+MAX_BID = 5000             # a plan takes at most 2000 points (update_settings)
+MAX_RANK_VALUE = 5500      # the highest bid with the rank bonus of LN R7
+MAX_SEATS = 400            # the largest section so far had 72 seats
+MAX_ROWS = 1000            # one row per bid: the fullest section so far had 298
+MAX_LISTS = 60             # one list per section a student bid on
+
+
+def plain_number(value, highest, whole=False):
+    """LN R18: a number as the bookmarklet writes it, from 0 to highest; otherwise None.
+
+    Text, true and false are no numbers here. Infinity and NaN fail the range check by themselves: comparing with NaN
+    is always false, and Infinity is above any highest. A whole number may not have a fraction.
+    """
+    if isinstance(value, bool) or not isinstance(value, (int, float)) or not 0 <= value <= highest:
+        return None
+    if whole and value != int(value):
+        return None
+    return value
+
+
+def has_personal_columns(payload):
+    """LN R9: anything beyond what the bookmarklet writes, in the list itself or in one of its rows."""
+    rows = payload.get("rows")
+    extra_in_rows = isinstance(rows, list) and any(not isinstance(row, dict) or set(row) - ROW_KEYS for row in rows)
+    return bool(set(payload) - LIST_KEYS) or extra_in_rows
+
+
+def read_rows(rows):
+    """LN R18: the rows of one rank list as plain numbers, or None when a row cannot be read."""
+    clean = []
+    for row in rows:
+        final, bid = plain_number(row.get("final"), MAX_RANK_VALUE), plain_number(row.get("bid"), MAX_BID, whole=True)
+        if final is None or bid is None or not isinstance(row.get("allocated"), bool):
+            return None
+        clean.append({"final": float(final), "bid": float(bid), "allocated": row["allocated"]})
+    return clean
 
 
 def round_name(year, term):
-    """The bidding round of a rank list: academic year '2026/2027' and term S1 mean 'Fall 2026'."""
-    first, second = (year or "2026/2027").split("/")
-    return ("Fall " + first) if term in ("S1", "T1", "T2") else ("Spring " + second)
+    """The bidding round of a rank list: academic year '2026/2027' and term S1 mean 'Fall 2026', term S2 'Spring 2027'.
+    None when the year is not written the way the platform writes it."""
+    match = re.fullmatch(r"(\d{4})/(\d{4})", year, re.ASCII)
+    if match is None or int(match[2]) != int(match[1]) + 1:
+        return None
+    return ("Fall " + match[1]) if term in ("S1", "T1", "T2") else ("Spring " + match[2])
+
+
+def shared_rounds(today=None):
+    """LN R18: the rounds a shared rank list may come from. Rank lists exist only once a round is over, so these are
+    the rounds of the calendar's academic year that have closed, and the two rounds of the year before."""
+    fall = next((row for row in db.load_calendar() if row["key"] == "fall-bidding"), None)
+    if fall is None:
+        return set()
+    year = int(fall["first_day"][:4])
+    rounds = {f"Fall {year - 1}", f"Spring {year}"}
+    for semester, name in (("Fall", f"Fall {year}"), ("Spring", f"Spring {year + 1}")):
+        round_ = round_of(semester, today)
+        if round_ is not None and round_["status"] == "closed":
+            rounds.add(name)
+    return rounds
+
+
+def known_section(code, term, section):
+    """LN R18: a shared list counts for a section of Lance's catalogue only, so no free text reaches the course sheet.
+    While a course has no timetable Lance knows none of its sections: then the name must be one Nova uses (TXA, TXB ...)."""
+    offering = all_offerings().get(code + "-" + term)
+    if offering is None:
+        return False
+    names = {row["section"] for row in all_sections().values() if row["offering_id"] == offering["id"]}
+    return section in (names or {row["section"] for row in all_sections().values()})
 
 
 def read_rank_list(payload):
-    """Check one shared rank list and boil it down to totals. Nothing about a single student is kept.
+    """LN R9 and LN R18: check one shared rank list and boil it down to totals. Nothing about a single student is kept.
 
-    Only totals per section leave this function. A field that could identify someone rejects the whole
+    Only totals per section leave this function. A field beyond the ones the bookmarklet writes rejects the whole
     upload, so a broken export can never store personal data by accident.
     """
-    try:
-        code = str(payload["code"]).strip()
-        term = str(payload["term"]).strip()
-        section = str(payload["section"]).strip()
-        list_name = str(payload.get("list", "primary")).strip()
-        seats = int(payload["seats"])
-        rows = payload["rows"]
-    except (KeyError, TypeError, ValueError):
-        return None, "This does not look like a rank list from the export."
-    if not code.isdigit() or term not in ("S1", "T1", "T2", "S2", "T3", "T4") or not section:
-        return None, "Course, term or section is missing."
+    if not isinstance(payload, dict):
+        return None, NOT_A_LIST
+    if has_personal_columns(payload):
+        return None, PERSONAL
+    texts = [payload.get("code"), payload.get("term"), payload.get("section"), payload.get("list", "primary"),
+             payload.get("year", "2026/2027")]
+    if not all(isinstance(text, str) for text in texts) or "rows" not in payload:
+        return None, NOT_A_LIST
+    code, term, section, list_name, year = (text.strip() for text in texts)
+    rows = payload["rows"]
+    if not known_section(code, term, section):
+        return None, "Lance does not know this course or section."
     if list_name not in ("primary", "alternate"):
         return None, "Unknown list."
+    round_ = round_name(year, term)
+    if round_ not in shared_rounds():
+        return None, "Lance takes rank lists only from the last rounds that are over."
+    seats = plain_number(payload.get("seats"), MAX_SEATS, whole=True)
+    if seats is None or seats < (0 if list_name == "alternate" else 1):   # an alternate list can have no seat left
+        return None, "The number of seats could not be read."
     if not isinstance(rows, list) or not rows:
         return None, "The rank list is empty."
-    clean = []
-    for row in rows:
-        if not isinstance(row, dict) or FORBIDDEN_FIELDS & {key.lower() for key in row}:
-            return None, "This export contains personal columns. Nothing was stored."
-        try:
-            clean.append({"final": float(row["final"]), "bid": float(row["bid"]), "allocated": bool(row["allocated"])})
-        except (KeyError, TypeError, ValueError):
-            return None, "A row of the rank list could not be read."
-        if clean[-1]["final"] < 0 or clean[-1]["bid"] < 0 or clean[-1]["final"] > 5000:
-            return None, "A row of the rank list could not be read."
+    if len(rows) > MAX_ROWS:
+        return None, f"A rank list has at most {MAX_ROWS} rows."
+    clean = read_rows(rows)
+    if clean is None:
+        return None, "A row of the rank list could not be read."
     allocated = [row for row in clean if row["allocated"]]
     cutoff = {
-        "code": code, "term": term, "section": section, "round": round_name(str(payload.get("year", "2026/2027")), term), "list": list_name,
-        "seats": seats, "bids": len(clean), "allocated": len(allocated),
+        "code": code, "term": term, "section": section, "round": round_, "list": list_name,
+        "seats": int(seats), "bids": len(clean), "allocated": len(allocated),
         "min_rank_value": min((row["final"] for row in allocated), default=None),
         "max_rank_value": max((row["final"] for row in allocated), default=None),
         "min_bid": min((row["bid"] for row in allocated), default=None),
         "zero_bids": sum(1 for row in clean if row["bid"] == 0),
-        "source": "shared rank list",
+        "source": SHARED,
     }
     buckets = defaultdict(lambda: {"bids": 0, "allocated": 0})
     for row in clean:
@@ -1138,13 +1297,27 @@ def read_rank_list(payload):
     return (cutoff, histogram), None
 
 
+def from_our_own_data(cutoff):
+    """LN R18: does Lance hold a list for this section, round and list from its own seed data? A shared list never
+    replaces it: that one was read from a real account, a pasted one could be made up."""
+    key = ("term", "section", "round", "list")
+    return any(row["source"] != SHARED and all(row[name] == cutoff[name] for name in key)
+               for row in db.load_cutoffs(cutoff["code"]))
+
+
 def share_rank_lists(payload):
-    """Store a whole export: one or more rank lists. Returns (how many were new or better, error)."""
-    lists = payload.get("lists") if isinstance(payload, dict) else None
-    if lists is None:
+    """LN08 and LN R18: store a whole export, one or more rank lists. Every list is checked before anything is stored,
+    so one that does not count refuses the whole share. Returns (how many were new or better, error)."""
+    if isinstance(payload, dict) and "lists" in payload:
+        if set(payload) != {"lists"}:      # LN R9: nothing travels beside the lists
+            return 0, PERSONAL
+        lists = payload["lists"]
+    else:
         lists = [payload]
     if not isinstance(lists, list) or not lists:
-        return 0, "This does not look like a rank list from the export."
+        return 0, NOT_A_LIST
+    if len(lists) > MAX_LISTS:
+        return 0, f"One share takes at most {MAX_LISTS} rank lists."
     prepared = []
     for one in lists:
         result, error = read_rank_list(one)
@@ -1153,7 +1326,7 @@ def share_rank_lists(payload):
         prepared.append(result)
     stored = 0
     for cutoff, histogram in prepared:
-        if db.save_price_data(cutoff, histogram):
+        if not from_our_own_data(cutoff) and db.save_price_data(cutoff, histogram):
             stored += 1
     return stored, None
 
@@ -1215,10 +1388,10 @@ def course_page(offering_id, plan):
     histograms = defaultdict(list)
     for row in db.load_histograms(offering["code"]):
         if row["list"] == prices_list:
-            histograms[(row["term"], row["section"])].append(row)
+            histograms[(row["term"], row["section"], row["round"])].append(row)    # each price row draws its own round
     prices = []
     for row in rows:
-        prices.append(dict(row, histogram=histograms.get((row["term"], row["section"]), [])))
+        prices.append(dict(row, histogram=histograms.get((row["term"], row["section"], row["round"]), [])))
     exams = [dict(exam, label=day_label(exam["date"])) for exam in all_exams().get((offering["code"], offering["term"]), []) if exam["date"]]
     no_exam = any(exam["kind"] == "none" for exam in all_exams().get((offering["code"], offering["term"]), []))
     other_terms = [row for row in db.load_offerings_by_code(offering["code"]) if row["id"] != offering_id]
