@@ -1,6 +1,8 @@
 """Scenarios A5 to A8, through the same requests the browser sends."""
 import json
 
+import pytest
+
 import db
 import logic
 
@@ -224,3 +226,43 @@ def test_a_body_larger_than_any_export_is_refused_unread(client):
     assert response.get_json()["error"]
     assert client.post("/api/restore", data=json.dumps({"rows": ["x" * 600 * 1024]}), content_type="application/json").status_code == 413
     assert share(client, EXPORT).status_code == 200
+
+
+ROW = {"offering_id": "2477-S1", "section_id": None, "list": "primary", "position": 1, "bid": None}
+
+
+@pytest.mark.parametrize("path, body", [
+    ("/api/add", {"section_id": ["2477-S1-TXA"]}), ("/api/add", {"offering_id": {"a": 1}}),
+    ("/api/switch", {"section_id": ["2477-S1-TXA"]}), ("/api/remove", {"item_id": []}), ("/api/remove", {"item_id": {"a": 1}}),
+    ("/api/remove", {"offering_id": ["2477-S1"]}), ("/api/bid", {"item_id": 10 ** 30, "bid": 1}),
+    ("/api/bid", {"offering_id": ["2477-S1"], "bid": 1}), ("/api/move", {"item_id": "\ud800", "direction": "up"}),
+    ("/api/move", {"item_id": True, "direction": "down"}), ("/api/settings", {"points": float("inf")}),
+    ("/api/settings", {"points": float("nan")}), ("/api/settings", {"programme": None}), ("/api/settings", {"programme": 0}),
+    ("/api/restore", {"rows": [dict(ROW, offering_id=["2477-S1"])]}), ("/api/restore", {"rows": [dict(ROW, section_id=[])]}),
+])
+def test_a_value_of_the_wrong_kind_is_a_bad_request_not_a_crash(client, path, body):
+    # lists or objects as ids, Infinity or NaN as points, no programme: no page sends that, so it is answered with 400
+    client.post("/api/add", json={"section_id": "2477-S1-TXB"})
+    client.post("/api/add", json={"section_id": "2277-T2-TXA"})
+    before = state_of(client)
+    response = client.post(path, data=json.dumps(body), content_type="application/json")
+    assert response.status_code == 400
+    assert response.get_json()["error"]
+    after = state_of(client)
+    assert (after["plan"], after["items"]) == (before["plan"], before["items"])
+
+
+@pytest.mark.parametrize("body", ["[1]", '"x"', "5", "true", "null", "[" * 100_000 + "]" * 100_000])
+def test_a_share_that_is_not_an_object_is_refused_not_a_crash(client, body):
+    response = client.post("/api/share", data=body, content_type="application/json")
+    assert response.status_code == 400
+    assert response.get_json()["error"]
+    nested = client.post("/api/share", data=json.dumps({"export": body}), content_type="application/json")
+    assert nested.status_code == 400
+
+
+def test_brackets_nested_thousands_deep_are_refused_not_a_crash(client):
+    deep = "[" * 100_000 + "]" * 100_000
+    response = client.post("/api/add", data=deep, content_type="application/json")
+    assert response.status_code == 415
+    assert response.get_json()["error"]

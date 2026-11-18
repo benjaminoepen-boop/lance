@@ -149,7 +149,10 @@ def answer(plan, error=None, **more):
 
 def payload():
     """The JSON a page sent. Refusing anything else keeps other websites from posting here."""
-    data = request.get_json(silent=True)
+    try:
+        data = request.get_json(silent=True)
+    except RecursionError:      # brackets nested thousands deep: no page sends that
+        data = None
     if not isinstance(data, dict):
         abort(415)
     return data
@@ -251,10 +254,11 @@ def api_example():
 @app.route("/api/share", methods=["POST"])
 def api_share():
     """A rank-list export. The rules keep totals only; the rows themselves are never written anywhere."""
-    text = (request.get_json(silent=True) or {}).get("export", "")
     try:
+        data = request.get_json(silent=True)
+        text = data.get("export") if isinstance(data, dict) else None
         export = json.loads(text) if isinstance(text, str) else None
-    except ValueError:
+    except (ValueError, RecursionError):     # not JSON at all, or brackets nested thousands deep
         export = None
     if export is None:
         return jsonify({"error": "This does not look like what the button copies.", "stored": 0}), 400
@@ -262,6 +266,17 @@ def api_share():
     if error:
         return jsonify({"error": error, "stored": 0}), 400
     return jsonify({"error": None, "stored": stored, "coverage": logic.coverage()})
+
+
+@app.errorhandler(logic.Malformed)
+def malformed(error):
+    """A value of the wrong kind, like a list where an id belongs: refused with a short sentence before any rule ran."""
+    return jsonify({"error": str(error)}), 400
+
+
+@app.errorhandler(415)
+def not_json(_):
+    return jsonify({"error": "Lance takes only what its pages send: a JSON object."}), 415
 
 
 @app.errorhandler(413)

@@ -28,6 +28,34 @@ BID_MARGIN = {"exact": 1.00, "plus10": 1.10, "plus25": 1.25}   # on top of last 
 WEEKDAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
 
+# ---------- requests no page sends ----------
+
+class Malformed(ValueError):
+    """A request no page of Lance sends, like a list where an id belongs or Infinity as points. It is refused before
+    anything is written, and app.py answers it with 400 and this sentence, where it used to fail with 500."""
+
+
+def checked_id(value):
+    """Course and section ids arrive as text, or not at all."""
+    if value is None or isinstance(value, str):
+        return value
+    raise Malformed("An id is text.")
+
+
+def checked_entry(value):
+    """An entry is named by its number from the state. True is no number here, and SQLite holds at most 2**63 - 1."""
+    if value is None or (type(value) is int and 0 < value < 2 ** 63):
+        return value
+    raise Malformed("An entry is named by its number.")
+
+
+def checked_points(value):
+    """Points arrive as typed, as text or as a number, or not at all. Infinity and NaN are no points."""
+    if value is None or isinstance(value, str) or type(value) is int or (type(value) is float and math.isfinite(value)):
+        return value
+    raise Malformed("Points are a number.")
+
+
 # ---------- times (from Festival Architect) ----------
 
 def to_minutes(clock):
@@ -632,6 +660,7 @@ def first_fitting_section(items, offering_id):
 
 def add_to_plan(plan, section_id=None, offering_id=None, list_name=None):
     """Add a section, or a whole course: then LN R11 picks the section. Returns an error text or None."""
+    section_id, offering_id = checked_id(section_id), checked_id(offering_id)
     items = db.load_items(plan["id"])
     if section_id:
         section = all_sections().get(section_id)
@@ -676,7 +705,7 @@ def switch_section(plan, section_id):
 
     If it was a backup, the two change places and the bids stay with the places: TXB 164, TXA 100 becomes TXA 164, TXB 100.
     """
-    section = all_sections().get(section_id)
+    section = all_sections().get(checked_id(section_id))
     if section is None:
         return "Unknown section."
     same_course = sorted((item for item in db.load_items(plan["id"]) if item["offering_id"] == section["offering_id"]),
@@ -695,6 +724,7 @@ def switch_section(plan, section_id):
 
 def remove_course(plan, offering_id):
     """LN R15: take a whole course out. Returns what undo needs to put it back, and an error text or None."""
+    checked_id(offering_id)
     rows = [item for item in db.load_items(plan["id"]) if item["offering_id"] == offering_id]
     if not rows:
         return [], "This course is not in your plan."
@@ -720,11 +750,12 @@ def restore_items(plan, rows):
     for row in rows:
         if not isinstance(row, dict):
             return "Nothing to put back."
-        offering = all_offerings().get(row.get("offering_id"))
-        section = all_sections().get(row.get("section_id")) if row.get("section_id") else None
+        offering_id, section_id = checked_id(row.get("offering_id")), checked_id(row.get("section_id"))
+        offering = all_offerings().get(offering_id)
+        section = all_sections().get(section_id) if section_id else None
         if offering is None or offering["semester"] != plan["semester"]:
             return "Unknown course."
-        if row.get("section_id") and (section is None or section["offering_id"] != offering["id"]):
+        if section_id and (section is None or section["offering_id"] != offering["id"]):
             return "Unknown section."
         if row.get("list") not in ("mandatory", "primary", "alternate"):
             return "Unknown list."
@@ -735,9 +766,9 @@ def restore_items(plan, rows):
             return "Unknown place."
         if any(item["offering_id"] == offering["id"] for item in items):
             return "Already in your plan."
-        if (offering["id"], row.get("section_id")) in seen:
+        if (offering["id"], section_id) in seen:
             return "The same entry is in the list twice."
-        seen.add((offering["id"], row.get("section_id")))
+        seen.add((offering["id"], section_id))
     # LN R17: a mandatory course that comes back brings its points along, so the bids are held against the plan as it will be
     points = points_with(plan, items + rows)
     for row in rows:
@@ -763,7 +794,7 @@ def start_over(plan):
 
 
 def remove_from_plan(plan, item_id):
-    item = db.load_item(item_id)
+    item = db.load_item(checked_entry(item_id))
     if item is None or item["plan_id"] != plan["id"]:
         return "This entry is not in your plan."
     db.delete_item(item_id)
@@ -791,7 +822,7 @@ def checked_bid(plan, bid):
 
 def set_bid(plan, item_id, bid):
     """The bid of one section."""
-    item = db.load_item(item_id)
+    item = db.load_item(checked_entry(item_id))
     if item is None or item["plan_id"] != plan["id"]:
         return "This entry is not in your plan."
     if item["list"] == "mandatory":
@@ -805,6 +836,7 @@ def set_bid(plan, item_id, bid):
 
 def set_course_bid(plan, offering_id, bid):
     """One bid for all sections of a course: only the highest counts anyway (LN R6), so this is the normal case."""
+    checked_id(offering_id)
     rows = [item for item in db.load_items(plan["id"]) if item["offering_id"] == offering_id]
     if not rows:
         return "This course is not in your plan."
@@ -820,7 +852,7 @@ def set_course_bid(plan, offering_id, bid):
 
 def move_item(plan, item_id, list_name=None, direction=None):
     """Move an entry to the other list, or up and down inside its list. Sections of a course move together."""
-    item = db.load_item(item_id)
+    item = db.load_item(checked_entry(item_id))
     if item is None or item["plan_id"] != plan["id"]:
         return "This entry is not in your plan."
     items = db.load_items(plan["id"])
@@ -856,6 +888,9 @@ def move_item(plan, item_id, list_name=None, direction=None):
 def update_settings(plan, programme, semester, points, has_bonus):
     """Save the plan's settings. Entries of another semester stay saved but do not show.
     Points of None mean: not typed now, keep what is saved. Zero means: back to the estimate (LN R17)."""
+    if not isinstance(programme, str):
+        raise Malformed("The programme is text.")
+    points = checked_points(points)
     if programme and programme not in db.load_programmes():
         return "Unknown programme."
     if semester not in ("Fall", "Spring"):
