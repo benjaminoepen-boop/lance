@@ -19,7 +19,7 @@ Three steps. **Courses:** a student chooses their programme, says which sections
 | Id | Capability | Behaviour |
 |---|---|---|
 | LN01 | Find a course | Search by name, code or lecturer, through all terms. The list shows the half of the semester on show, in groups by how the course counts for the programme. |
-| LN02 | Build the week | Add and remove courses, switch sections. One week per half semester. |
+| LN02 | Build the week | Add and remove courses, switch sections, up to 40 entries in a semester. One week per half semester. |
 | LN03 | See clashes first | Each section shows what it would clash with before it is added. An open course shows its sections in the week; resting on a row previews them. |
 | LN04 | Plan the points | One bid per course, a separate bid per section on request. Other sections of the course in order. Show what is left, what a repeat of last round would charge, and what stays after it. |
 | LN05 | Read past prices | Cut-off, seats, number of bids and the distribution of bids per section. |

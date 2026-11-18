@@ -15,6 +15,10 @@ import db
 
 MAX_ECTS = 31.5            # LN R8: mandatory and elective courses per semester
 RECOMMENDED_ECTS = 28.0
+# LN02: what a plan holds in one semester. LN R8 leaves room for 9 courses of 3.5 ECTS on the mandatory and primary
+# lists; 40 entries add backup sections and a long alternate list, and keep every answer fast.
+MAX_ENTRIES = 40
+FULL = f"A plan holds at most {MAX_ENTRIES} entries in a semester."
 BONUS = 1.1                # LN R7: rank value of part of the students with 45 or more ECTS passed
 # LN R17: two rough reference values from the team's own accounts, as (ECTS in mandatory courses, points).
 # Nova does not publish how it sets the points, so this is an estimate until the student types the real number.
@@ -596,6 +600,11 @@ def load_plan(plan_id):
     return plan
 
 
+def in_semester(items, semester):
+    """The entries among these that belong to one semester."""
+    return [item for item in items if all_offerings()[item["offering_id"]]["semester"] == semester]
+
+
 def next_position(items, list_name):
     positions = [item["position"] for item in items if item["list"] == list_name]
     return max(positions) + 1 if positions else 1
@@ -652,6 +661,8 @@ def add_to_plan(plan, section_id=None, offering_id=None, list_name=None):
             list_name = "mandatory"
         else:
             list_name = "primary"
+    if len(in_semester(items, plan["semester"])) >= MAX_ENTRIES:
+        return FULL
     bid = same_course[0]["bid"] if same_course else None   # LN R14: only the highest is held anyway (LN R6)
     try:
         db.insert_item(plan["id"], offering_id, section_id, list_name, next_position(items, list_name), bid)
@@ -698,10 +709,14 @@ def undo_rows(rows):
 
 
 def restore_items(plan, rows):
-    """LN R15: put back what remove_course took out. The rows come from the browser, so each one is checked first."""
+    """LN R15: put back what remove_course took out. The rows come from the browser, so each one is checked first,
+    and then they are written all together or not at all."""
     if not isinstance(rows, list) or not rows:
         return "Nothing to put back."
     items = db.load_items(plan["id"])
+    if len(in_semester(items, plan["semester"])) + len(rows) > MAX_ENTRIES:     # LN02
+        return FULL
+    seen = set()
     for row in rows:
         if not isinstance(row, dict):
             return "Nothing to put back."
@@ -713,18 +728,28 @@ def restore_items(plan, rows):
             return "Unknown section."
         if row.get("list") not in ("mandatory", "primary", "alternate"):
             return "Unknown list."
-        if not isinstance(row.get("position"), int):
+        # positions only grow while you click (removing does not count them again): 2**31 is far beyond that,
+        # and far below what SQLite holds. True is no place, although Python counts it as 1.
+        position = row.get("position")
+        if type(position) is not int or not 1 <= position < 2 ** 31:
             return "Unknown place."
         if any(item["offering_id"] == offering["id"] for item in items):
             return "Already in your plan."
+        if (offering["id"], row.get("section_id")) in seen:
+            return "The same entry is in the list twice."
+        seen.add((offering["id"], row.get("section_id")))
     # LN R17: a mandatory course that comes back brings its points along, so the bids are held against the plan as it will be
     points = points_with(plan, items + rows)
     for row in rows:
         bid = row.get("bid")
-        if bid is not None and (not isinstance(bid, int) or bid < 0 or bid > points):
+        if bid is not None and type(bid) is not int:
+            return "A bid is a whole number."
+        if bid is not None and not 0 <= bid <= points:
             return "A bid cannot exceed your " + str(points) + " points."
-    for row in rows:
-        db.insert_item(plan["id"], row["offering_id"], row.get("section_id"), row["list"], row["position"], row.get("bid"))
+    try:
+        db.insert_items(plan["id"], rows)
+    except sqlite3.IntegrityError:     # the same undo twice, faster than the check above
+        return "Already in your plan."
     return None
 
 
@@ -861,7 +886,7 @@ def relist_for_programme(plan):
 
 def plan_items(plan):
     """The entries of this plan that belong to its semester."""
-    return [item for item in db.load_items(plan["id"]) if all_offerings()[item["offering_id"]]["semester"] == plan["semester"]]
+    return in_semester(db.load_items(plan["id"]), plan["semester"])
 
 
 def warnings_for(plan, items):
