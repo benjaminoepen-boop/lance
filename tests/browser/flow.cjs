@@ -64,6 +64,29 @@ async function run(browserType, label, options) {
     return { gap: Math.round(box.right - control.right), right: Math.round(control.right), order: name.right <= chevron.left + 1 && chevron.right <= control.left };
   }));
   check(n("the control sits at the right edge of the row"), edges.length === 10 && edges.every((edge) => edge.gap >= 0 && edge.gap <= 12 && edge.order) && new Set(edges.map((edge) => edge.right)).size === 1, JSON.stringify(edges.slice(0, 3)));
+  /* a group heading stands out from its rows and shows that it folds: the name in ink and larger than the facts of a row,
+     the count grey like them, a band of its own and a chevron darker than a row's. A press folds its courses, a second one brings them back */
+  const mandatory = page.locator("#courses .group", { hasText: "Mandatory" });
+  const look = await mandatory.evaluate((group) => {
+    const style = (element) => getComputedStyle(element);
+    const row = document.querySelector("#courses .course");
+    const name = style(group.querySelector(".group-name"));
+    return {
+      size: parseFloat(name.fontSize), weight: Number(name.fontWeight),
+      ink: name.color === style(row.querySelector(".course-name")).color,
+      grey: style(group.querySelector(".count")).color === style(row.querySelector(".course-sub")).color,
+      band: !["rgba(0, 0, 0, 0)", style(group.closest(".chooser")).backgroundColor].includes(style(group).backgroundColor),
+      chevron: style(group.querySelector(".i-chev")).backgroundColor !== style(row.querySelector(".i-chev")).backgroundColor,
+    };
+  });
+  check(n("a group heading stands out from its rows, on a band of its own"), look.size >= 15 && look.weight >= 600 && look.ink && look.grey && look.band && look.chevron, JSON.stringify(look));
+  const listed = () => page.locator("#courses .course").count();
+  const all = await listed();
+  const inGroup = Number(await mandatory.locator(".count").textContent());
+  await mandatory.click();
+  const folded = (await mandatory.getAttribute("aria-expanded")) === "false" && (await listed()) === all - inGroup;
+  await mandatory.click();
+  check(n("a group heading folds its courses and opens them again"), folded && (await mandatory.getAttribute("aria-expanded")) === "true" && (await listed()) === all, `${inGroup} of ${all}`);
 
   /* ---- search looks through all terms ---- */
   await page.fill("#search", "impact investments");

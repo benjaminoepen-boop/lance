@@ -259,14 +259,15 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 .course-list { flex: 1; min-height: 0; overflow-y: auto; overflow-anchor: none; display: flex; flex-direction: column; gap: 2px; margin: 0 -8px; padding: 0 8px 12px; }
 /* the figures of your plan above the list: only on a phone, where your plan is not beside the list */
 .figures.list-figures { display: none; }
-/* a group heading folds its courses: its chevron stands in the column of the rows' chevrons, left of their controls */
-.group { display: flex; align-items: center; gap: 8px; width: 100%; min-height: var(--h); margin-top: 6px; padding: 0 calc(var(--control) + 18px) 0 12px; border: 0; border-radius: var(--r-row); background: none; text-align: left; }
+/* a group heading folds its courses. It stands out from the rows: the name in ink on a band one step darker than the card,
+   rounded like a row, a little more room above it. Its chevron stands in the column of the rows' chevrons, left of their controls */
+.group { --hover: var(--chip); display: flex; align-items: center; gap: 8px; width: 100%; min-height: var(--h); margin-top: 12px; padding: 0 calc(var(--control) + 18px) 0 12px; border: 0; border-radius: var(--r-row); background: var(--paper); text-align: left; }
 .group:first-child { margin-top: 0; }
 @media (hover: hover) { .group:hover { background: var(--hover); } }
 @media (hover: hover) { .group:hover .i-chev { color: var(--ink); } }
-.group-name { font-size: 13px; font-weight: 600; color: var(--ink-2); }
+.group-name { font-size: 15px; font-weight: 600; color: var(--ink); }
 .group .count, h3 .count { font-size: 13px; font-weight: 400; color: var(--ink-3); font-variant-numeric: tabular-nums; }
-.group .i-chev { margin-left: auto; }
+.group .i-chev { margin-left: auto; color: var(--ink-2); }
 /* a course row: the place of the dot, name and facts, the chevron, then the control in a fixed column at the right edge.
    Everything but the control opens the row. White at rest, paper under the mouse; open, a paper surface holding white section tiles. */
 .course { border-radius: var(--r-row); transition: background-color .15s; }
