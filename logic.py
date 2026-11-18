@@ -1021,6 +1021,44 @@ def catalogue(plan):
 LIST_KEYS = {"code", "term", "section", "list", "seats", "year", "rows"}
 ROW_KEYS = {"final", "bid", "allocated"}
 PERSONAL = "This export contains personal columns. Nothing was stored."
+NOT_A_LIST = "This does not look like a rank list from the export."
+# LN R18: how big the numbers of a real rank list can be, with room to spare.
+MAX_BID = 5000             # a plan takes at most 2000 points (update_settings)
+MAX_RANK_VALUE = 5500      # the highest bid with the rank bonus of LN R7
+MAX_SEATS = 400            # the largest section so far had 72 seats
+MAX_ROWS = 1000            # one row per bid: the fullest section so far had 298
+MAX_LISTS = 60             # one list per section a student bid on
+
+
+def plain_number(value, highest, whole=False):
+    """LN R18: a number as the bookmarklet writes it, from 0 to highest; otherwise None.
+
+    Text, true and false are no numbers here. Infinity and NaN fail the range check by themselves: comparing with NaN
+    is always false, and Infinity is above any highest. A whole number may not have a fraction.
+    """
+    if isinstance(value, bool) or not isinstance(value, (int, float)) or not 0 <= value <= highest:
+        return None
+    if whole and value != int(value):
+        return None
+    return value
+
+
+def has_personal_columns(payload):
+    """LN R9: anything beyond what the bookmarklet writes, in the list itself or in one of its rows."""
+    rows = payload.get("rows")
+    extra_in_rows = isinstance(rows, list) and any(not isinstance(row, dict) or set(row) - ROW_KEYS for row in rows)
+    return bool(set(payload) - LIST_KEYS) or extra_in_rows
+
+
+def read_rows(rows):
+    """LN R18: the rows of one rank list as plain numbers, or None when a row cannot be read."""
+    clean = []
+    for row in rows:
+        final, bid = plain_number(row.get("final"), MAX_RANK_VALUE), plain_number(row.get("bid"), MAX_BID, whole=True)
+        if final is None or bid is None or not isinstance(row.get("allocated"), bool):
+            return None
+        clean.append({"final": float(final), "bid": float(bid), "allocated": row["allocated"]})
+    return clean
 
 
 def round_name(year, term):
@@ -1036,38 +1074,35 @@ def read_rank_list(payload):
     upload, so a broken export can never store personal data by accident.
     """
     if not isinstance(payload, dict):
-        return None, "This does not look like a rank list from the export."
-    if set(payload) - LIST_KEYS:
+        return None, NOT_A_LIST
+    if has_personal_columns(payload):
         return None, PERSONAL
     try:
         code = str(payload["code"]).strip()
         term = str(payload["term"]).strip()
         section = str(payload["section"]).strip()
         list_name = str(payload.get("list", "primary")).strip()
-        seats = int(payload["seats"])
         rows = payload["rows"]
     except (KeyError, TypeError, ValueError):
-        return None, "This does not look like a rank list from the export."
+        return None, NOT_A_LIST
     if not code.isdigit() or term not in ("S1", "T1", "T2", "S2", "T3", "T4") or not section:
         return None, "Course, term or section is missing."
     if list_name not in ("primary", "alternate"):
         return None, "Unknown list."
+    seats = plain_number(payload.get("seats"), MAX_SEATS, whole=True)
+    if seats is None or seats < (0 if list_name == "alternate" else 1):   # an alternate list can have no seat left
+        return None, "The number of seats could not be read."
     if not isinstance(rows, list) or not rows:
         return None, "The rank list is empty."
-    clean = []
-    for row in rows:
-        if not isinstance(row, dict) or set(row) - ROW_KEYS:
-            return None, PERSONAL
-        try:
-            clean.append({"final": float(row["final"]), "bid": float(row["bid"]), "allocated": bool(row["allocated"])})
-        except (KeyError, TypeError, ValueError):
-            return None, "A row of the rank list could not be read."
-        if clean[-1]["final"] < 0 or clean[-1]["bid"] < 0 or clean[-1]["final"] > 5000:
-            return None, "A row of the rank list could not be read."
+    if len(rows) > MAX_ROWS:
+        return None, f"A rank list has at most {MAX_ROWS} rows."
+    clean = read_rows(rows)
+    if clean is None:
+        return None, "A row of the rank list could not be read."
     allocated = [row for row in clean if row["allocated"]]
     cutoff = {
         "code": code, "term": term, "section": section, "round": round_name(str(payload.get("year", "2026/2027")), term), "list": list_name,
-        "seats": seats, "bids": len(clean), "allocated": len(allocated),
+        "seats": int(seats), "bids": len(clean), "allocated": len(allocated),
         "min_rank_value": min((row["final"] for row in allocated), default=None),
         "max_rank_value": max((row["final"] for row in allocated), default=None),
         "min_bid": min((row["bid"] for row in allocated), default=None),
@@ -1094,7 +1129,9 @@ def share_rank_lists(payload):
     else:
         lists = [payload]
     if not isinstance(lists, list) or not lists:
-        return 0, "This does not look like a rank list from the export."
+        return 0, NOT_A_LIST
+    if len(lists) > MAX_LISTS:
+        return 0, f"One share takes at most {MAX_LISTS} rank lists."
     prepared = []
     for one in lists:
         result, error = read_rank_list(one)
