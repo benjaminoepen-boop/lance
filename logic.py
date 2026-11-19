@@ -7,7 +7,7 @@ a fee became a bid and the festival budget became the points balance.
 import math
 import sqlite3
 from collections import defaultdict
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from functools import lru_cache
 
 import db
@@ -992,11 +992,17 @@ def state_of(plan):
     }
 
 
+def windows_not_ended(today=None):
+    """Every bidding and add/drop window of the academic calendar that has not ended yet, the first one first."""
+    today = today or date.today().isoformat()
+    return [row for row in db.load_calendar()
+            if ("bidding" in row["key"] or "add-drop" in row["key"]) and row["last_day"] >= today]
+
+
 def next_deadline(today=None):
     """The next bidding or add/drop window from the academic calendar."""
     today = today or date.today().isoformat()
-    upcoming = [row for row in db.load_calendar()
-                if ("bidding" in row["key"] or "add-drop" in row["key"]) and row["last_day"] >= today]
+    upcoming = windows_not_ended(today)
     if not upcoming:
         return None
     row = upcoming[0]
@@ -1244,16 +1250,48 @@ def syllabus_url(code, term):
 
 # ---------- LN10: the calendar file ----------
 
+PLATFORM_URL = "https://bidding.novasbe.pt/"
+
+# Lisbon's clock, written into the file so that every calendar app reads TZID=Europe/Lisbon the same way
+# (RFC 5545, 3.6.5): summer time (WEST, UTC+1) from 1:00 on the last Sunday of March,
+# winter time (WET, UTC+0) from 2:00 on the last Sunday of October. test_calendar.py checks it against Python's time zone database.
+LISBON_TIME_ZONE = [
+    "BEGIN:VTIMEZONE", "TZID:Europe/Lisbon",
+    "BEGIN:DAYLIGHT", "TZOFFSETFROM:+0000", "TZOFFSETTO:+0100", "TZNAME:WEST",
+    "DTSTART:19700329T010000", "RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU", "END:DAYLIGHT",
+    "BEGIN:STANDARD", "TZOFFSETFROM:+0100", "TZOFFSETTO:+0000", "TZNAME:WET",
+    "DTSTART:19701025T020000", "RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU", "END:STANDARD",
+    "END:VTIMEZONE",
+]
+
+
 def ics_escape(text):
     return text.replace("\\", "\\\\").replace(",", "\\,").replace(";", "\\;").replace("\n", "\\n")
 
 
-def calendar_file(plan):
-    """Every class and exam of the week as a calendar file, with make-up days on their real dates (LN R13)."""
+def ics_fold(line):
+    """One line of the file in pieces of at most 75 bytes; each further piece starts with a space (RFC 5545, 3.1).
+    It counts bytes, not letters, so a letter like ó (two bytes) is never cut in half."""
+    pieces, piece, size = [], "", 0
+    for letter in line:
+        width = len(letter.encode("utf-8"))
+        if size + width > 75:
+            pieces.append(piece)
+            piece, size = " ", 1
+        piece += letter
+        size += width
+    pieces.append(piece)
+    return "\r\n".join(pieces)
+
+
+def calendar_file(plan, today=None):
+    """Every class and exam of the week as a calendar file, with make-up days on their real dates (LN R13),
+    and every bidding and add/drop window that has not ended, with a reminder the day before it opens (LN R21)."""
+    today = today or date.today().isoformat()
     items = week_items(plan_items(plan))
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Lance//Nova bidding planner//EN", "CALSCALE:GREGORIAN",
-             "X-WR-CALNAME:Lance plan", "X-WR-TIMEZONE:Europe/Lisbon"]
+             "X-WR-CALNAME:Lance plan", "X-WR-TIMEZONE:Europe/Lisbon", *LISBON_TIME_ZONE]
 
     def event(uid, day, start, end, summary, location="", note=""):
         compact = day.replace("-", "")
@@ -1279,8 +1317,21 @@ def calendar_file(plan):
         offering = all_offerings()[item["offering_id"]]
         for number, exam in enumerate(regular_exams(offering)):
             event(f"{offering['id']}-exam-{number}", exam["date"], exam["start"], exam["end"], offering["name"] + " " + exam["kind"])
+    # LN R21: each window is an all-day event over its real days. The standard ends an all-day event on the day after
+    # the last. The event starts at midnight, so a reminder 15 hours earlier rings at 9:00 the day before.
+    # TRANSPARENT: a window is not a meeting, so the student does not look busy for three days.
+    note = ("Bids only count once you enter them on Nova's platform, on a laptop:\n" + PLATFORM_URL
+            + "\nFrom Lance, a student project, not an official Nova SBE system.")
+    for row in windows_not_ended(today):
+        day_after = date.fromisoformat(row["last_day"]) + timedelta(days=1)
+        lines.extend(["BEGIN:VEVENT", f"UID:{row['key']}-{row['first_day']}@lance", f"DTSTAMP:{stamp}",
+                      "DTSTART;VALUE=DATE:" + row["first_day"].replace("-", ""),
+                      "DTEND;VALUE=DATE:" + day_after.strftime("%Y%m%d"),
+                      "SUMMARY:" + ics_escape(row["label"]), "DESCRIPTION:" + ics_escape(note), "TRANSP:TRANSPARENT",
+                      "BEGIN:VALARM", "ACTION:DISPLAY", "DESCRIPTION:" + ics_escape("Tomorrow: " + row["label"]),
+                      "TRIGGER:-PT15H", "END:VALARM", "END:VEVENT"])
     lines.append("END:VCALENDAR")
-    return "\r\n".join(lines) + "\r\n"
+    return "".join(ics_fold(line) + "\r\n" for line in lines)
 
 
 # ---------- LN10: the list to type into the platform ----------

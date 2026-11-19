@@ -31,7 +31,7 @@ For the live demonstration at the deployed address. Press the buttons in this or
 | 1:50 | Click the row *Introduction to Programming* | "It folds open: three sections, and the same three wait in the week. No extra page." Click tile TXC. "The bid stays." Click TXB. *Course details*, *See all bids*: "298 bids for 72 seats." |
 | 2:30 | Tab *Bids* on the right | "One card per course: my bid in its field, and last round's answer at the same place in every card. 165 of 165 points held while bidding. If last round repeats I pay about 132 and 33 come back: that is what the platform really charged this account. (164 + 100) / 2." |
 | 3:00 | Click the card *Introduction to Programming* | "The sections in the order Nova tries them, each with last round's bids, darker where they won. The rank lists come from students, without names." |
-| 3:30 | *Finish on Nova*, top right | "Nothing has been sent. Only Nova's platform counts. Copy list, calendar file with every class on its real date." |
+| 3:30 | *Finish on Nova*, top right | "Nothing has been sent. Only Nova's platform counts. Copy list, calendar file with every class on its real date and a reminder the day before bidding opens." |
 | 4:00 | *the fall lists are out*: paste a real export, the counter rises. Paste one with a student column | "Refused whole. Only totals are kept." |
 | 4:40 | *Open on another device*, then the link on a phone | "The same plan on the phone, without an account." |
 
