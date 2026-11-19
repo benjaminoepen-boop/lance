@@ -11,6 +11,11 @@
         {% if not plan.programme %}<option value="" selected disabled>Your programme</option>{% endif %}
         {% for name in programmes %}<option value="{{ name }}" {{ 'selected' if name == plan.programme }}>{{ name }}</option>{% endfor %}
       </select>
+      {#- LN R20: only a programme with areas of expertise shows this menu; planner.js fills it again on every change -#}
+      <select class="field" id="set-area" aria-label="Area of expertise" {{ 'hidden' if not state.areas }}>
+        <option value="">No area of expertise</option>
+        {% for name in state.areas %}<option value="{{ name }}" {{ 'selected' if name == plan.area }}>{{ name }}</option>{% endfor %}
+      </select>
       <select class="field" id="set-semester" aria-label="Semester">
         {% for name, label in semesters %}<option value="{{ name }}" {{ 'selected' if plan.semester == name }}>{{ label }}</option>{% endfor %}
       </select>

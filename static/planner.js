@@ -365,7 +365,7 @@ function courseRow(course, state) {
       },
         /* every row keeps the place of the dot, so that all names start on one line */
         planned ? Lance.dot(state, course.id) : el("span", { class: "dot" }),
-        el("span", { class: "course-text" }, el("span", { class: "course-name", text: course.name }), metaLine(course, first), noteLine(course, state)),
+        el("span", { class: "course-text" }, el("span", { class: "course-name" }, course.name, areaTag(course)), metaLine(course, first), noteLine(course, state)),
         Lance.icon(sections ? "chev" : "next")),
       /* one column of one width: every plus, tick and Pick ends on the same line */
       el("span", { class: "control" }, pickButton(course, planned))),
@@ -375,6 +375,30 @@ function courseRow(course, state) {
       el("div", { class: "course-foot" },
         el("span", { class: "meta", text: [exam ? `Exam ${exam.label}` : course.exam ? `Exam ${course.exam}` : null, course.lecturers].filter(Boolean).join(" · ") }),
         el("a", { class: "go", href: `#${course.id}` }, "Course details"))) : null);
+}
+
+/* LN R20: what a course is in the chosen area of expertise. Only core courses say so: the group already says the rest */
+function areaTag(course) {
+  const words = { core: "Core", core_optional: "Core option" }[course.area_role];
+  return words ? el("span", { class: "area-tag", title: course.area_role === "core" ? "Every core course is needed for the area" : "One core option is needed for the area", text: words }) : null;
+}
+
+/* LN R20: under the heading of the area, how far your plan is: a bar, the ECTS, and what is still needed.
+   The server counts both semesters, so the bar does not drop when you switch to spring */
+const AREA_RULE = { core: ", including every core course", core_optional: ", including one core option", none: "" };
+
+function areaProgress(area) {
+  const needs = [...area.core_missing, area.core_options.length ? `one of ${area.core_options.join(", ")}` : null].filter(Boolean);
+  const ects = `${area.ects} of ${area.needed} ECTS`;
+  /* first what counts, then how far you are; once the area is complete the rule has nothing left to say */
+  const rule = area.done ? null : el("span", { class: "area-rule" },
+    `Needs ${area.needed} ECTS of electives from this list${AREA_RULE[area.core_rule]}. `,
+    el("a", { class: "go", href: "/rules?about=areas#areas" }, "How areas work"));
+  return el("div", { class: "area-progress" }, rule,
+    el("span", { class: "area-bar", "aria-hidden": "true" }, el("span", { style: `width: ${Math.min(100, (area.ects / area.needed) * 100)}%` })),
+    area.done ? Lance.status("ok", `Area complete · ${ects}`)
+      : el("span", { class: "area-words", text: needs.length ? `${ects} · still needed: ${needs.join(", ")}` : ects }),
+    area.elsewhere.length ? el("span", { class: "area-words", text: `Not in Lance, counts too: ${area.elsewhere.map((course) => `${course.name} (${course.ects} ECTS)`).join(", ")}` }) : null);
 }
 
 function renderList(state) {
@@ -391,16 +415,21 @@ function renderList(state) {
     return;
   }
   const noProgramme = !state.plan.programme;
-  const titles = { mandatory: "Mandatory", elective: "Electives", outside: noProgramme ? "All courses" : "Other programmes" };
+  /* LN R20: with an area of expertise chosen, its courses leave Electives and Other programmes for a group of their own,
+     right under the mandatory courses. Its heading stays while no course of it is on show, for the progress under it */
+  const area = state.area;
+  const inArea = (course) => Boolean(area && course.area_role && course.kind !== "mandatory");
+  const titles = { mandatory: "Mandatory", ...(area ? { area: area.name } : {}), elective: "Electives", outside: noProgramme ? "All courses" : "Other programmes" };
   Object.keys(titles).forEach((kind) => {
-    const courses = shown.filter((course) => course.kind === kind);
-    if (!courses.length) return;
+    const courses = shown.filter((course) => (kind === "area" ? inArea(course) : course.kind === kind && !inArea(course)));
+    if (!courses.length && !(kind === "area" && !view.query && !view.fits)) return;
     const folded = !view.query && !noProgramme && view.closed[kind];
     /* a group heading folds like a row: the whole line is the button, the chevron at the right edge */
     list.append(el("button", {
-      type: "button", class: "group", "aria-expanded": folded ? "false" : "true",
+      type: "button", class: `group${kind === "area" ? " area-group" : ""}`, "aria-expanded": folded ? "false" : "true",
       onclick: () => { view.closed[kind] = !view.closed[kind]; holdPreviews(); renderList(Lance.state); },
     }, el("span", { class: "group-name", text: titles[kind] }), el("span", { class: "count", text: String(courses.length) }), Lance.icon("chev")));
+    if (kind === "area") list.append(areaProgress(area));
     if (!folded) courses.forEach((course) => list.append(courseRow(course, state)));
   });
   list.scrollTop = scroll;
@@ -742,6 +771,12 @@ function render(state) {
   semester.value = state.plan.semester;
   fitToValue(programme);
   fitToValue(semester);
+  /* LN R20: the areas of the programme on show; a programme without any hides the menu */
+  const area = document.getElementById("set-area");
+  area.replaceChildren(el("option", { value: "", text: "No area of expertise" }), ...state.areas.map((name) => el("option", { value: name, text: name })));
+  area.value = state.plan.area || "";
+  area.hidden = !state.areas.length;
+  if (!area.hidden) fitToValue(area);
 }
 
 /* a menu is only as wide as what it shows, so that everything stays on one line (browsers make it as wide as its longest option).
@@ -782,6 +817,7 @@ document.getElementById("fits").addEventListener("click", (event) => {
 document.getElementById("reset").addEventListener("click", resetPlan);
 document.getElementById("set-programme").addEventListener("change", (event) => changeSetting({ programme: event.target.value }));
 document.getElementById("set-semester").addEventListener("change", (event) => changeSetting({ semester: event.target.value }));
+document.getElementById("set-area").addEventListener("change", (event) => changeSetting({ area: event.target.value }));
 document.addEventListener("keydown", (event) => {
   if (event.key !== "Escape") return;
   if (view.open) goBack();

@@ -14,6 +14,7 @@ import db
 
 MAX_ECTS = 31.5            # LN R8: mandatory and elective courses per semester
 RECOMMENDED_ECTS = 28.0
+AREA_ECTS = 21             # LN R20: electives an area of expertise needs
 BONUS = 1.1                # LN R7: rank value of part of the students with 45 or more ECTS passed
 # LN R17: two rough reference values from the team's own accounts, as (ECTS in mandatory courses, points).
 # Nova does not publish how it sets the points, so this is an estimate until the student types the real number.
@@ -526,6 +527,55 @@ def ects_summary(items):
     return {"total": total, "recommended": RECOMMENDED_ECTS, "maximum": MAX_ECTS, "over": total > MAX_ECTS}
 
 
+# ---------- LN R20: areas of expertise ----------
+
+def areas_of(programme):
+    """The areas of expertise a programme offers, in alphabetical order. Some programmes have none."""
+    if not programme:
+        return []
+    return sorted({row["area"] for row in db.load_areas(programme)})
+
+
+def area_rows(plan):
+    """The courses of the area the plan has chosen; none without an area."""
+    if not plan.get("area"):
+        return []
+    return [row for row in db.load_areas(plan["programme"]) if row["area"] == plan["area"]]
+
+
+def area_roles(plan):
+    """{offering id: 'core' | 'core_optional' | 'elective'} for the chosen area. Courses taught elsewhere have no offering."""
+    return {f"{row['code']}-{row['term']}": row["role"] for row in area_rows(plan) if row["role"] != "elsewhere"}
+
+
+def area_progress(plan):
+    """LN R20: how far the plan is in its area: the ECTS of area courses on the primary list in both semesters
+    (a course counts once, whichever term), the core courses still missing, and the core options while none is taken.
+    Done at 21 ECTS with every core course, or with one core option. None without an area.
+    'core_rule' says which of the three kinds of area it is: 'core', 'core_optional' or 'none'."""
+    rows = area_rows(plan)
+    if not rows:
+        return None
+    roles = area_roles(plan)
+    taken = {}
+    for item in db.load_items(plan["id"]):
+        if item["list"] == "primary" and item["offering_id"] in roles:
+            offering = all_offerings()[item["offering_id"]]
+            taken[offering["code"]] = offering["ects"]
+    core_missing = sorted({row["name"] for row in rows if row["role"] == "core" and row["code"] not in taken})
+    options = [row for row in rows if row["role"] == "core_optional"]
+    core_options = [] if any(row["code"] in taken for row in options) else sorted({row["name"] for row in options})
+    ects = sum(taken.values())
+    has_core = any(row["role"] == "core" for row in rows)
+    return {
+        "name": plan["area"], "ects": ects, "needed": AREA_ECTS,
+        "core_rule": "core" if has_core else "core_optional" if options else "none",
+        "core_missing": core_missing, "core_options": core_options,
+        "done": ects >= AREA_ECTS and not core_missing and not core_options,
+        "elsewhere": [{"name": row["name"], "ects": row["ects"]} for row in rows if row["role"] == "elsewhere"],
+    }
+
+
 # ---------- the plan ----------
 
 def default_plan_id(programme="", semester="Fall", points=0):
@@ -804,11 +854,17 @@ def move_item(plan, item_id, list_name=None, direction=None):
     return None
 
 
-def update_settings(plan, programme, semester, points, has_bonus):
+def update_settings(plan, programme, semester, points, has_bonus, area=None):
     """Save the plan's settings. Entries of another semester stay saved but do not show.
-    Points of None mean: not typed now, keep what is saved. Zero means: back to the estimate (LN R17)."""
+    Points of None mean: not typed now, keep what is saved. Zero means: back to the estimate (LN R17).
+    LN R20: an area of None keeps the chosen one, an empty area means none. Another programme has other areas,
+    so changing the programme clears the area unless one of the new programme is named."""
     if programme and programme not in db.load_programmes():
         return "Unknown programme."
+    if area is None and programme != plan["programme"]:
+        area = ""
+    if area and area not in areas_of(programme):
+        return "Unknown area of expertise."
     if semester not in ("Fall", "Spring"):
         return "Unknown semester."
     if points is None:
@@ -820,6 +876,8 @@ def update_settings(plan, programme, semester, points, has_bonus):
     if value < 0 or value > 2000:
         return "Points must be between 0 and 2000."
     db.update_plan(plan["id"], programme, semester, value, has_bonus)
+    if area is not None:
+        db.update_area(plan["id"], area)
     if programme != plan["programme"]:
         relist_for_programme(db.load_plan(plan["id"]))
     return None
@@ -875,6 +933,7 @@ def load_example(plan):
     if plan_items(plan):
         return "Your plan already has courses."
     db.update_plan(plan["id"], "Management", "Fall", 165, False)
+    db.update_area(plan["id"], "")
     positions = defaultdict(int)
     for section_id, list_name, bid in EXAMPLE_PLAN:
         positions[list_name] += 1
@@ -928,6 +987,8 @@ def state_of(plan):
         "round": round_of(plan["semester"]),
         "known_prices": known_prices(plan["semester"]),
         "platform_list": platform_list(plan),
+        "areas": areas_of(plan["programme"]),
+        "area": area_progress(plan),
     }
 
 
@@ -978,8 +1039,10 @@ def semester_label(semester, today=None):
 
 
 def catalogue(plan):
-    """The course list of one semester for one programme, ready to send to the page."""
+    """The course list of one semester for one programme, ready to send to the page.
+    LN R20: 'area_role' says what a course is in the chosen area of expertise (core, core_optional, elective), else None."""
     kinds = db.load_programme_kinds(plan["programme"])
+    roles = area_roles(plan)
     cut_rows = defaultdict(list)
     for row in db.load_cutoffs():
         if row["list"] == "primary":
@@ -1004,6 +1067,7 @@ def catalogue(plan):
         rows.append({
             "id": offering["id"], "code": offering["code"], "name": offering["name"], "term": offering["term"],
             "ects": offering["ects"], "lecturers": offering["lecturers"], "kind": kinds.get(offering["id"], "outside"),
+            "area_role": roles.get(offering["id"]),
             "has_schedule": offering["has_schedule"], "sections": sections,
             "exam": day_label(exam["date"]) if exam else None,
             "cutoff_low": min(prices) if prices else None, "cutoff_high": max(prices) if prices else None,

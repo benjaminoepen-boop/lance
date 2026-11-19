@@ -29,6 +29,7 @@ Three steps. **Courses:** a student chooses their programme, says which sections
 | LN09 | Rules and dates | The rules as short questions, Nova's wording one click deeper, the calendar. The last step says what is missing and has a checklist. |
 | LN10 | Take it along | A calendar file with every class on its real date; the list to type into the platform. |
 | LN11 | Come back | The plan is saved without an account. A private link continues it on another device. |
+| LN12 | Plan an area of expertise | A programme with areas of expertise offers them in a menu next to the programme. The courses of the chosen area get a group of their own under the mandatory courses, core courses are marked, and the group says how far the plan is. No area is a choice too. |
 
 ## Business rules
 
@@ -51,6 +52,7 @@ Three steps. **Courses:** a student chooses their programme, says which sections
 | LN R15 | Removing a course removes all its sections and can be undone, including bids and place. Reset empties the semester on show, keeps the settings and can be undone the same way. A course can be removed in the list, on its sheet, in its bid card and in its row of the summary. | Team decision; advisor's feedback, 17 Nov 2026 |
 | LN R16 | Two exams of different courses in the week on one date, one after the other, are not a clash (the platform allows it) but a hard day: Lance says so in the list before adding, under the week and in the Summary. It is not counted as a clash. Midterms and presentations do not count. | Team decision |
 | LN R17 | Points the student has not typed are an estimate from the mandatory courses in the plan: a straight line through 140 points at 20 ECTS and 120 points at 23 ECTS, never below 0, a course counted once. Without mandatory courses there is no estimate. Typed points always win; an empty field brings the estimate back. The estimate is never saved as if it had been typed. | Team decision, 17 Nov 2026: rough values from our own accounts. Nova does not publish the rule |
+| LN R20 | An area of expertise needs at least 21 ECTS of electives in the area, including every core course of the area, or, where the area has "core optional" courses instead, at least one of them. Lance counts the area courses on the primary list in both semesters, a course once whichever term; the alternate list does not count. A core course counts in any term it is offered. Courses taught outside Nova SBE are named but not counted. Changing the programme clears the area; the student chooses again. | Areas of Expertise pages of Management (and IMM), Finance (and IMF) and Economics, and the electives of Impact Entrepreneurship, SharePoint *Masters Nova SBE*, read on 18 Nov 2026 |
 
 ## What the product must remember
 
