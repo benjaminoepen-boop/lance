@@ -96,7 +96,9 @@ def nova():
 @app.route("/rules")
 def rules():
     plan, is_new = current_plan()
-    return page("rules.html", plan, is_new, active="rules", calendar=calendar_rows(), today=date.today().isoformat())
+    # ?about=areas opens that question: the link under an area of expertise (LN R20) leads straight to it
+    return page("rules.html", plan, is_new, active="rules", calendar=calendar_rows(), today=date.today().isoformat(),
+                about=request.args.get("about", ""))
 
 
 @app.route("/share")
@@ -235,7 +237,7 @@ def api_settings():
     plan, _ = current_plan()
     data = payload()
     error = logic.update_settings(plan, data.get("programme", plan["programme"]), data.get("semester", plan["semester"]),
-                                  data.get("points"), bool(data.get("has_bonus", plan["has_bonus"])))
+                                  data.get("points"), bool(data.get("has_bonus", plan["has_bonus"])), area=data.get("area"))
     return answer(plan, error)
 
 
