@@ -5,7 +5,8 @@
 const Bids = (() => {
   const { el } = Lance;
   const QUICK = [["exact", "Just enough", "Exactly what the last seat cost last round"], ["plus10", "+10 %", "Last round's price plus 10 %"], ["plus25", "+25 %", "Last round's price plus 25 %"]];
-  const view = { open: null, picking: false, query: "" };
+  /* unfolding: the card a click has just opened. It glides open once; drawn again after a change, it stands still */
+  const view = { open: null, unfolding: null, picking: false, query: "" };
   const compact = (time) => time.replace(/^0/, "");
   const whole = (value) => String(Math.round(value * 10) / 10);
   const meetingsText = (meetings) => meetings.map((m) => `${m.day} ${compact(m.start)}`).join(" · ");
@@ -256,7 +257,7 @@ const Bids = (() => {
     const free = course && first.section ? course.sections.filter((section) => !rows.some((row) => row.section_id === section.id)) : [];
     const quick = listName === "primary" && a.exact && first.section ? QUICK.filter(([key]) => a.suggestions[key] !== null && a.suggestions[key] !== undefined) : [];
     const notes = notesOf(rows, state);
-    return el("div", { class: "bid-details" },
+    return el("div", { class: `bid-details${view.unfolding === first.offering_id ? " unfold" : ""}` },
       /* the amount in its own span: on a phone it stands under its name, so that three buttons fit one row */
       quick.length ? el("div", { class: "quick" }, el("span", { class: "meta", text: "Take" }), ...quick.map(([key, label, hint]) => el("button", {
         type: "button", class: "btn small", title: hint, onclick: () => Lance.send("/api/bid", { offering_id: first.offering_id, bid: Math.min(a.suggestions[key], state.plan.points) }),
@@ -296,6 +297,7 @@ const Bids = (() => {
 
   function toggle(offeringId) {
     view.open = view.open === offeringId ? null : offeringId;
+    view.unfolding = view.open;
     render(Lance.state);
   }
 
@@ -421,11 +423,13 @@ const Bids = (() => {
       box.replaceChildren(el("div", { class: "empty-note" },
         el("p", { text: state.items.length ? "Mandatory courses need no bid. Add an elective to bid on." : "Nothing to bid on yet." }),
         el("button", { type: "button", class: "btn only-phone", onclick: () => { location.hash = ""; } }, "Pick courses")));
+      view.unfolding = null;
       return;
     }
     const alternate = listBlock("Alternate list", "Tried if a primary course gets no seat. Needs a bid, holds no points.", "alternate", state);
     alternate.append(alternatePicker(state));
     box.replaceChildren(listBlock("Primary list", "Higher up goes first", "primary", state), alternate, foot(state));
+    view.unfolding = null;
     const again = focusKey ? box.querySelector(focusKey) : null;
     if (!again) return;
     restoring = true;

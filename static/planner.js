@@ -12,6 +12,7 @@ const view = {
   tab: "week",         /* what the right half shows: week, bids or summary */
   open: null,          /* the course open in the left column with all its details */
   expanded: null,      /* the course folded open in the list, to pick a section right there */
+  unfolding: null,     /* the course whose row a click has just folded open: it glides open once, then stands still */
   preview: null,       /* the course under the mouse in the list */
   hot: null,           /* the section under the mouse */
   fresh: null,         /* the section that was just added: it pops in */
@@ -48,6 +49,7 @@ async function addCourse(course) {
   const entry = entriesOf(Lance.state, course.id)[0];
   view.fresh = entry.section_id;
   if (course.sections.length > 1) {
+    if (view.expanded !== course.id) view.unfolding = course.id;
     view.expanded = course.id;
     renderKeeping(course.id);
   } else {
@@ -89,6 +91,7 @@ function toggleExpanded(course) {
   clearTimeout(previewTimer);
   view.preview = null;
   view.expanded = view.expanded === course.id ? null : course.id;
+  view.unfolding = view.expanded;
   if (view.expanded) bringForward(course);
   renderKeeping(course.id);
 }
@@ -369,8 +372,9 @@ function courseRow(course, state) {
         Lance.icon(sections ? "chev" : "next")),
       /* one column of one width: every plus, tick and Pick ends on the same line */
       el("span", { class: "control" }, pickButton(course, planned))),
-    open ? el("div", { class: "course-more" },
-      course.kind === "mandatory" && !planned ? el("p", { class: "hint", text: "Pick the section Nova assigned you." }) : null,
+    open ? el("div", { class: `course-more${view.unfolding === course.id ? " unfold" : ""}` },
+      /* the hint stays after the pick: taken away, the tiles would jump up from under the mouse that has just pressed one */
+      course.kind === "mandatory" ? el("p", { class: "hint", text: "Pick the section Nova assigned you." }) : null,
       sectionTiles(course, state),
       el("div", { class: "course-foot" },
         el("span", { class: "meta", text: [exam ? `Exam ${exam.label}` : course.exam ? `Exam ${course.exam}` : null, course.lecturers].filter(Boolean).join(" · ") }),
@@ -412,6 +416,7 @@ function renderList(state) {
     list.append(el("div", { class: "empty-note" },
       el("p", { text: view.fits ? "Nothing else fits your week." : `No course matches in ${state.plan.semester}.` }),
       view.fits ? null : el("button", { type: "button", class: "btn tertiary", onclick: () => changeSetting({ semester: other }) }, `Look in ${other}`)));
+    view.unfolding = null;
     return;
   }
   const noProgramme = !state.plan.programme;
@@ -433,6 +438,7 @@ function renderList(state) {
     if (!folded) courses.forEach((course) => list.append(courseRow(course, state)));
   });
   list.scrollTop = scroll;
+  view.unfolding = null;   /* drawn once with its glide; from the next drawing on the open row stands still */
   if (focused) {
     const again = list.querySelector(`[data-key="${focused}"]`);
     if (again) again.focus({ preventScroll: true });
@@ -463,7 +469,7 @@ function renderSections(state) {
   const examClash = state.exam_warnings[course.id];
   box.replaceChildren(...[
     title,
-    course.kind === "mandatory" && !entries.length ? el("p", { class: "hint", text: "Pick the section Nova assigned you." }) : null,
+    course.kind === "mandatory" ? el("p", { class: "hint", text: "Pick the section Nova assigned you." }) : null,
     examClash ? Lance.status("bad", `Exam at the same time as ${examClash.join(", ")}`) : null,
     sectionTiles(course, state),
     remove,

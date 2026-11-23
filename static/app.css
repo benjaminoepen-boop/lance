@@ -299,7 +299,10 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 .course-note { max-width: 100%; }
 .course-note > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .time { display: none; }
-.course-more { --hover: var(--chip); display: flex; flex-direction: column; gap: 10px; padding: 2px 12px 12px 28px; animation: unfold .16s ease-out; }   /* under the name */
+.course-more { --hover: var(--chip); display: flex; flex-direction: column; gap: 10px; padding: 2px 12px 12px 28px; }   /* under the name */
+/* a row and a bid card glide open once, at the click that opens them. Every change draws them again: without this class
+   they then stand still, instead of fading in under the mouse after each click inside them */
+.course-more.unfold, .bid-details.unfold { animation: unfold .16s ease-out; }
 .hint { font-size: 13px; color: var(--ink-3); }
 /* the sections of a course: a white tile each, the same on the open row and in the course; one click picks */
 .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(98px, 1fr)); gap: 6px; }
@@ -443,7 +446,7 @@ details.about[open] > summary { display: none; }
 .bid-status > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .bid-head > .i-chev { grid-area: chev; }
 /* open, the details stay in the same card on an inner paper surface, the actions below them */
-.bid-details { --hover: var(--chip); display: flex; flex-direction: column; gap: 12px; margin: 0 14px; padding: 12px 14px; background: var(--paper); border-radius: var(--r-ctl); font-size: 13px; animation: unfold .16s ease-out; }
+.bid-details { --hover: var(--chip); display: flex; flex-direction: column; gap: 12px; margin: 0 14px; padding: 12px 14px; background: var(--paper); border-radius: var(--r-ctl); font-size: 13px; }
 .bid-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 2px; padding: 6px 4px; }
 .bid-actions .go { min-height: var(--h); padding: 0 10px; font-weight: 500; }
 .quick, .try-more { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
