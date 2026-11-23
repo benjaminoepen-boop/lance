@@ -52,10 +52,21 @@ def checked_entry(value):
 
 
 def checked_points(value):
-    """Points arrive as typed, as text or as a number, or not at all. Infinity and NaN are no points."""
-    if value is None or isinstance(value, str) or type(value) is int or (type(value) is float and math.isfinite(value)):
+    """Points arrive as typed, as text or as a number, or not at all. Infinity and NaN are no points, and neither is
+    a number with a fraction: 1.9 used to be cut to 1 (Codex review, 23 Nov). 120.0 is 120."""
+    if value is None or isinstance(value, str) or type(value) is int or (type(value) is float and math.isfinite(value) and value.is_integer()):
         return value
-    raise Malformed("Points are a number.")
+    raise Malformed("Points are a whole number.")
+
+
+def checked_bonus(value, saved):
+    """The bonus box sends true or false; nothing sent keeps what is saved. Any other value is refused: the text
+    "false" used to count as yes (Codex review, 23 Nov)."""
+    if value is None:
+        return bool(saved)
+    if type(value) is bool:
+        return value
+    raise Malformed("The bonus is true or false.")
 
 
 # ---------- times (from Festival Architect) ----------

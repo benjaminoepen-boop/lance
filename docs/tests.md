@@ -1,6 +1,6 @@
 # What the tests check, and what they do not
 
-`uv run pytest` runs 370 tests in about a minute. Every test starts on its own throwaway database, built from the real files in `seed/` (`tests/conftest.py`), so the numbers in the tests are Nova's real courses, times and prices. GitHub runs the tests and a check of the dependencies on every pull request and on every push to `main` (`.github/workflows/tests.yml`). The click-through in real browsers needs a running server and four browsers, so it is run by hand before a merge (`AGENTS.md`).
+`uv run pytest` runs 374 tests in about a minute. Every test starts on its own throwaway database, built from the real files in `seed/` (`tests/conftest.py`), so the numbers in the tests are Nova's real courses, times and prices. GitHub runs the tests and a check of the dependencies on every pull request and on every push to `main` (`.github/workflows/tests.yml`). The click-through in real browsers needs a running server and four browsers, so it is run by hand before a merge (`AGENTS.md`).
 
 ## The test files
 
@@ -26,6 +26,7 @@
 | `test_logo.py` | 4 | The envelope in the top bar, the browser tab and on a home screen | | Picture sizes for an iPhone and an installed app |
 | `test_share_video.py` | 2 | The share page plays the video with captions (LN08) | | The files come with their types |
 | `test_alternate_week.py` | 11 | A plus for the alternate list puts the course there; the state says which alternates the week draws beside it (LN R13) | | An alternate holds no points and no ECTS and stays out of the week; only its first section is drawn; a spring alternate has nothing to draw |
+| `test_settings_types.py` | 4 | Whole points count, also as 120.0; no bonus sent keeps the saved one | A bonus that is not true or false; points with a fraction | Nothing changes when a setting is refused |
 
 `tests/browser/flow.cjs` is not a pytest file. It clicks the whole way a student goes, in Chromium on a laptop and a small laptop, in Safari on an iPhone and in Chrome on an Android phone, and checks more than 90 things per device that only a browser can know: that a click changes what is on the screen, that nothing scrolls sideways, that a course has the same colour in the list, the week and its bid card.
 
