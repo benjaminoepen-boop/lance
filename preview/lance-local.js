@@ -6,7 +6,7 @@
   const KEY = "lance-preview-plan-3";
   let DATA = null;
   let sheets = null;
-  let offerings, sections, meetings, sessions, exams, kindsByProgramme;
+  let offerings, sections, meetings, sessions, exams, kindsByProgramme, areasByProgramme;
 
   const ready = realFetch("data.json").then((r) => r.json()).then((d) => {
     DATA = d;
@@ -16,10 +16,11 @@
     sessions = d.sessions;
     exams = d.exams;
     kindsByProgramme = d.kinds;
+    areasByProgramme = d.areas || {};
   });
 
   // ---------- storing the plan ----------
-  function blank() { return { plan: { id: "preview", programme: "", semester: "Fall", points: 0, has_bonus: 0 }, items: [], next: 1 }; }
+  function blank() { return { plan: { id: "preview", programme: "", semester: "Fall", points: 0, has_bonus: 0, area: "" }, items: [], next: 1 }; }
   function load() {
     if (window.__lanceStore) return window.__lanceStore;
     let store = null;
@@ -333,6 +334,33 @@
     return store.items.filter((i) => offerings[i.offering_id].semester === store.plan.semester)
       .sort((a, b) => a.list.localeCompare(b.list) || a.position - b.position || a.id - b.id);
   }
+  // ---------- LN R20: areas of expertise (logic.areas_of, area_roles, area_progress) ----------
+  const sortedNames = (names) => [...new Set(names)].sort();
+  function areasOf(programme) { return programme ? sortedNames((areasByProgramme[programme] || []).map((row) => row.area)) : []; }
+  function areaRows(plan) { return plan.area ? (areasByProgramme[plan.programme] || []).filter((row) => row.area === plan.area) : []; }
+  function areaRoles(plan) {
+    return Object.fromEntries(areaRows(plan).filter((row) => row.role !== "elsewhere").map((row) => [`${row.code}-${row.term}`, row.role]));
+  }
+  function areaProgress(store) {
+    const rows = areaRows(store.plan);
+    if (!rows.length) return null;
+    const roles = areaRoles(store.plan);
+    const taken = {};
+    store.items.forEach((item) => {
+      if (item.list === "primary" && roles[item.offering_id]) taken[offerings[item.offering_id].code] = offerings[item.offering_id].ects;
+    });
+    const coreMissing = sortedNames(rows.filter((row) => row.role === "core" && !(row.code in taken)).map((row) => row.name));
+    const options = rows.filter((row) => row.role === "core_optional");
+    const coreOptions = options.some((row) => row.code in taken) ? [] : sortedNames(options.map((row) => row.name));
+    const ects = Object.values(taken).reduce((sum, value) => sum + value, 0);
+    return {
+      name: store.plan.area, ects, needed: 21, core_rule: rows.some((row) => row.role === "core") ? "core" : options.length ? "core_optional" : "none",
+      core_missing: coreMissing, core_options: coreOptions,
+      done: ects >= 21 && !coreMissing.length && !coreOptions.length,
+      elsewhere: rows.filter((row) => row.role === "elsewhere").map((row) => ({ name: row.name, ects: row.ects })),
+    };
+  }
+
   function stateOf(store, today) {
     const items = planItems(store);
     const plan = store.plan;
@@ -360,11 +388,13 @@
       plan, items: enriched, ects: ects(items), reserved: reserved(items), forecast: forecast(plan, items),
       clashes: classClashes(week).concat(examClashes(week)).map((c, i) => [c, i]).sort((a, b) => ["exam", "class", "midterm"].indexOf(a[0].kind) - ["exam", "class", "midterm"].indexOf(b[0].kind) || a[1] - b[1]).map((pair) => pair[0]), section_warnings: perSection, exam_warnings: perOffering, exams: examList,
       warnings: warnings(plan, items), next_deadline: nextDeadline(today), round: roundOf(plan.semester, today), known_prices: knownPrices(), platform_list: platformList(items),
+      areas: areasOf(plan.programme), area: areaProgress(store),
     };
   }
   function catalogue(store) {
     const plan = store.plan;
     const kinds = kindsByProgramme[plan.programme] || {};
+    const roles = areaRoles(plan);
     const rows = [];
     DATA.offerings.forEach((o) => {
       if (o.semester !== plan.semester) return;
@@ -377,6 +407,7 @@
       const prices = DATA.cutoffs.filter((r) => r.code === o.code && r.list === "primary" && r.min_rank_value !== null).map((r) => r.min_rank_value);
       rows.push({
         id: o.id, code: o.code, name: o.name, term: o.term, ects: o.ects, lecturers: o.lecturers, kind: kinds[o.id] || "outside",
+        area_role: roles[o.id] || null,
         has_schedule: o.has_schedule, sections: own, exam: exam ? dayLabel(exam.date) : null,
         cutoff_low: prices.length ? Math.min(...prices) : null, cutoff_high: prices.length ? Math.max(...prices) : null,
       });
@@ -509,6 +540,11 @@
     if (!Number.isInteger(value)) return "Points are a whole number.";
     if (value < 0 || value > 2000) return "Points must be between 0 and 2000.";
     if (data.programme && !kindsByProgramme[data.programme]) return "Unknown programme.";
+    /* LN R20: no area given keeps the chosen one, but another programme has other areas */
+    let area = data.area === undefined || data.area === null ? null : data.area;
+    if (area === null && (data.programme || store.plan.programme) !== store.plan.programme) area = "";
+    if (area && !areasOf(data.programme || store.plan.programme).includes(area)) return "Unknown area of expertise.";
+    if (area !== null) store.plan.area = area;
     const programmeBefore = store.plan.programme;
     store.plan.programme = data.programme || store.plan.programme;
     if (store.plan.programme !== programmeBefore) {
@@ -526,7 +562,7 @@
   }
   function example(store) {
     if (planItems(store).length) return "Your plan already has courses.";
-    store.plan.programme = "Management"; store.plan.semester = "Fall"; store.plan.points = 165; store.plan.has_bonus = 0;
+    store.plan.programme = "Management"; store.plan.semester = "Fall"; store.plan.points = 165; store.plan.has_bonus = 0; store.plan.area = "";
     const positions = {};
     DATA.example.forEach(([sectionId, listName, bid]) => {
       positions[listName] = (positions[listName] || 0) + 1;

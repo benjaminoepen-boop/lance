@@ -39,6 +39,8 @@ PLANS = {
                        "add": [["2329-T2-TXA", 20], ["2388-T2-TXA", 15], ["2277-T2-TXA", 88], ["2329-T1-TXA", None]], "alternate": ["2388-T2-TXA", "2277-T2-TXA"]},
     "spring": {"setup": {"programme": "Economics", "semester": "Spring", "points": 200, "has_bonus": 0},
                "add_offering": [["2477-S2", 100], ["2277-T3", 30], ["2206-S2", None]], "add": [], "alternate": []},
+    "area": {"setup": {"programme": "Finance", "semester": "Fall", "points": 250, "has_bonus": 0, "area": "Financial Markets"},
+             "add_offering": [["2218-T2", 30], ["2257-T1", 10], ["2240-T1", None]], "add": [], "alternate": []},
 }
 
 
@@ -47,6 +49,9 @@ def python_side():
     for name, spec in PLANS.items():
         setup = spec["setup"]
         plan = db.load_plan(db.create_plan(setup["programme"], setup["semester"], setup["points"], bool(setup["has_bonus"])))
+        if setup.get("area"):
+            logic.update_settings(plan, setup["programme"], setup["semester"], setup["points"], bool(setup["has_bonus"]), area=setup["area"])
+            plan = db.load_plan(plan["id"])
         for section_id, bid in spec["add"]:
             logic.add_to_plan(plan, section_id=section_id)
             item = [i for i in db.load_items(plan["id"]) if i["section_id"] == section_id][0]

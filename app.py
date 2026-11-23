@@ -3,16 +3,28 @@
 Run:  uv run flask --app app run --port 8770
 """
 import json
+import mimetypes
 import os
 from datetime import date
 from urllib.parse import quote
 
 from flask import Flask, Response, abort, jsonify, make_response, redirect, render_template, request, url_for
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 import db
 import logic
 
 app = Flask(__name__)
+# The captions of the share video: with nosniff on, a browser ignores them unless they come as text/vtt,
+# and a slim server image may not know the type.
+mimetypes.add_type("text/vtt", ".vtt")
+# Deployed, the host's proxy speaks HTTPS to the browser and passes each request on over plain HTTP. Trusting that one
+# proxy's X-Forwarded-Proto and X-Forwarded-Host lets the app see HTTPS: then the plan cookie is Secure, HSTS is sent and
+# the private link starts with https. On http://localhost there is no such header, so nothing changes there.
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
+# A real export is a few hundred KB at most. A larger body is refused with 413 before it is read.
+MAX_BODY_KB = 512
+app.config["MAX_CONTENT_LENGTH"] = MAX_BODY_KB * 1024
 db.init_db()
 
 COOKIE = "lance_plan"
@@ -25,14 +37,16 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 def current_plan():
     """Return this visitor's plan and whether it was just created."""
     plan_id = request.cookies.get(COOKIE, "")
-    plan = db.load_plan(plan_id) if plan_id else None
+    plan = logic.load_plan(plan_id) if plan_id else None
     if plan is not None:
         return plan, False
-    return db.load_plan(logic.default_plan_id()), True
+    return logic.load_plan(logic.default_plan_id()), True
 
 
 def remember(response, plan):
-    response.set_cookie(COOKIE, plan["id"], max_age=ONE_YEAR, httponly=True, samesite="Lax")
+    """The plan id is the whole key to a plan: scripts cannot read its cookie, and a cookie set over HTTPS is sent back
+    over HTTPS only."""
+    response.set_cookie(COOKIE, plan["id"], max_age=ONE_YEAR, httponly=True, samesite="Lax", secure=request.is_secure)
     return response
 
 
@@ -61,6 +75,8 @@ def safe_headers(response):
     response.headers["Content-Security-Policy"] = (
         "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; "
         "script-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'self'")
+    if request.is_secure:      # the browser then stays on HTTPS for a year, so the plan id never goes out in plain text
+        response.headers["Strict-Transport-Security"] = "max-age=31536000"
     return response
 
 
@@ -84,33 +100,21 @@ def course(offering_id):
     plan, is_new = current_plan()
     if logic.course_page(offering_id, plan) is None:
         abort(404)
-    return page("planner.html", plan, is_new, active="planner", open_course=offering_id, saved=request.args.get("saved"))
+    return page("planner.html", plan, is_new, active="planner", open_course=offering_id)
 
 
 @app.route("/nova")
 def nova():
     plan, is_new = current_plan()
-    return page("nova.html", plan, is_new, active="nova", platform_list=logic.platform_list(plan))
-
-
-@app.route("/course/<offering_id>/rate", methods=["POST"])
-def rate(offering_id):
-    plan, _ = current_plan()
-    offering = logic.all_offerings().get(offering_id)
-    if offering is None:
-        abort(404)
-    rating, error = logic.validate_rating(request.form)
-    if error:
-        return remember(redirect(url_for("course", offering_id=offering_id, saved="error")), plan)
-    db.save_rating(plan["id"], offering["code"], rating["overall"], rating["workload_hours"], rating["fairness"],
-                   rating["organisation"], rating["again"], rating["grade"])
-    return remember(redirect(url_for("course", offering_id=offering_id, saved="yes")), plan)
+    return page("nova.html", plan, is_new, active="nova", platform_list=logic.platform_list(plan), coverage=logic.coverage())
 
 
 @app.route("/rules")
 def rules():
     plan, is_new = current_plan()
-    return page("rules.html", plan, is_new, active="rules", calendar=calendar_rows(), today=date.today().isoformat())
+    # ?about=areas opens that question: the link under an area of expertise (LN R20) leads straight to it
+    return page("rules.html", plan, is_new, active="rules", calendar=calendar_rows(), today=date.today().isoformat(),
+                about=request.args.get("about", ""))
 
 
 @app.route("/share")
@@ -151,15 +155,20 @@ def calendar_rows():
 
 # ---------- what the pages ask for while you work ----------
 
-def answer(plan, error=None):
-    """Every change answers with the fresh state, so the page never has to guess."""
-    body = {"error": error, "state": logic.state_of(plan)}
+def answer(plan, error=None, **more):
+    """Every change answers with the fresh state, so the page never has to guess.
+    The plan is read again first: a change to the mandatory courses changes the estimated points."""
+    plan = logic.load_plan(plan["id"])
+    body = {"error": error, "state": logic.state_of(plan), **more}
     return remember(jsonify(body), plan)
 
 
 def payload():
     """The JSON a page sent. Refusing anything else keeps other websites from posting here."""
-    data = request.get_json(silent=True)
+    try:
+        data = request.get_json(silent=True)
+    except RecursionError:      # brackets nested thousands deep: no page sends that
+        data = None
     if not isinstance(data, dict):
         abort(415)
     return data
@@ -177,11 +186,15 @@ def api_catalogue():
     return remember(jsonify(logic.catalogue(plan)), plan)
 
 
+# Each change to the entries of a plan runs inside logic.undoable: one click, one step the left arrow can take back (LN R19).
+# The answer comes after that block, so that the state it carries already counts the step.
+
 @app.route("/api/add", methods=["POST"])
 def api_add():
     plan, _ = current_plan()
     data = payload()
-    error = logic.add_to_plan(plan, section_id=data.get("section_id"), offering_id=data.get("offering_id"), list_name=data.get("list"))
+    with logic.undoable(plan):
+        error = logic.add_to_plan(plan, section_id=data.get("section_id"), offering_id=data.get("offering_id"), list_name=data.get("list"))
     return answer(plan, error)
 
 
@@ -191,28 +204,40 @@ def api_remove():
     plan, _ = current_plan()
     data = payload()
     if data.get("offering_id"):
-        removed, error = logic.remove_course(plan, data["offering_id"])
-        body = {"error": error, "removed": removed, "state": logic.state_of(plan)}
-        return remember(jsonify(body), plan)
-    return answer(plan, logic.remove_from_plan(plan, data.get("item_id")))
+        with logic.undoable(plan):
+            removed, error = logic.remove_course(plan, data["offering_id"])
+        return answer(plan, error, removed=removed)
+    with logic.undoable(plan):
+        error = logic.remove_from_plan(plan, data.get("item_id"))
+    return answer(plan, error)
 
 
 @app.route("/api/restore", methods=["POST"])
 def api_restore():
     plan, _ = current_plan()
-    return answer(plan, logic.restore_items(plan, payload().get("rows")))
+    rows = payload().get("rows")
+    with logic.undoable(plan):
+        error = logic.restore_items(plan, rows)
+    return answer(plan, error)
 
 
 @app.route("/api/switch", methods=["POST"])
 def api_switch():
     plan, _ = current_plan()
-    return answer(plan, logic.switch_section(plan, payload().get("section_id")))
+    section_id = payload().get("section_id")
+    with logic.undoable(plan):
+        error = logic.switch_section(plan, section_id)
+    return answer(plan, error)
 
 
 @app.route("/api/start-over", methods=["POST"])
 def api_start_over():
+    """Empties the semester on show and answers with what undo needs, like removing one course."""
     plan, _ = current_plan()
-    return answer(plan, logic.start_over(plan))
+    payload()
+    with logic.undoable(plan):
+        removed = logic.start_over(plan)
+    return answer(plan, removed=removed)
 
 
 @app.route("/api/sheet/<offering_id>")
@@ -229,42 +254,66 @@ def api_sheet(offering_id):
 def api_bid():
     plan, _ = current_plan()
     data = payload()
-    if data.get("offering_id"):
-        return answer(plan, logic.set_course_bid(plan, data["offering_id"], data.get("bid")))
-    return answer(plan, logic.set_bid(plan, data.get("item_id"), data.get("bid")))
+    with logic.undoable(plan):
+        if data.get("offering_id"):
+            error = logic.set_course_bid(plan, data["offering_id"], data.get("bid"))
+        else:
+            error = logic.set_bid(plan, data.get("item_id"), data.get("bid"))
+    return answer(plan, error)
 
 
 @app.route("/api/move", methods=["POST"])
 def api_move():
     plan, _ = current_plan()
     data = payload()
-    error = logic.move_item(plan, data.get("item_id"), list_name=data.get("list"), direction=data.get("direction"))
+    with logic.undoable(plan):
+        error = logic.move_item(plan, data.get("item_id"), list_name=data.get("list"), direction=data.get("direction"))
     return answer(plan, error)
 
 
 @app.route("/api/settings", methods=["POST"])
 def api_settings():
+    """Programme, semester, points and the bonus are settings, not changes: the arrows leave them alone (LN R19)."""
     plan, _ = current_plan()
     data = payload()
     error = logic.update_settings(plan, data.get("programme", plan["programme"]), data.get("semester", plan["semester"]),
-                                  data.get("points", plan["points"]), bool(data.get("has_bonus", plan["has_bonus"])))
-    return answer(db.load_plan(plan["id"]), error)
+                                  data.get("points"), bool(data.get("has_bonus", plan["has_bonus"])), area=data.get("area"))
+    return answer(plan, error)
 
 
 @app.route("/api/example", methods=["POST"])
 def api_example():
     plan, _ = current_plan()
-    error = logic.load_example(plan)
-    return answer(db.load_plan(plan["id"]), error)
+    payload()
+    with logic.undoable(plan):
+        error = logic.load_example(plan)
+    return answer(plan, error)
+
+
+@app.route("/api/undo", methods=["POST"])
+def api_undo():
+    """LN R19: the left arrow. One step back in the semester on show, answered like every change."""
+    plan, _ = current_plan()
+    payload()
+    return answer(plan, logic.undo(plan))
+
+
+@app.route("/api/redo", methods=["POST"])
+def api_redo():
+    """LN R19: the right arrow. One step forward again."""
+    plan, _ = current_plan()
+    payload()
+    return answer(plan, logic.redo(plan))
 
 
 @app.route("/api/share", methods=["POST"])
 def api_share():
     """A rank-list export. The rules keep totals only; the rows themselves are never written anywhere."""
-    text = (request.get_json(silent=True) or {}).get("export", "")
     try:
+        data = request.get_json(silent=True)
+        text = data.get("export") if isinstance(data, dict) else None
         export = json.loads(text) if isinstance(text, str) else None
-    except ValueError:
+    except (ValueError, RecursionError):     # not JSON at all, or brackets nested thousands deep
         export = None
     if export is None:
         return jsonify({"error": "This does not look like what the button copies.", "stored": 0}), 400
@@ -272,6 +321,22 @@ def api_share():
     if error:
         return jsonify({"error": error, "stored": 0}), 400
     return jsonify({"error": None, "stored": stored, "coverage": logic.coverage()})
+
+
+@app.errorhandler(logic.Malformed)
+def malformed(error):
+    """A value of the wrong kind, like a list where an id belongs: refused with a short sentence before any rule ran."""
+    return jsonify({"error": str(error)}), 400
+
+
+@app.errorhandler(415)
+def not_json(_):
+    return jsonify({"error": "Lance takes only what its pages send: a JSON object."}), 415
+
+
+@app.errorhandler(413)
+def too_large(_):
+    return jsonify({"error": f"This is too large: Lance takes at most {MAX_BODY_KB} KB at once.", "stored": 0}), 413
 
 
 @app.errorhandler(404)

@@ -2,7 +2,7 @@
 
 Two kinds of data, as in the course:
   content   what Nova publishes: courses, sections, sessions, exams. Rebuilt from seed/ whenever seed/ changes.
-  progress  what people do here: plans, bids, ratings, shared price data. Never touched by a rebuild.
+  progress  what people do here: plans, bids, the steps of undo and redo, shared price data. Never touched by a rebuild.
 """
 import csv
 import hashlib
@@ -82,6 +82,22 @@ CREATE TABLE syllabi (
     weights    TEXT NOT NULL,        -- JSON: [{"label": "Final exam", "percent": 60}, ...]
     PRIMARY KEY (code, term)
 );
+CREATE TABLE course_ratings (         -- what students say on Uni Feedback, an independent review site
+    code      TEXT PRIMARY KEY,
+    rating    REAL NOT NULL,         -- the average of all reviews, 1 to 5
+    reviews   INTEGER NOT NULL,      -- how many reviews the average rests on
+    workload  TEXT NOT NULL,         -- Very light, Light, Moderate, Heavy, Very heavy
+    source_id TEXT NOT NULL          -- the course's number on uni-feedback.com, for the link to its reviews
+);
+CREATE TABLE areas (                  -- LN R20: the areas of expertise of each programme and their courses
+    programme TEXT NOT NULL,
+    area      TEXT NOT NULL,
+    code      TEXT NOT NULL,         -- empty for a course taught outside Nova SBE ('elsewhere')
+    term      TEXT NOT NULL,
+    name      TEXT NOT NULL,
+    ects      REAL NOT NULL,
+    role      TEXT NOT NULL          -- core, core_optional, elective, elsewhere
+);
 CREATE INDEX sessions_by_section ON sessions (section_id);
 CREATE INDEX meetings_by_section ON meetings (section_id);
 CREATE INDEX sections_by_offering ON sections (offering_id);
@@ -92,9 +108,10 @@ CREATE TABLE IF NOT EXISTS plans (
     id         TEXT PRIMARY KEY,
     programme  TEXT NOT NULL,
     semester   TEXT NOT NULL,
-    points     INTEGER NOT NULL,
+    points     INTEGER NOT NULL,     -- the Balance the student typed; 0 while they have not (then LN R17 estimates)
     has_bonus  INTEGER NOT NULL,     -- 1 when the student expects the 10 % rank bonus
-    created_at TEXT NOT NULL
+    created_at TEXT NOT NULL,
+    area       TEXT NOT NULL DEFAULT ''   -- LN R20: the chosen area of expertise, empty for none
 );
 CREATE TABLE IF NOT EXISTS plan_items (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -107,18 +124,15 @@ CREATE TABLE IF NOT EXISTS plan_items (
     UNIQUE (plan_id, offering_id, section_id)
 );
 CREATE INDEX IF NOT EXISTS items_by_plan ON plan_items (plan_id);
-CREATE TABLE IF NOT EXISTS ratings (
-    plan_id        TEXT NOT NULL,    -- one rating per plan and course; never shown to anyone
-    code           TEXT NOT NULL,
-    overall        INTEGER NOT NULL,
-    workload_hours INTEGER NOT NULL,
-    fairness       INTEGER NOT NULL,
-    organisation   INTEGER NOT NULL,
-    again          INTEGER NOT NULL,
-    grade          REAL,             -- optional, shown only as an average of many
-    created_at     TEXT NOT NULL,
-    PRIMARY KEY (plan_id, code)
+-- LN R19: what the arrows can go back and forth to. A step is a copy of the entries of one semester of one plan.
+CREATE TABLE IF NOT EXISTS plan_steps (
+    id       INTEGER PRIMARY KEY AUTOINCREMENT,   -- the newest step has the highest id
+    plan_id  TEXT NOT NULL REFERENCES plans (id),
+    semester TEXT NOT NULL,                       -- Fall or Spring: each semester has steps of its own
+    kind     TEXT NOT NULL,                       -- undo: the entries before a change; redo: what an undo took back
+    entries  TEXT NOT NULL                        -- JSON: [{"id": 7, "offering_id": "2477-S1", "section_id": ..., "list": ..., "position": 1, "bid": 120}, ...]
 );
+CREATE INDEX IF NOT EXISTS steps_by_plan ON plan_steps (plan_id, semester, kind);
 -- Past prices. Only totals per section: no row here can point to a student.
 CREATE TABLE IF NOT EXISTS cutoffs (
     code           TEXT NOT NULL,
@@ -150,7 +164,8 @@ CREATE TABLE IF NOT EXISTS bid_histogram (
 );
 """
 
-CONTENT_TABLES = ["offerings", "sections", "meetings", "sessions", "exams", "programme_offerings", "calendar", "syllabi"]
+CONTENT_TABLES = ["offerings", "sections", "meetings", "sessions", "exams", "programme_offerings", "calendar", "syllabi",
+                  "course_ratings", "areas"]
 
 
 def connect():
@@ -199,6 +214,10 @@ def init_db():
     os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
     with closing(connect()) as connection:
         connection.executescript(PROGRESS_SCHEMA)
+        # A database from before areas of expertise keeps its plans and gets the new column, empty.
+        columns = [row["name"] for row in connection.execute("PRAGMA table_info(plans)")]
+        if "area" not in columns:
+            connection.execute("ALTER TABLE plans ADD COLUMN area TEXT NOT NULL DEFAULT ''")
         connection.execute("CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT NOT NULL)")
         fingerprint = seed_fingerprint()
         row = connection.execute("SELECT value FROM meta WHERE key = 'seed'").fetchone()
@@ -304,6 +323,12 @@ def load_programme_kinds(programme):
     return {row["offering_id"]: row["kind"] for row in rows}
 
 
+def load_areas(programme):
+    """The rows of seed/areas.csv for one programme: every area with its courses."""
+    with closing(connect()) as connection:
+        return rows_as_dicts(connection.execute("SELECT * FROM areas WHERE programme = ? ORDER BY area, term, name", (programme,)))
+
+
 def load_programmes():
     with closing(connect()) as connection:
         rows = connection.execute("SELECT DISTINCT programme FROM programme_offerings ORDER BY programme").fetchall()
@@ -328,6 +353,11 @@ def load_syllabus(code, term):
 def load_all_syllabi():
     with closing(connect()) as connection:
         return rows_as_dicts(connection.execute("SELECT code, term, synopsis FROM syllabi"))
+
+
+def load_course_ratings():
+    with closing(connect()) as connection:
+        return rows_as_dicts(connection.execute("SELECT * FROM course_ratings"))
 
 
 # ---------- past prices ----------
@@ -397,6 +427,12 @@ def update_plan(plan_id, programme, semester, points, has_bonus):
         connection.commit()
 
 
+def update_area(plan_id, area):
+    with closing(connect()) as connection:
+        connection.execute("UPDATE plans SET area = ? WHERE id = ?", (area, plan_id))
+        connection.commit()
+
+
 def load_items(plan_id):
     with closing(connect()) as connection:
         return rows_as_dicts(connection.execute(
@@ -418,6 +454,15 @@ def insert_item(plan_id, offering_id, section_id, list_name, position, bid=None)
         return cursor.lastrowid
 
 
+def insert_items(plan_id, rows):
+    """Several entries in one go: all of them, or none if one fails. Undo never leaves half a plan behind."""
+    with closing(connect()) as connection:
+        connection.executemany(
+            "INSERT INTO plan_items (plan_id, offering_id, section_id, list, position, bid) VALUES (?, ?, ?, ?, ?, ?)",
+            [(plan_id, row["offering_id"], row.get("section_id"), row["list"], row["position"], row.get("bid")) for row in rows])
+        connection.commit()
+
+
 def delete_item(item_id):
     with closing(connect()) as connection:
         connection.execute("DELETE FROM plan_items WHERE id = ?", (item_id,))
@@ -433,20 +478,57 @@ def update_item(item_id, **fields):
         connection.commit()
 
 
-# ---------- ratings ----------
-
-def save_rating(plan_id, code, overall, workload_hours, fairness, organisation, again, grade):
+def replace_items(plan_id, old_ids, rows):
+    """Take these entries out and put those in, each with its own id, so that a course keeps its colour.
+    One transaction: if anything fails, nothing has changed."""
     with closing(connect()) as connection:
-        connection.execute("""
-            INSERT OR REPLACE INTO ratings (plan_id, code, overall, workload_hours, fairness, organisation, again, grade, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                           (plan_id, code, overall, workload_hours, fairness, organisation, again, grade, now()))
+        connection.executemany("DELETE FROM plan_items WHERE id = ? AND plan_id = ?", [(item_id, plan_id) for item_id in old_ids])
+        connection.executemany(
+            "INSERT INTO plan_items (id, plan_id, offering_id, section_id, list, position, bid) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            [(row["id"], plan_id, row["offering_id"], row["section_id"], row["list"], row["position"], row["bid"]) for row in rows])
         connection.commit()
 
 
-def load_ratings(code):
+# ---------- steps: what the arrows go back and forth to (LN R19) ----------
+
+def push_step(plan_id, semester, kind, entries, keep):
+    """Save the entries of one semester as the newest step of its kind. Only the newest `keep` steps stay."""
     with closing(connect()) as connection:
-        return rows_as_dicts(connection.execute("SELECT * FROM ratings WHERE code = ?", (code,)))
+        connection.execute("INSERT INTO plan_steps (plan_id, semester, kind, entries) VALUES (?, ?, ?, ?)",
+                           (plan_id, semester, kind, json.dumps(entries)))
+        connection.execute("""
+            DELETE FROM plan_steps WHERE plan_id = ? AND semester = ? AND kind = ? AND id NOT IN (
+                SELECT id FROM plan_steps WHERE plan_id = ? AND semester = ? AND kind = ? ORDER BY id DESC LIMIT ?)""",
+                           (plan_id, semester, kind, plan_id, semester, kind, keep))
+        connection.commit()
+
+
+def pop_step(plan_id, semester, kind):
+    """Take the newest step of its kind out and return its entries, or None when there is none."""
+    with closing(connect()) as connection:
+        row = connection.execute("SELECT id, entries FROM plan_steps WHERE plan_id = ? AND semester = ? AND kind = ? ORDER BY id DESC LIMIT 1",
+                                 (plan_id, semester, kind)).fetchone()
+        if row is None:
+            return None
+        connection.execute("DELETE FROM plan_steps WHERE id = ?", (row["id"],))
+        connection.commit()
+    return json.loads(row["entries"])
+
+
+def clear_steps(plan_id, semester, kind):
+    with closing(connect()) as connection:
+        connection.execute("DELETE FROM plan_steps WHERE plan_id = ? AND semester = ? AND kind = ?", (plan_id, semester, kind))
+        connection.commit()
+
+
+def count_steps(plan_id, semester):
+    """{'undo': how many steps back, 'redo': how many forward} for one semester of a plan."""
+    with closing(connect()) as connection:
+        rows = connection.execute("SELECT kind, COUNT(*) AS steps FROM plan_steps WHERE plan_id = ? AND semester = ? GROUP BY kind",
+                                  (plan_id, semester)).fetchall()
+    counts = {"undo": 0, "redo": 0}
+    counts.update({row["kind"]: row["steps"] for row in rows})
+    return counts
 
 
 def now():

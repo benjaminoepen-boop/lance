@@ -12,6 +12,7 @@ const view = {
   tab: "week",         /* what the right half shows: week, bids or summary */
   open: null,          /* the course open in the left column with all its details */
   expanded: null,      /* the course folded open in the list, to pick a section right there */
+  unfolding: null,     /* the course whose row a click has just folded open: it glides open once, then stands still */
   preview: null,       /* the course under the mouse in the list */
   hot: null,           /* the section under the mouse */
   fresh: null,         /* the section that was just added: it pops in */
@@ -48,6 +49,7 @@ async function addCourse(course) {
   const entry = entriesOf(Lance.state, course.id)[0];
   view.fresh = entry.section_id;
   if (course.sections.length > 1) {
+    if (view.expanded !== course.id) view.unfolding = course.id;
     view.expanded = course.id;
     renderKeeping(course.id);
   } else {
@@ -60,6 +62,14 @@ async function removeCourse(offeringId, name) {
   const answer = await Lance.send("/api/remove", { offering_id: offeringId });
   if (answer.error) return;
   Lance.toast(`Removed ${name}`, { label: "Undo", run: () => Lance.send("/api/restore", { rows: answer.removed }) });
+}
+
+/* LN R15: everything out at once, so that nobody has to look for each course again. Undo puts it all back */
+async function resetPlan() {
+  const answer = await Lance.send("/api/start-over", {});
+  if (answer.error || !answer.removed || !answer.removed.length) return;
+  const courses = new Set(answer.removed.map((row) => row.offering_id)).size;
+  Lance.toast(`Removed ${courses === 1 ? "1 course" : `all ${courses} courses`}`, { label: "Undo", run: () => Lance.send("/api/restore", { rows: answer.removed }) });
 }
 
 async function chooseSection(course, section) {
@@ -81,6 +91,7 @@ function toggleExpanded(course) {
   clearTimeout(previewTimer);
   view.preview = null;
   view.expanded = view.expanded === course.id ? null : course.id;
+  view.unfolding = view.expanded;
   if (view.expanded) bringForward(course);
   renderKeeping(course.id);
 }
@@ -316,7 +327,10 @@ function metaLine(course, first) {
       : ` · a seat took ${Math.ceil(course.cutoff_low)} to ${Math.ceil(course.cutoff_high)}`;
   /* a phone has no week beside the list, so a course with one section says its time here */
   const time = !first && course.sections.length === 1 ? el("span", { class: "time", text: ` · ${meetingsText(course.sections[0].meetings)}` }) : null;
-  return el("span", { class: "course-sub" }, `${course.term} · ${course.ects} ECTS`, chosen, time, price);
+  /* LN07: what students say on Uni Feedback, as one number; the course sheet has the rest */
+  const rating = course.rating === null ? null
+    : el("span", { title: `${course.rating.toFixed(1)} of 5 from ${course.reviews} ${course.reviews === 1 ? "review" : "reviews"} on Uni Feedback`, text: ` · ★ ${course.rating.toFixed(1)}` });
+  return el("span", { class: "course-sub" }, `${course.term} · ${course.ects} ECTS`, rating, chosen, time, price);
 }
 
 /* the one thing to know before adding, as a status line: an exam at the same time is worst, then a class, then the same course in the other half */
@@ -327,6 +341,9 @@ function noteLine(course, state) {
   if (clash) return Lance.status("warn", clash, { cls: "course-note" });
   const twin = state.items.find((item) => item.code === course.code && item.offering_id !== course.id);
   if (twin) return Lance.status("warn", `In your plan in ${twin.term}`, { cls: "course-note" });
+  /* two exams on one day are no clash, but a hard day: said last, because the other notes block or double the course */
+  const day = state.day_warnings[course.id];
+  if (day) return Lance.status("warn", `Exam on the same day as ${day.join(", ")}`, { cls: "course-note" });
   return null;
 }
 
@@ -351,16 +368,41 @@ function courseRow(course, state) {
       },
         /* every row keeps the place of the dot, so that all names start on one line */
         planned ? Lance.dot(state, course.id) : el("span", { class: "dot" }),
-        el("span", { class: "course-text" }, el("span", { class: "course-name", text: course.name }), metaLine(course, first), noteLine(course, state)),
+        el("span", { class: "course-text" }, el("span", { class: "course-name" }, course.name, areaTag(course)), metaLine(course, first), noteLine(course, state)),
         Lance.icon(sections ? "chev" : "next")),
       /* one column of one width: every plus, tick and Pick ends on the same line */
       el("span", { class: "control" }, pickButton(course, planned))),
-    open ? el("div", { class: "course-more" },
-      course.kind === "mandatory" && !planned ? el("p", { class: "hint", text: "Pick the section Nova assigned you." }) : null,
+    open ? el("div", { class: `course-more${view.unfolding === course.id ? " unfold" : ""}` },
+      /* the hint stays after the pick: taken away, the tiles would jump up from under the mouse that has just pressed one */
+      course.kind === "mandatory" ? el("p", { class: "hint", text: "Pick the section Nova assigned you." }) : null,
       sectionTiles(course, state),
       el("div", { class: "course-foot" },
         el("span", { class: "meta", text: [exam ? `Exam ${exam.label}` : course.exam ? `Exam ${course.exam}` : null, course.lecturers].filter(Boolean).join(" · ") }),
         el("a", { class: "go", href: `#${course.id}` }, "Course details"))) : null);
+}
+
+/* LN R20: what a course is in the chosen area of expertise. Only core courses say so: the group already says the rest */
+function areaTag(course) {
+  const words = { core: "Core", core_optional: "Core option" }[course.area_role];
+  return words ? el("span", { class: "area-tag", title: course.area_role === "core" ? "Every core course is needed for the area" : "One core option is needed for the area", text: words }) : null;
+}
+
+/* LN R20: under the heading of the area, how far your plan is: a bar, the ECTS, and what is still needed.
+   The server counts both semesters, so the bar does not drop when you switch to spring */
+const AREA_RULE = { core: ", including every core course", core_optional: ", including one core option", none: "" };
+
+function areaProgress(area) {
+  const needs = [...area.core_missing, area.core_options.length ? `one of ${area.core_options.join(", ")}` : null].filter(Boolean);
+  const ects = `${area.ects} of ${area.needed} ECTS`;
+  /* first what counts, then how far you are; once the area is complete the rule has nothing left to say */
+  const rule = area.done ? null : el("span", { class: "area-rule" },
+    `Needs ${area.needed} ECTS of electives from this list${AREA_RULE[area.core_rule]}. `,
+    el("a", { class: "go", href: "/rules?about=areas#areas" }, "How areas work"));
+  return el("div", { class: "area-progress" }, rule,
+    el("span", { class: "area-bar", "aria-hidden": "true" }, el("span", { style: `width: ${Math.min(100, (area.ects / area.needed) * 100)}%` })),
+    area.done ? Lance.status("ok", `Area complete · ${ects}`)
+      : el("span", { class: "area-words", text: needs.length ? `${ects} · still needed: ${needs.join(", ")}` : ects }),
+    area.elsewhere.length ? el("span", { class: "area-words", text: `Not in Lance, counts too: ${area.elsewhere.map((course) => `${course.name} (${course.ects} ECTS)`).join(", ")}` }) : null);
 }
 
 function renderList(state) {
@@ -374,22 +416,29 @@ function renderList(state) {
     list.append(el("div", { class: "empty-note" },
       el("p", { text: view.fits ? "Nothing else fits your week." : `No course matches in ${state.plan.semester}.` }),
       view.fits ? null : el("button", { type: "button", class: "btn tertiary", onclick: () => changeSetting({ semester: other }) }, `Look in ${other}`)));
+    view.unfolding = null;
     return;
   }
   const noProgramme = !state.plan.programme;
-  const titles = { mandatory: "Mandatory", elective: "Electives", outside: noProgramme ? "All courses" : "Other programmes" };
+  /* LN R20: with an area of expertise chosen, its courses leave Electives and Other programmes for a group of their own,
+     right under the mandatory courses. Its heading stays while no course of it is on show, for the progress under it */
+  const area = state.area;
+  const inArea = (course) => Boolean(area && course.area_role && course.kind !== "mandatory");
+  const titles = { mandatory: "Mandatory", ...(area ? { area: area.name } : {}), elective: "Electives", outside: noProgramme ? "All courses" : "Other programmes" };
   Object.keys(titles).forEach((kind) => {
-    const courses = shown.filter((course) => course.kind === kind);
-    if (!courses.length) return;
+    const courses = shown.filter((course) => (kind === "area" ? inArea(course) : course.kind === kind && !inArea(course)));
+    if (!courses.length && !(kind === "area" && !view.query && !view.fits)) return;
     const folded = !view.query && !noProgramme && view.closed[kind];
     /* a group heading folds like a row: the whole line is the button, the chevron at the right edge */
     list.append(el("button", {
-      type: "button", class: "group", "aria-expanded": folded ? "false" : "true",
+      type: "button", class: `group${kind === "area" ? " area-group" : ""}`, "aria-expanded": folded ? "false" : "true",
       onclick: () => { view.closed[kind] = !view.closed[kind]; holdPreviews(); renderList(Lance.state); },
     }, el("span", { class: "group-name", text: titles[kind] }), el("span", { class: "count", text: String(courses.length) }), Lance.icon("chev")));
+    if (kind === "area") list.append(areaProgress(area));
     if (!folded) courses.forEach((course) => list.append(courseRow(course, state)));
   });
   list.scrollTop = scroll;
+  view.unfolding = null;   /* drawn once with its glide; from the next drawing on the open row stands still */
   if (focused) {
     const again = list.querySelector(`[data-key="${focused}"]`);
     if (again) again.focus({ preventScroll: true });
@@ -420,7 +469,7 @@ function renderSections(state) {
   const examClash = state.exam_warnings[course.id];
   box.replaceChildren(...[
     title,
-    course.kind === "mandatory" && !entries.length ? el("p", { class: "hint", text: "Pick the section Nova assigned you." }) : null,
+    course.kind === "mandatory" ? el("p", { class: "hint", text: "Pick the section Nova assigned you." }) : null,
     examClash ? Lance.status("bad", `Exam at the same time as ${examClash.join(", ")}`) : null,
     sectionTiles(course, state),
     remove,
@@ -498,7 +547,7 @@ async function tryExample() {
   await Lance.send("/api/example", {});
   await loadCatalogue();
   Lance.update(Lance.state);
-  Lance.toast("An example: a real Management plan from Fall 2026.", { label: "Start over", run: () => Lance.send("/api/start-over", {}) });
+  Lance.toast("An example: a real Management plan from Fall 2026.", { label: "Reset", run: resetPlan });
 }
 
 /* ---- above the list, and the lines about clashes ---- */
@@ -559,6 +608,9 @@ function renderClashes(state) {
   if (state.clashes.length > 2 && !view.allClashes) {
     box.append(el("button", { type: "button", class: "btn tertiary flush", onclick: () => { view.allClashes = true; renderClashes(Lance.state); } }, `${state.clashes.length - 2} more`));
   }
+  /* a hard day, two exams one after the other: an orange line under the clashes, never counted as a clash */
+  state.exam_days.forEach((day) => box.append(el("div", { class: "clash-line exam-day" },
+    el("p", { class: "status warn" }, Lance.icon("warn"), el("span", {}, `Two exams on ${day.when}: `, el("b", { text: `${day.first} × ${day.second}` }), ". Nova allows it, but it is a long day.")))));
 }
 
 /* ---- the head of your plan: where you stand, whatever tab is open ---- */
@@ -584,7 +636,10 @@ function figuresOf(state, head) {
     tone ? Lance.icon(tone) : null, el("b", { class: "num", text: value }), ` ${label}`);
   return [
     figure(String(state.ects.total), ects.label, ects.tone, `Nova recommends ${state.ects.recommended} ECTS, the maximum is ${state.ects.maximum}`, "ects"),
-    points ? figure(String(left), "points left", left < 0 ? "bad" : null, `${state.reserved} of your ${points} points are in bids`)
+    /* LN R17: points nobody typed are an estimate from the mandatory courses, and "about" says so */
+    points ? figure(String(left), state.plan.points_estimated ? "points left, estimated" : "points left", left < 0 ? "bad" : null,
+      state.plan.points_estimated ? `About ${points} points for ${state.mandatory_ects} mandatory ECTS. Type your Balance in Bids to replace the estimate`
+        : `${state.reserved} of your ${points} points are in bids`)
       : electives ? Lance.status("warn", "No points yet") : el("span", { text: "No points yet" }),
     clashes ? figure(String(clashes), clashes === 1 ? "clash" : "clashes", exam ? "bad" : "warn") : el("span", { text: "No clash" }),
   ];
@@ -594,6 +649,7 @@ function renderHead(state) {
   const clashes = state.clashes.length;
   const exam = state.clashes.some((clash) => clash.kind === "exam");
   document.getElementById("figures").replaceChildren(...figuresOf(state, true));
+  document.getElementById("reset").hidden = state.items.length === 0;
   /* above the list only once there is something in the plan: then a + shows what it changed */
   const line = document.getElementById("list-figures");
   const shown = state.items.length > 0;
@@ -629,14 +685,14 @@ function planRow(entries, state, classClash, examClash) {
   const backups = entries.slice(1).map((item) => item.section).filter(Boolean);
   const exam = state.exams.find((item) => item.offering_id === first.offering_id && item.kind === "exam");
   const clash = classClash.get(first.id);
-  const examLevel = examClash.get(first.offering_id);
+  const examLevel = examClash.get(first.offering_id) || (state.exam_days.some((day) => day.offerings.includes(first.offering_id)) ? "day" : null);
   const bid = entries.some((item) => item.bid !== null) ? Math.max(...entries.map((item) => item.bid || 0)) : null;
   const time = first.section ? meetingsText(first.meetings) : "Not published";
   /* like every list: the whole row opens the course on the left, the chevron at the right edge says so.
      The name stays a link for the keyboard, in ink like the names in the other lists */
   return el("tr", {
     class: `go-row${alternate ? " alt" : ""}`,
-    onclick: (event) => { if (!event.target.closest("a")) go(first.offering_id); },
+    onclick: (event) => { if (!event.target.closest("a, button")) go(first.offering_id); },
   },
     el("td", { class: "name" }, el("span", { class: "named" },
       Lance.dot(state, first.offering_id),
@@ -646,9 +702,14 @@ function planRow(entries, state, classClash, examClash) {
     el("td", { class: "opt" }, first.section || "–", backups.length ? el("span", { class: "faint", title: `If full: ${backups.join(", ")}`, text: ` +${backups.length}` }) : null),
     el("td", { class: "opt" }, clash ? cellValue(`${first.term} · ${time}`, "warn", `Clashes: ${clash}`) : el("span", { class: "faint", text: `${first.term} · ` }), clash ? null : time),
     el("td", { class: `r num${alternate ? " faint" : ""}`, title: alternate ? "The alternate list does not count" : null, text: alternate ? `(${first.ects})` : String(first.ects) }),
-    el("td", { class: "opt" }, cellValue(exam ? exam.label : "–", examLevel === "exam" ? "bad" : examLevel ? "warn" : null)),
+    el("td", { class: "opt" }, cellValue(exam ? exam.label : "–", examLevel === "exam" ? "bad" : examLevel ? "warn" : null, examLevel === "day" ? "Two exams on one day" : null)),
     el("td", { class: `r num${alternate ? " faint" : ""}` },
       first.list === "mandatory" ? "–" : bid === null ? cellValue("No bid", first.list === "primary" ? "warn" : null) : String(bid)),
+    /* out of the plan right here: nobody has to find the course in the list again */
+    el("td", { class: "act" }, el("button", {
+      type: "button", class: "icon-btn", title: `Remove ${first.name}`, "aria-label": `Remove ${first.name}`, html: Lance.icons.close,
+      onclick: () => removeCourse(first.offering_id, first.name),
+    })),
     el("td", { class: "chev" }, Lance.icon("next")));
 }
 
@@ -661,7 +722,7 @@ function totalsRow(state, counted, alternates) {
   const examClashes = state.clashes.filter((clash) => clash.kind !== "class");
   const ects = ectsWords(state.ects);
   const many = (count, word) => `${count} ${word}${count === 1 ? "" : word.endsWith("sh") ? "es" : "s"}`;
-  return el("tr", {}, el("td", { colspan: 7 }, el("div", { class: "plan-totals" },
+  return el("tr", {}, el("td", { colspan: 8 }, el("div", { class: "plan-totals" },
     el("span", {}, el("b", { class: "num", text: String(counted) }), counted === 1 ? " course" : " courses", alternates ? ` + ${alternates} alternate` : null),
     el("span", { class: "opt" }, classClashes ? cellValue(many(classClashes, "class clash"), "warn") : "No class clash"),
     el("span", { title: `Nova recommends ${state.ects.recommended} ECTS, the maximum is ${state.ects.maximum}` },
@@ -687,7 +748,7 @@ function renderPlanTable(state) {
   [["mandatory", "Mandatory"], ["primary", "Primary list"], ["alternate", "Alternate list"]].forEach(([list, title]) => {
     const ids = offerings.filter((id) => entriesOf(state, id)[0].list === list);
     if (!ids.length) return;
-    body.append(el("tr", { class: "plan-group" }, el("th", { colspan: 7, scope: "colgroup", text: title })));
+    body.append(el("tr", { class: "plan-group" }, el("th", { colspan: 8, scope: "colgroup", text: title })));
     ids.forEach((id) => body.append(planRow(entriesOf(state, id), state, classClash, examClash)));
   });
   const counted = offerings.filter((id) => entriesOf(state, id)[0].list !== "alternate").length;
@@ -695,18 +756,52 @@ function renderPlanTable(state) {
   box.replaceChildren(
     el("table", { class: "plan-table" },
       el("thead", {}, el("tr", {}, head("Course"), head("Section", "opt"), head("Time", "opt"), head("ECTS", "r"), head("Exam", "opt"), head("Bid", "r"),
-        el("th", { class: "chev" }, el("span", { class: "sr", text: "Open" })))),
+        el("th", { class: "act" }, el("span", { class: "sr", text: "Remove" })), el("th", { class: "chev" }, el("span", { class: "sr", text: "Open" })))),
       body,
-      el("tfoot", {}, totalsRow(state, counted, offerings.length - counted))),
-    el("button", {
-      type: "button", class: "btn plan-reset",
-      onclick: () => { if (window.confirm(`Remove every ${state.plan.semester} course from your plan?`)) Lance.send("/api/start-over", {}); },
-    }, "Start over"));
+      el("tfoot", {}, totalsRow(state, counted, offerings.length - counted))));
+}
+
+/* ---- LN R19: the two arrows in the top bar. The server keeps the steps; the page asks for one step back or
+   forward and redraws from the answer, as after any other change ---- */
+
+let stepping = false;   /* one step at a time: a second press waits until the first has its answer */
+async function takeStep(way) {
+  const possible = Lance.state && (way === "undo" ? Lance.state.can_undo : Lance.state.can_redo);
+  if (stepping || !possible) return;
+  stepping = true;
+  try {
+    /* a bid still waiting to be saved is the last change, so it goes first */
+    if (typeof Bids !== "undefined") await Bids.flush();
+    const answer = await Lance.send(`/api/${way}`, {});
+    if (!answer.error) Lance.toast(way === "undo" ? "Undone" : "Redone");
+  } finally {
+    stepping = false;
+  }
+}
+
+/* an arrow is switched off when there is nothing to take back or to do again */
+function renderArrows(state) {
+  document.getElementById("undo").disabled = !state.can_undo;
+  document.getElementById("redo").disabled = !state.can_redo;
+}
+
+/* a field keeps its own undo: Cmd+Z while typing in the search, a number or a menu is not meant for your plan */
+const inField = (node) => node instanceof Element && node.matches("input:not([type=checkbox]), textarea, select");
+
+/* the keys: Cmd+Z or Ctrl+Z one step back; with Shift, or Ctrl+Y, forward again */
+function arrowKeys(event) {
+  if (!(event.metaKey || event.ctrlKey) || event.altKey || inField(event.target)) return;
+  const key = event.key.toLowerCase();
+  const way = key === "z" ? (event.shiftKey ? "redo" : "undo") : key === "y" && event.ctrlKey && !event.shiftKey ? "redo" : null;
+  if (!way) return;
+  event.preventDefault();
+  takeStep(way);
 }
 
 /* ---- wiring ---- */
 
 function render(state) {
+  renderArrows(state);
   renderTabs(state);
   renderHead(state);
   renderList(state);
@@ -720,6 +815,12 @@ function render(state) {
   semester.value = state.plan.semester;
   fitToValue(programme);
   fitToValue(semester);
+  /* LN R20: the areas of the programme on show; a programme without any hides the menu */
+  const area = document.getElementById("set-area");
+  area.replaceChildren(el("option", { value: "", text: "No area of expertise" }), ...state.areas.map((name) => el("option", { value: name, text: name })));
+  area.value = state.plan.area || "";
+  area.hidden = !state.areas.length;
+  if (!area.hidden) fitToValue(area);
 }
 
 /* a menu is only as wide as what it shows, so that everything stays on one line (browsers make it as wide as its longest option).
@@ -757,8 +858,13 @@ document.getElementById("fits").addEventListener("click", (event) => {
   event.currentTarget.setAttribute("aria-pressed", view.fits ? "true" : "false");
   if (Lance.state) renderList(Lance.state);
 });
+document.getElementById("reset").addEventListener("click", resetPlan);
+document.getElementById("undo").addEventListener("click", () => takeStep("undo"));
+document.getElementById("redo").addEventListener("click", () => takeStep("redo"));
+document.addEventListener("keydown", arrowKeys);
 document.getElementById("set-programme").addEventListener("change", (event) => changeSetting({ programme: event.target.value }));
 document.getElementById("set-semester").addEventListener("change", (event) => changeSetting({ semester: event.target.value }));
+document.getElementById("set-area").addEventListener("change", (event) => changeSetting({ area: event.target.value }));
 document.addEventListener("keydown", (event) => {
   if (event.key !== "Escape") return;
   if (view.open) goBack();
@@ -792,7 +898,5 @@ document.getElementById("plan-tabs").addEventListener("keydown", (event) => {
   else if (view.tab !== "week" && !location.hash) {
     try { history.replaceState(null, "", `#${view.tab}`); } catch (error) { /* a sandboxed preview keeps its address */ }
   }
-  if (planner.dataset.saved === "yes") Lance.toast("Thanks, your answers are in.");
-  if (planner.dataset.saved === "error") Lance.toast("Please answer every question.");
   route();
 })();

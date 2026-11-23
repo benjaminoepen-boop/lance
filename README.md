@@ -4,6 +4,12 @@ Plan your Nova SBE course bidding: see every clash before you bid, what a seat c
 
 *Lance* is Portuguese for a bid. Team project for Introduction to Programming, Nova SBE 2026/27. It grew out of the solo project Festival Architect (see the history of this repository): a stage became a student's week, an artist a course section, a fee a bid, the festival budget the points balance. Not an official Nova SBE system; bids are placed on Nova's platform only.
 
+## Where it runs
+
+**https://lance.152-53-146-182.sslip.io**
+
+One container on a server of our own, behind a proxy that speaks HTTPS. The database file lives in a volume, so plans and shared prices survive a restart and a new version. What runs there is the code on `main` (see *Deploy it* below).
+
 ## Run it
 
 ```
@@ -28,11 +34,11 @@ The tests run on a throwaway database built from the real data. `tests/test_real
 | File | What lives there |
 |---|---|
 | `app.py` | The screens: every address the browser can ask for |
-| `logic.py` | The rules: clashes, prices, points, ratings, shared price data |
+| `logic.py` | The rules: clashes, prices, points, shared price data |
 | `db.py` | Storage: one SQLite file, no rules |
 | `templates/`, `static/` | What the pages look like; JavaScript only draws what `logic.py` answers |
-| `seed/` | The content: courses, sections, sessions, exams and past prices |
-| `scripts/` | How the content is made from Nova's PDFs (`docs/data.md`) |
+| `seed/` | The content: courses, sections, sessions, exams, course ratings and past prices |
+| `scripts/` | How the content is made from Nova's PDFs and from Uni Feedback (`docs/data.md`) |
 | `tests/` | One test file per group of rules |
 | `docs/product-brief.md` | Requirements, rules and acceptance scenarios |
 | `docs/walkthrough.md` | Six clicks from the button to the database |
@@ -40,7 +46,7 @@ The tests run on a throwaway database built from the real data. `tests/test_real
 | `docs/usability.md` | Who used it without help, and what changed because of it |
 | `docs/tests.md` | What the tests check, what they do not, and how much of the code runs in a test |
 
-Content and progress are separate: `seed/` is rebuilt into the database whenever it changes; plans, ratings and shared prices are never touched by that.
+Content and progress are separate: `seed/` is rebuilt into the database whenever it changes; plans and shared prices are never touched by that.
 
 ## Show it without a server
 
@@ -48,11 +54,13 @@ Content and progress are separate: `seed/` is rebuilt into the database whenever
 
 ## Deploy it
 
-Any host that runs a container and keeps one folder across restarts:
+Any host that runs a container, keeps one folder across restarts and puts HTTPS in front of it:
 
 ```
 docker build -t lance .
 docker run -p 8000:8000 -v lance-data:/data lance
 ```
 
-`LANCE_DB` sets where the database file lives.
+`LANCE_DB` sets where the database file lives. The container runs as the user `lance`, who can write only `/data`. A volume made by an earlier image belongs to root; hand it over once with `docker run --rm --user root -v lance-data:/data lance chown -R lance /data`.
+
+Lance trusts the one proxy in front of it to say that the browser came over HTTPS. Then the plan cookie is `Secure` and the browser is told to stay on HTTPS.

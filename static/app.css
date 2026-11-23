@@ -11,7 +11,7 @@
   --ink: #1d1d1f; --ink-2: #515154; --ink-3: #6b6b70;
   --line: #e4e4e9; --line-2: #d2d2d7; --line-3: #a1a1a6;   /* line-3: the border of a field under the mouse */
   /* blue: what can be clicked, what is selected, the focus ring */
-  --blue: #0e45fd; --blue-deep: #0b37ca; --blue-soft: #ecf0ff; --blue-on-dark: #a9bcff;
+  --blue: #0e45fd; --blue-deep: #0b37ca; --blue-soft: #ecf0ff; --blue-on-dark: #a9bcff; --on-blue: #ffffff;   /* on-blue: the words on a blue fill */
   /* status only, never clickable */
   --red: #c4000f; --red-soft: #ffebe9; --orange: #a85400; --orange-soft: #fff1df; --orange-line: #dd9a4e; --orange-ink: #87561f; --green: #17762f;
   /* the lines of the week */
@@ -30,6 +30,10 @@
   --petrol: #156273; --petrol-soft: #e7f7fb; --petrol-line: #b8dbe5;
   /* bars and charts are grey, because they cannot be clicked: a light bar, and a darker fill for what is taken or won */
   --bar: #dcdce1; --bar-fill: #8e8e93;
+  /* the toast is the one dark note in the light scheme */
+  --toast: #1d1d1f;
+  /* the seal of the logo: white, a little softer on dark. The envelope keeps its own two blues in both schemes */
+  --seal: #ffffff;
   /* three control heights, two radii (rows take 10, pills are round); a phone makes every control finger-sized */
   --h-sm: 30px; --h: 36px; --h-icon: 32px;
   --control: 48px;   /* the column at the right edge of a course row that holds its plus, tick or Pick */
@@ -46,8 +50,63 @@
   --i-bad: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='%23000' stroke-linecap='round'%3E%3Ccircle cx='6' cy='6' r='4.9' stroke-width='1.3'/%3E%3Cpath d='M6 3.5v3M6 8.4v.01' stroke-width='1.5'/%3E%3C/svg%3E");
   --i-ok: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.2 6.4 4.8 9l5-5.6'/%3E%3C/svg%3E");
 }
+/* ---- dark scheme: the same names with dark values, so nothing else in this file changes. The switch in the top bar
+   (system, light, dark) sets data-theme on <html>; with no choice the system setting decides.
+   The dark values stand twice, for a chosen dark and for a system set to dark: tests/test_dark_mode.py checks that they agree.
+   Light surfaces become near-black, blue turns lighter (it is read on dark), and the course colours keep their order:
+   a light strong shade for the dot, a dark soft shade for the block, ink on it above 7 : 1. ---- */
+:root[data-theme="light"] { color-scheme: light; }
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #121214; --card: #1c1c1f; --chip: #2a2a2e;
+  --ink: #f2f2f4; --ink-2: #bcbcc1; --ink-3: #9a9aa0;
+  --line: #2c2c31; --line-2: #3b3b41; --line-3: #5a5a61;
+  --blue: #7d97ff; --blue-deep: #a9bcff; --blue-soft: #1d2548; --blue-on-dark: #a9bcff; --on-blue: #0b1020;
+  --red: #ff7b73; --red-soft: #3a1a1b; --orange: #ffb04d; --orange-soft: #3a2a12; --orange-line: #a8661f; --orange-ink: #e2b277; --green: #4cc16a;
+  --grid: #26262a;
+  --olive: #a3b574;  --olive-soft: #252b18;  --olive-line: #3d4a24;
+  --plum: #c58bc2;   --plum-soft: #30202f;   --plum-line: #4d334b;
+  --teal: #6fbcbc;   --teal-soft: #172d2d;   --teal-line: #2a4b4b;
+  --violet: #b79ad6; --violet-soft: #28202f; --violet-line: #43365a;
+  --forest: #6fb07e; --forest-soft: #172a1c; --forest-line: #2b4a33;
+  --mauve: #d08fa8;  --mauve-soft: #30202a;  --mauve-line: #503545;
+  --jade: #7ec2ad;   --jade-soft: #172c25;   --jade-line: #2c4b40;
+  --petrol: #5fb4cb; --petrol-soft: #142a31; --petrol-line: #274a56;
+  --bar: #34343a; --bar-fill: #9a9aa0;
+  --toast: #38383e;
+  --seal: #f2f2f4;
+}
+:root[data-theme="dark"] select.field { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='%239a9aa0' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5'/%3E%3C/svg%3E"); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #121214; --card: #1c1c1f; --chip: #2a2a2e;
+    --ink: #f2f2f4; --ink-2: #bcbcc1; --ink-3: #9a9aa0;
+    --line: #2c2c31; --line-2: #3b3b41; --line-3: #5a5a61;
+    --blue: #7d97ff; --blue-deep: #a9bcff; --blue-soft: #1d2548; --blue-on-dark: #a9bcff; --on-blue: #0b1020;
+    --red: #ff7b73; --red-soft: #3a1a1b; --orange: #ffb04d; --orange-soft: #3a2a12; --orange-line: #a8661f; --orange-ink: #e2b277; --green: #4cc16a;
+    --grid: #26262a;
+    --olive: #a3b574;  --olive-soft: #252b18;  --olive-line: #3d4a24;
+    --plum: #c58bc2;   --plum-soft: #30202f;   --plum-line: #4d334b;
+    --teal: #6fbcbc;   --teal-soft: #172d2d;   --teal-line: #2a4b4b;
+    --violet: #b79ad6; --violet-soft: #28202f; --violet-line: #43365a;
+    --forest: #6fb07e; --forest-soft: #172a1c; --forest-line: #2b4a33;
+    --mauve: #d08fa8;  --mauve-soft: #30202a;  --mauve-line: #503545;
+    --jade: #7ec2ad;   --jade-soft: #172c25;   --jade-line: #2c4b40;
+    --petrol: #5fb4cb; --petrol-soft: #142a31; --petrol-line: #274a56;
+    --bar: #34343a; --bar-fill: #9a9aa0;
+    --toast: #38383e;
+    --seal: #f2f2f4;
+  }
+  :root:not([data-theme="light"]) select.field { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='%239a9aa0' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5'/%3E%3C/svg%3E"); }
+}
+/* the switch: for a moment every colour glides, so the page turns instead of flashing */
+html.theming, html.theming *, html.theming *::before, html.theming *::after { transition: background-color .3s ease, border-color .3s ease, color .3s ease, fill .3s ease !important; }
+.theme-btn { position: relative; overflow: hidden; }
+.theme-btn svg { position: absolute; inset: 0; margin: auto; opacity: 0; transform: rotate(-90deg) scale(.5); transition: opacity .25s, transform .35s cubic-bezier(.3, 1.4, .5, 1); }
+.theme-btn[data-mode="system"] .t-system, .theme-btn[data-mode="light"] .t-light, .theme-btn[data-mode="dark"] .t-dark { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { .theme-btn svg { transition: none; } html.theming, html.theming *, html.theming *::before, html.theming *::after { transition: none !important; } }
 * { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; }
+html { -webkit-text-size-adjust: 100%; color-scheme: light dark; }
 body { margin: 0; background: var(--paper); color: var(--ink); font: 400 15px/1.45 "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; -webkit-font-smoothing: antialiased; }
 /* white surfaces: a hover on them is paper grey */
 .topbar, .card, .chooser, details.rule, .bid-row, .picker { --hover: var(--paper); }
@@ -70,7 +129,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
 /* ---- one state system: a pointing hand on everything clickable and nowhere else, one focus ring, one disabled look.
    Hover only for a real mouse, so every :hover sits in @media (hover: hover): after a tap nothing stays lit. Focus is for everyone ---- */
-button, select, summary, label.check, .scale label { cursor: pointer; }
+button, select, summary, label.check { cursor: pointer; }
 /* a redraw never moves the page by itself: planner.js keeps the row that was clicked in its place (Chrome would otherwise jump) */
 html, body { overflow-anchor: none; }
 :focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
@@ -107,9 +166,9 @@ a { color: var(--blue); text-decoration: underline; text-decoration-thickness: 1
    primary (filled blue, one per screen), secondary (white with a border), tertiary (blue words for small extras) ---- */
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: var(--h); padding: 0 14px; border: 1px solid var(--line-2); border-radius: var(--r-ctl); background: var(--card); color: var(--ink); font-size: 15px; font-weight: 500; white-space: nowrap; text-decoration: none; }
 /* one hover for every outlined control: the border turns blue */
-@media (hover: hover) { .btn:hover:not(:disabled), .tile:hover, .scale label:hover span, .add-card:hover { border-color: var(--blue); color: var(--blue-deep); } }
-.btn.primary { background: var(--blue); border-color: var(--blue); color: #fff; }
-@media (hover: hover) { .btn.primary:hover:not(:disabled) { background: var(--blue-deep); border-color: var(--blue-deep); color: #fff; } }
+@media (hover: hover) { .btn:hover:not(:disabled), .tile:hover, .add-card:hover { border-color: var(--blue); color: var(--blue-deep); } }
+.btn.primary { background: var(--blue); border-color: var(--blue); color: var(--on-blue); }
+@media (hover: hover) { .btn.primary:hover:not(:disabled) { background: var(--blue-deep); border-color: var(--blue-deep); color: var(--on-blue); } }
 .btn.tertiary { border-color: transparent; background: none; color: var(--blue); padding: 0 10px; }
 @media (hover: hover) { .btn.tertiary:hover:not(:disabled) { border-color: transparent; background: var(--hover); color: var(--blue-deep); } }
 .btn.small { min-height: var(--h-sm); padding: 0 10px; font-size: 13px; }
@@ -117,9 +176,9 @@ a { color: var(--blue); text-decoration: underline; text-decoration-thickness: 1
 .btn.flush { margin-left: -10px; align-self: flex-start; }   /* a tertiary button whose words line up with the text above */
 /* a filter that stays pressed: the same pale blue as a selected section */
 .toggle[aria-pressed=true], .toggle[aria-pressed=true]:hover:not(:disabled) { background: var(--blue-soft); border-color: var(--blue); color: var(--blue-deep); }
-/* × and ?: the only buttons without words, so they always carry a title */
+/* ×, ?, the two arrows and the theme switch: the only buttons without words, so they always carry a title */
 .icon-btn { display: inline-grid; place-items: center; flex: none; width: var(--h-icon); height: var(--h-icon); padding: 0; border: 0; border-radius: var(--r-ctl); background: none; color: var(--ink-3); text-decoration: none; }
-@media (hover: hover) { .icon-btn:hover { background: var(--hover); color: var(--ink); } }
+@media (hover: hover) { .icon-btn:hover:not(:disabled) { background: var(--hover); color: var(--ink); } }
 
 /* ---- fields: white, a grey border that darkens under the mouse, the height of a button ---- */
 .field { min-height: var(--h); min-width: 0; padding: 0 10px; border: 1px solid var(--line-2); border-radius: var(--r-ctl); background: var(--card); color: var(--ink); font-size: 15px; }
@@ -134,7 +193,6 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 .num-field .unit { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: 13px; color: var(--ink-3); pointer-events: none; }
 .num-field.small input { min-height: var(--h-sm); width: 80px; padding-right: 31px; font-size: 13px; }
 .num-field.small .unit { right: 9px; }
-.num-input { width: 84px; text-align: right; font-variant-numeric: tabular-nums; }
 
 /* ---- status: how something stands, one component everywhere. The verdict first, a small icon, never a button ---- */
 .status { display: inline-flex; align-items: flex-start; gap: 6px; min-width: 0; font-size: 13px; color: var(--ink-2); }
@@ -185,7 +243,9 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 .topbar { position: sticky; top: 0; z-index: 30; height: var(--top); display: flex; align-items: center; gap: 18px; padding: 0 var(--gap); background: var(--card); border-bottom: 1px solid var(--line); }
 .brand { display: flex; align-items: center; gap: 9px; margin-left: -8px; padding: 4px 8px; border-radius: var(--r-ctl); font-weight: 600; font-size: 17px; color: var(--ink); text-decoration: none; }
 @media (hover: hover) { .brand:hover { background: var(--hover); color: var(--ink); } }
-.brand i { width: 24px; height: 24px; border-radius: var(--r-ctl); background: var(--blue); display: grid; place-items: center; color: #fff; }
+/* the logo draws its own tile in base.html; only its seal follows the colour scheme */
+.brand .logo { flex: none; }
+.brand .seal { fill: var(--seal); }
 .brand small { font-size: 12px; font-weight: 500; color: var(--ink-3); margin-left: 1px; }
 .top-right { margin-left: auto; display: flex; align-items: center; gap: 6px; }
 .main { padding: var(--gap); min-width: 0; }
@@ -195,7 +255,8 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 .planner { display: grid; grid-template-columns: minmax(360px, 2fr) minmax(0, 3fr); gap: var(--gap); height: calc(100vh - var(--top) - var(--gap) * 2); min-height: 560px; }
 .chooser { min-height: 0; display: flex; flex-direction: column; gap: 10px; min-width: 0; background: var(--card); border: 1px solid var(--line); border-radius: var(--r-card); padding: 12px 14px 0; }
 .scope { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; min-width: 0; }
-#set-programme, #set-semester { flex: none; }
+#set-programme, #set-semester, #set-area { flex: none; }
+#set-area { max-width: 100%; text-overflow: ellipsis; }   /* "Strategy and International Business" is long: it shortens rather than push the row wider */
 .scope .seg { margin-left: auto; }
 .list-view { display: flex; flex-direction: column; gap: 10px; min-height: 0; flex: 1; }
 .tools { display: flex; gap: 8px; }
@@ -205,14 +266,24 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 .course-list { flex: 1; min-height: 0; overflow-y: auto; overflow-anchor: none; display: flex; flex-direction: column; gap: 2px; margin: 0 -8px; padding: 0 8px 12px; }
 /* the figures of your plan above the list: only on a phone, where your plan is not beside the list */
 .figures.list-figures { display: none; }
-/* a group heading folds its courses: its chevron stands in the column of the rows' chevrons, left of their controls */
-.group { display: flex; align-items: center; gap: 8px; width: 100%; min-height: var(--h); margin-top: 6px; padding: 0 calc(var(--control) + 18px) 0 12px; border: 0; border-radius: var(--r-row); background: none; text-align: left; }
+/* a group heading folds its courses. It stands out from the rows: the name in ink on a band one step darker than the card,
+   rounded like a row, a little more room above it. Its chevron stands in the column of the rows' chevrons, left of their controls */
+.group { --hover: var(--chip); display: flex; align-items: center; gap: 8px; width: 100%; min-height: var(--h); margin-top: 12px; padding: 0 calc(var(--control) + 18px) 0 12px; border: 0; border-radius: var(--r-row); background: var(--paper); text-align: left; }
 .group:first-child { margin-top: 0; }
 @media (hover: hover) { .group:hover { background: var(--hover); } }
 @media (hover: hover) { .group:hover .i-chev { color: var(--ink); } }
-.group-name { font-size: 13px; font-weight: 600; color: var(--ink-2); }
+.group-name { font-size: 15px; font-weight: 600; color: var(--ink); }
 .group .count, h3 .count { font-size: 13px; font-weight: 400; color: var(--ink-3); font-variant-numeric: tabular-nums; }
-.group .i-chev { margin-left: auto; }
+.group .i-chev { margin-left: auto; color: var(--ink-2); }
+/* LN R20: the area of expertise. Its progress sits under its heading: a grey bar (bars cannot be clicked), then the words.
+   Core courses carry a small grey tag after their name; status colours stay for how things stand */
+.area-progress { display: flex; flex-direction: column; gap: 4px; padding: 2px calc(var(--control) + 18px) 6px 12px; font-size: 13px; color: var(--ink-2); }
+.area-bar { display: block; height: 4px; border-radius: 2px; background: var(--bar); overflow: hidden; }
+.area-bar > span { display: block; height: 100%; background: var(--bar-fill); border-radius: 2px; }
+.area-progress .status.ok { color: var(--green); }
+.area-words { line-height: 1.4; }
+.area-rule { line-height: 1.4; color: var(--ink); }   /* the rule of the area, above its bar: what counts, before how far you are */
+.area-tag { display: inline-block; margin-left: 6px; padding: 0 6px; border-radius: 9px; background: var(--chip); color: var(--ink-2); font-size: 11px; font-weight: 500; line-height: 17px; vertical-align: 1px; }
 /* a course row: the place of the dot, name and facts, the chevron, then the control in a fixed column at the right edge.
    Everything but the control opens the row. White at rest, paper under the mouse; open, a paper surface holding white section tiles. */
 .course { border-radius: var(--r-row); transition: background-color .15s; }
@@ -228,7 +299,10 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 .course-note { max-width: 100%; }
 .course-note > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .time { display: none; }
-.course-more { --hover: var(--chip); display: flex; flex-direction: column; gap: 10px; padding: 2px 12px 12px 28px; animation: unfold .16s ease-out; }   /* under the name */
+.course-more { --hover: var(--chip); display: flex; flex-direction: column; gap: 10px; padding: 2px 12px 12px 28px; }   /* under the name */
+/* a row and a bid card glide open once, at the click that opens them. Every change draws them again: without this class
+   they then stand still, instead of fading in under the mouse after each click inside them */
+.course-more.unfold, .bid-details.unfold { animation: unfold .16s ease-out; }
 .hint { font-size: 13px; color: var(--ink-3); }
 /* the sections of a course: a white tile each, the same on the open row and in the course; one click picks */
 .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(98px, 1fr)); gap: 6px; }
@@ -278,22 +352,18 @@ details.about[open] > summary { display: none; }
 .figure b { font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .clamp { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .stat-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.stat-grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .stat { background: var(--paper); border-radius: var(--r-ctl); padding: 7px 9px; }
 .stat b { display: block; font-size: 17px; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.2; }
 .stat span { font-size: 12px; font-weight: 500; color: var(--ink-3); }
-.rate-form { display: flex; flex-direction: column; gap: 10px; }
-.rate-q { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 12px; align-items: center; }
-.scale { display: inline-flex; gap: 4px; }
-.scale label { position: relative; }
-.scale input { position: absolute; opacity: 0; }
-.scale span { display: grid; place-items: center; min-width: var(--h); height: var(--h); padding: 0 10px; border: 1px solid var(--line-2); border-radius: var(--r-ctl); background: var(--card); font-weight: 500; color: var(--ink); }
-.scale input:checked + span { background: var(--blue-soft); border-color: var(--blue); color: var(--blue-deep); }
-.scale input:focus-visible + span { outline: 2px solid var(--blue); outline-offset: 2px; }
 
 /* ---- the right half: where you stand on top, then Week, Bids and Summary ---- */
 .plan { min-height: 0; display: flex; flex-direction: column; padding: 0; }
 .plan-head { flex: none; display: flex; flex-direction: column; gap: 4px; padding: 12px 18px 0; border-bottom: 1px solid var(--line); }
 .plan-title { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 16px; min-height: 32px; }
+/* the title on the left, where you stand and Reset on the right; Reset ends on the edge of the text below it */
+.plan-title h2 { margin-right: auto; }
+#reset { margin-right: -10px; }
 /* the figures: the number dark and 600, the word grey; colour and an icon only when something needs a look */
 .figures { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 20px; color: var(--ink-2); }
 .figures > span { white-space: nowrap; }
@@ -376,7 +446,7 @@ details.about[open] > summary { display: none; }
 .bid-status > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .bid-head > .i-chev { grid-area: chev; }
 /* open, the details stay in the same card on an inner paper surface, the actions below them */
-.bid-details { --hover: var(--chip); display: flex; flex-direction: column; gap: 12px; margin: 0 14px; padding: 12px 14px; background: var(--paper); border-radius: var(--r-ctl); font-size: 13px; animation: unfold .16s ease-out; }
+.bid-details { --hover: var(--chip); display: flex; flex-direction: column; gap: 12px; margin: 0 14px; padding: 12px 14px; background: var(--paper); border-radius: var(--r-ctl); font-size: 13px; }
 .bid-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 2px; padding: 6px 4px; }
 .bid-actions .go { min-height: var(--h); padding: 0 10px; font-weight: 500; }
 .quick, .try-more { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
@@ -412,6 +482,7 @@ details.about[open] > summary { display: none; }
 .go-row > td:last-child { border-radius: 0 8px 8px 0; }
 @media (hover: hover) { .go-row:hover > td { background: var(--hover); } .go-row:hover .i-next { color: var(--ink); } }
 .plan-table .chev { width: 12px; padding-left: 0; padding-right: 10px; }
+.plan-table .act { width: var(--h-icon); padding-top: 0; padding-bottom: 0; padding-right: 0; }
 .plan-table td.chev .i { vertical-align: middle; }
 /* the dot before the name, the name over its facts (a phone shows them under the name) */
 .named { display: flex; align-items: flex-start; gap: 8px; min-width: 0; }
@@ -427,7 +498,6 @@ details.about[open] > summary { display: none; }
 .plan-totals b { color: var(--ink); }
 .plan-totals .status { font-size: inherit; font-weight: 600; }
 .plan-totals .status b { color: inherit; }
-.plan-reset { margin-top: 16px; }
 
 /* ---- step 3 and the quiet pages ---- */
 .narrow { max-width: 860px; margin: 0 auto; display: flex; flex-direction: column; gap: var(--gap); }
@@ -439,6 +509,11 @@ details.about[open] > summary { display: none; }
 .before-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .before-row .go { flex: none; font-size: 13px; }
 .row-gap { display: flex; flex-wrap: wrap; gap: 8px; }
+/* the Finish page asks students who bid before for their rank lists: a card of its own, the button with how far the prices reach */
+.share-ask { display: flex; flex-direction: column; gap: 8px; }
+.share-ask > h2 { margin-bottom: 2px; }
+.share-ask p { line-height: 1.5; }
+.share-ask-go { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-top: 4px; }
 /* the answer a (?) leads to: below the bar on top, ringed like a focused control, because that is where you are */
 .answer { scroll-margin-top: calc(var(--top) + var(--gap)); }
 .answer:target { outline: 2px solid var(--blue); outline-offset: 2px; }
@@ -459,6 +534,10 @@ blockquote cite { display: block; font-style: normal; font-size: 12px; font-weig
 .pay b { font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; text-align: right; }
 .date-row { display: flex; justify-content: space-between; gap: 12px; padding: 3px 0; }
 .date-row.past { opacity: .5; }
+/* the share page: the video of the five steps, as wide as the cards under it */
+.howto { padding: 0; overflow: hidden; }
+.howto video { display: block; width: 100%; height: auto; background: #000; }
+kbd { display: inline-block; min-width: 18px; padding: 0 4px; border-radius: 4px; background: var(--chip); color: var(--ink-2); font: inherit; font-size: 12px; text-align: center; }
 .three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gap); }
 .three .card { display: flex; flex-direction: column; gap: 6px; }
 .three .card > h2 { margin-bottom: 0; }
@@ -466,7 +545,7 @@ blockquote cite { display: block; font-style: normal; font-size: 12px; font-weig
 .bookmarklet { align-self: flex-start; cursor: grab; }
 .copy-box { width: 100%; min-height: 70px; resize: vertical; font-size: 13px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; margin: 4px 0; }
 ul.plain { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
-.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: 24px; width: max-content; pointer-events: none; display: flex; align-items: center; gap: 14px; background: var(--ink); color: #fff; padding: 9px 16px; border-radius: var(--r-ctl); font-weight: 500; z-index: 40; max-width: calc(100% - 32px); }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: 24px; width: max-content; pointer-events: none; display: flex; align-items: center; gap: 14px; background: var(--toast); color: #fff; padding: 9px 16px; border-radius: var(--r-ctl); font-weight: 500; z-index: 40; max-width: calc(100% - 32px); }
 .toast button { border: 0; background: none; color: var(--blue-on-dark); font-weight: 500; padding: 2px 0; white-space: nowrap; pointer-events: auto; }
 @media (hover: hover) { .toast button:hover { color: #fff; text-decoration: underline; text-underline-offset: 3px; } }
 
@@ -495,9 +574,12 @@ ul.plain { margin: 0; padding-left: 18px; display: flex; flex-direction: column;
   .course-main { min-height: 56px; padding: 6px 6px 6px 8px; }
   .course-more { padding-left: 24px; }
   .group { padding-left: 8px; padding-right: calc(var(--control) + 14px); }
+  .area-progress { padding-left: 8px; padding-right: 8px; }
+  #set-area { order: 5; flex-basis: 100%; }   /* a phone: the area gets a line of its own under programme and semester */
   .tile { min-height: 62px; }
   .time { display: inline; }
   .plan-head { padding: 10px 12px 10px; }
+  .plan-title .figures { order: 3; flex-basis: 100%; }   /* a phone: title and Reset on one line, the figures under them */
   .plan-title { min-height: 0; }
   .figures { gap: 2px 14px; font-size: 13px; }
   .tabs { display: none; }

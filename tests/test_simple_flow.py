@@ -9,6 +9,8 @@ Family Business 2416-T1: TXA Wed 08:00 and Fri 12:30. Advanced Financial Managem
 """
 import sqlite3
 
+import pytest
+
 import db
 import logic
 from conftest import add_all, bid_on
@@ -228,11 +230,68 @@ def test_restoring_nonsense_is_refused_and_changes_nothing(plan):
     assert db.load_items(plan["id"]) == []
 
 
+def some_sections(count):
+    """The first sections of the catalogue, all of the fall: the spring has no timetable yet."""
+    return sorted(logic.all_sections())[:count]
+
+
+def test_a_plan_holds_at_most_40_entries_in_a_semester(plan):
+    # LN02: room for 9 courses of 3.5 ECTS (LN R8) with backup sections and a long alternate list
+    fall = some_sections(41)
+    add_all(plan, *fall[:40])
+    assert logic.add_to_plan(plan, section_id=fall[40]) == "A plan holds at most 40 entries in a semester."
+    assert len(db.load_items(plan["id"])) == 40
+    logic.update_settings(plan, plan["programme"], "Spring", plan["points"], False)
+    assert logic.add_to_plan(db.load_plan(plan["id"]), offering_id="2477-S2") is None
+
+
+def test_undo_puts_back_at_most_what_a_plan_holds(plan):
+    rows = [{"offering_id": logic.all_sections()[section_id]["offering_id"], "section_id": section_id, "list": "alternate",
+             "position": number, "bid": None} for number, section_id in enumerate(some_sections(41), start=1)]
+    assert logic.restore_items(plan, rows) == "A plan holds at most 40 entries in a semester."
+    add_all(plan, "2477-S1-TXB")
+    assert logic.restore_items(plan, rows[-40:]) == "A plan holds at most 40 entries in a semester."
+    assert len(db.load_items(plan["id"])) == 1
+
+
+def test_undo_puts_back_each_entry_once(plan):
+    row = {"offering_id": "2477-S1", "section_id": "2477-S1-TXB", "list": "primary", "position": 1, "bid": None}
+    assert logic.restore_items(plan, [row, dict(row, position=2)])
+    assert logic.restore_items(plan, [dict(row, section_id=None), dict(row, section_id=None, position=2)])
+    assert db.load_items(plan["id"]) == []
+
+
+@pytest.mark.parametrize("position", [True, 1.5, "1", 0, -1, 2 ** 31, 10 ** 30, None])
+def test_undo_takes_only_a_plain_whole_place(plan, position):
+    # the first row is fine: a refused second row must not leave it behind
+    first = {"offering_id": "2652-S1", "section_id": "2652-S1-TXA", "list": "alternate", "position": 1, "bid": None}
+    second = {"offering_id": "2477-S1", "section_id": "2477-S1-TXB", "list": "primary", "position": position, "bid": None}
+    assert logic.restore_items(plan, [first, second]) == "Unknown place."
+    assert db.load_items(plan["id"]) == []
+
+
+def test_undo_writes_all_its_entries_or_none(plan):
+    row = {"offering_id": "2477-S1", "section_id": "2477-S1-TXB", "list": "primary", "position": 1, "bid": None}
+    with pytest.raises(sqlite3.IntegrityError):
+        db.insert_items(plan["id"], [row, dict(row, position=2)])
+    assert db.load_items(plan["id"]) == []
+
+
 def test_start_over_empties_the_plan_and_keeps_the_settings(plan):
     add_all(plan, "2477-S1-TXB", "2277-T2-TXB")
-    assert logic.start_over(plan) is None
+    removed = logic.start_over(plan)
+    assert [row["section_id"] for row in removed] == ["2477-S1-TXB", "2277-T2-TXB"]
     assert db.load_items(plan["id"]) == []
     assert db.load_plan(plan["id"])["programme"] == plan["programme"]
+
+
+def test_start_over_can_be_undone_with_every_bid_and_place(plan):
+    add_all(plan, "2459-S1-TXC", "2477-S1-TXB", "2477-S1-TXA", "2277-T2-TXB")
+    bid_on(plan, "2477-S1", 90)
+    before = keep(sorted(db.load_items(plan["id"]), key=lambda row: (row["list"], row["position"])))
+    removed = logic.start_over(plan)
+    assert logic.restore_items(plan, removed) is None
+    assert keep(sorted(db.load_items(plan["id"]), key=lambda row: (row["list"], row["position"]))) == before
 
 
 def test_start_over_leaves_the_other_semester_alone(plan):
@@ -240,7 +299,7 @@ def test_start_over_leaves_the_other_semester_alone(plan):
     logic.update_settings(plan, plan["programme"], "Spring", plan["points"], False)
     spring = db.load_plan(plan["id"])
     assert logic.add_to_plan(spring, offering_id="2477-S2") is None
-    assert logic.start_over(spring) is None
+    assert [row["offering_id"] for row in logic.start_over(spring)] == ["2477-S2"]
     assert [item["offering_id"] for item in db.load_items(plan["id"])] == ["2477-S1"]
 
 

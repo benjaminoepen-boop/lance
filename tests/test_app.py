@@ -1,6 +1,8 @@
 """Scenarios A5 to A8, through the same requests the browser sends."""
 import json
 
+import pytest
+
 import db
 import logic
 
@@ -100,7 +102,7 @@ def test_spring_works_without_a_timetable(client):
 def test_the_calendar_file_has_every_class_on_its_real_date(client):
     client.post("/api/add", json={"section_id": "2477-S1-TXB"})
     body = client.get("/plan.ics").data.decode()
-    assert body.count("BEGIN:VEVENT") == 13     # 12 classes and the exam
+    assert body.count("DTSTART;TZID=Europe/Lisbon:") == 13     # 12 classes and the exam; the bidding windows are all-day
     assert "DTSTART;TZID=Europe/Lisbon:20261204T123000" in body
     assert "Make-up for 1 Dec" in body
     assert "DTSTART;TZID=Europe/Lisbon:20261219T173000" in body
@@ -115,48 +117,6 @@ def test_the_list_for_the_platform_keeps_the_order(client):
     text = state_of(client)["platform_list"]
     assert text.index("Introduction to Programming") < text.index("Impact Investments")
     assert "TXB 10, TXA 10" in text
-
-
-# ---------- A7: ratings stay anonymous ----------
-
-RATING = {"overall": "4", "workload_hours": "6", "fairness": "4", "organisation": "5", "again": "1", "grade": "16"}
-
-
-def rate_as(count, code="2477"):
-    for number in range(count):
-        db.save_rating(f"plan-{number}", code, 4, 6, 4, 5, 1, 16.0)
-
-
-def test_ratings_stay_hidden_below_three():
-    rate_as(2)
-    assert logic.rating_summary("2477")["show"] is False
-
-
-def test_ratings_show_from_three_but_grades_only_from_ten():
-    rate_as(3)
-    summary = logic.rating_summary("2477")
-    assert summary["show"] is True and summary["overall"] == 4
-    assert summary["show_grade"] is False
-    rate_as(10)
-    assert logic.rating_summary("2477")["show_grade"] is True
-
-
-def test_one_visitor_counts_once(client):
-    client.post("/course/2477-S1/rate", data=RATING)
-    client.post("/course/2477-S1/rate", data=dict(RATING, overall="1"))
-    rows = db.load_ratings("2477")
-    assert len(rows) == 1 and rows[0]["overall"] == 1
-
-
-def test_an_incomplete_rating_is_refused(client):
-    client.post("/course/2477-S1/rate", data={"overall": "9"})
-    assert db.load_ratings("2477") == []
-
-
-def test_ratings_have_no_field_for_free_text():
-    rating, error = logic.validate_rating(dict(RATING, comment="Prof X is terrible"))
-    assert error is None
-    assert "comment" not in rating
 
 
 # ---------- A8: shared price data keeps no personal data ----------
@@ -255,3 +215,92 @@ def test_a_round_that_is_over_is_offered_as_practice(client):
     assert lance.semester_option("Fall", today="2026-11-07") == "Fall · practice"
     assert lance.semester_option("Spring", today="2026-11-07") == "Spring · opens 18 Jan"
     assert lance.semester_option("Spring", today="2027-01-19") == "Spring · open now"
+
+
+# ---------- requests no page sends ----------
+
+def test_a_body_larger_than_any_export_is_refused_unread(client):
+    # a real export is a few hundred KB at most; three uploads of 47 MB once held 1.3 GB of memory
+    response = client.post("/api/share", data=json.dumps({"export": "x" * 512 * 1024}), content_type="application/json")
+    assert response.status_code == 413
+    assert response.get_json()["error"]
+    assert client.post("/api/restore", data=json.dumps({"rows": ["x" * 600 * 1024]}), content_type="application/json").status_code == 413
+    assert share(client, EXPORT).status_code == 200
+
+
+ROW = {"offering_id": "2477-S1", "section_id": None, "list": "primary", "position": 1, "bid": None}
+
+
+@pytest.mark.parametrize("path, body", [
+    ("/api/add", {"section_id": ["2477-S1-TXA"]}), ("/api/add", {"offering_id": {"a": 1}}),
+    ("/api/switch", {"section_id": ["2477-S1-TXA"]}), ("/api/remove", {"item_id": []}), ("/api/remove", {"item_id": {"a": 1}}),
+    ("/api/remove", {"offering_id": ["2477-S1"]}), ("/api/bid", {"item_id": 10 ** 30, "bid": 1}),
+    ("/api/bid", {"offering_id": ["2477-S1"], "bid": 1}), ("/api/move", {"item_id": "\ud800", "direction": "up"}),
+    ("/api/move", {"item_id": True, "direction": "down"}), ("/api/settings", {"points": float("inf")}),
+    ("/api/settings", {"points": float("nan")}), ("/api/settings", {"programme": None}), ("/api/settings", {"programme": 0}),
+    ("/api/restore", {"rows": [dict(ROW, offering_id=["2477-S1"])]}), ("/api/restore", {"rows": [dict(ROW, section_id=[])]}),
+])
+def test_a_value_of_the_wrong_kind_is_a_bad_request_not_a_crash(client, path, body):
+    # lists or objects as ids, Infinity or NaN as points, no programme: no page sends that, so it is answered with 400
+    client.post("/api/add", json={"section_id": "2477-S1-TXB"})
+    client.post("/api/add", json={"section_id": "2277-T2-TXA"})
+    before = state_of(client)
+    response = client.post(path, data=json.dumps(body), content_type="application/json")
+    assert response.status_code == 400
+    assert response.get_json()["error"]
+    after = state_of(client)
+    assert (after["plan"], after["items"]) == (before["plan"], before["items"])
+
+
+@pytest.mark.parametrize("body", ["[1]", '"x"', "5", "true", "null", "[" * 100_000 + "]" * 100_000])
+def test_a_share_that_is_not_an_object_is_refused_not_a_crash(client, body):
+    response = client.post("/api/share", data=body, content_type="application/json")
+    assert response.status_code == 400
+    assert response.get_json()["error"]
+    nested = client.post("/api/share", data=json.dumps({"export": body}), content_type="application/json")
+    assert nested.status_code == 400
+
+
+def test_brackets_nested_thousands_deep_are_refused_not_a_crash(client):
+    deep = "[" * 100_000 + "]" * 100_000
+    response = client.post("/api/add", data=deep, content_type="application/json")
+    assert response.status_code == 415
+    assert response.get_json()["error"]
+
+
+def test_start_over_and_the_example_take_only_what_a_page_sends(client):
+    # a form on another website could empty a plan or swap its cookie: like every other change, these take JSON only
+    client.post("/api/add", json={"section_id": "2477-S1-TXB"})
+    response = client.post("/api/start-over", data={"x": "1"})
+    assert response.status_code == 415
+    assert "Set-Cookie" not in response.headers
+    assert client.post("/api/example", data={"x": "1"}).status_code == 415
+    assert client.post("/api/start-over").status_code == 415
+    assert len(state_of(client)["items"]) == 1
+
+
+# ---------- running behind the host's HTTPS proxy ----------
+
+def test_behind_https_the_plan_cookie_is_secure_and_hsts_is_sent(client):
+    # the proxy speaks HTTPS to the browser and says so in X-Forwarded-Proto; plain http://localhost stays as it was
+    secure = client.get("/", headers={"X-Forwarded-Proto": "https"})
+    assert "Secure" in secure.headers["Set-Cookie"]
+    assert secure.headers["Strict-Transport-Security"] == "max-age=31536000"
+    plain = client.get("/")
+    assert "Secure" not in plain.headers["Set-Cookie"]
+    assert "Strict-Transport-Security" not in plain.headers
+
+
+def test_behind_https_the_private_link_is_https(client):
+    page = client.get("/nova", headers={"X-Forwarded-Proto": "https", "X-Forwarded-Host": "lance.example.org"})
+    assert 'data-link="https://lance.example.org/p/' in page.get_data(as_text=True)
+
+
+def test_the_container_runs_as_its_own_user_with_threads():
+    import os
+    import re
+    with open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "Dockerfile"), encoding="utf-8") as file:
+        text = file.read()
+    assert re.search(r"^USER (?!root\b)\w+", text, re.MULTILINE)
+    assert re.search(r"uv==\d+\.\d+\.\d+", text)
+    assert '"--worker-class", "gthread"' in text and '"--threads"' in text

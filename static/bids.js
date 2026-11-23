@@ -5,7 +5,8 @@
 const Bids = (() => {
   const { el } = Lance;
   const QUICK = [["exact", "Just enough", "Exactly what the last seat cost last round"], ["plus10", "+10 %", "Last round's price plus 10 %"], ["plus25", "+25 %", "Last round's price plus 25 %"]];
-  const view = { open: null, picking: false, query: "" };
+  /* unfolding: the card a click has just opened. It glides open once; drawn again after a change, it stands still */
+  const view = { open: null, unfolding: null, picking: false, query: "" };
   const compact = (time) => time.replace(/^0/, "");
   const whole = (value) => String(Math.round(value * 10) / 10);
   const meetingsText = (meetings) => meetings.map((m) => `${m.day} ${compact(m.start)}`).join(" · ");
@@ -23,6 +24,14 @@ const Bids = (() => {
   window.addEventListener("pagehide", () => {
     if (pending) fetch("/api/bid", { method: "POST", keepalive: true, headers: { "Content-Type": "application/json" }, body: JSON.stringify(pending.body) });
   });
+  /* the arrows in the top bar save a waiting bid at once, so that it counts as the last change (LN R19) */
+  async function flush() {
+    if (!pending) return;
+    clearTimeout(pending.timer);
+    const { body } = pending;
+    pending = null;
+    await Lance.send("/api/bid", body);
+  }
 
   /* a number in its field with the unit inside: the same field for your points, a course's bid and, smaller, each section's bid.
      The unit lets clicks through, so a click on "pts" still lands in the field. */
@@ -114,13 +123,15 @@ const Bids = (() => {
       part(el("b", { class: "num", text: whole(f.left) }), " back afterwards")];
   }
 
-  /* missing points or a budget spent twice: one line with its icon */
+  /* missing points or a budget spent twice: one line with its icon. LN R17: points nobody typed are an estimate, and a line says so */
   function pointsNote(state) {
     const points = state.plan.points;
-    if (!state.items.some((item) => item.list === "primary")) return [];
+    const estimate = state.plan.points_estimated
+      ? [el("p", { class: "meta", id: "points-estimate", text: `Estimated from your ${state.mandatory_ects} mandatory ECTS. Type the Balance from Nova's platform to replace it.` })] : [];
+    if (!state.items.some((item) => item.list === "primary")) return estimate;
     if (!points) return [Lance.status("warn", "Enter your points: they are the Balance on Nova's platform.")];
-    if (state.reserved > points) return [Lance.status("bad", `Your bids hold ${state.reserved} points, you have ${points}.`)];
-    return [];
+    if (state.reserved > points) return [Lance.status("bad", `Your bids hold ${state.reserved} points, you have ${points}.`), ...estimate];
+    return estimate;
   }
 
   /* the small print, once, under the lists */
@@ -246,7 +257,7 @@ const Bids = (() => {
     const free = course && first.section ? course.sections.filter((section) => !rows.some((row) => row.section_id === section.id)) : [];
     const quick = listName === "primary" && a.exact && first.section ? QUICK.filter(([key]) => a.suggestions[key] !== null && a.suggestions[key] !== undefined) : [];
     const notes = notesOf(rows, state);
-    return el("div", { class: "bid-details" },
+    return el("div", { class: `bid-details${view.unfolding === first.offering_id ? " unfold" : ""}` },
       /* the amount in its own span: on a phone it stands under its name, so that three buttons fit one row */
       quick.length ? el("div", { class: "quick" }, el("span", { class: "meta", text: "Take" }), ...quick.map(([key, label, hint]) => el("button", {
         type: "button", class: "btn small", title: hint, onclick: () => Lance.send("/api/bid", { offering_id: first.offering_id, bid: Math.min(a.suggestions[key], state.plan.points) }),
@@ -286,6 +297,7 @@ const Bids = (() => {
 
   function toggle(offeringId) {
     view.open = view.open === offeringId ? null : offeringId;
+    view.unfolding = view.open;
     render(Lance.state);
   }
 
@@ -411,11 +423,13 @@ const Bids = (() => {
       box.replaceChildren(el("div", { class: "empty-note" },
         el("p", { text: state.items.length ? "Mandatory courses need no bid. Add an elective to bid on." : "Nothing to bid on yet." }),
         el("button", { type: "button", class: "btn only-phone", onclick: () => { location.hash = ""; } }, "Pick courses")));
+      view.unfolding = null;
       return;
     }
     const alternate = listBlock("Alternate list", "Tried if a primary course gets no seat. Needs a bid, holds no points.", "alternate", state);
     alternate.append(alternatePicker(state));
     box.replaceChildren(listBlock("Primary list", "Higher up goes first", "primary", state), alternate, foot(state));
+    view.unfolding = null;
     const again = focusKey ? box.querySelector(focusKey) : null;
     if (!again) return;
     restoring = true;
@@ -442,5 +456,5 @@ const Bids = (() => {
   Lance.onChange(render);
   if (Lance.state) render(Lance.state);
 
-  return { problem };
+  return { problem, flush };
 })();

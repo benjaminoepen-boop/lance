@@ -6,12 +6,17 @@ Each member is asked about code they did not write. Six clicks, from the button 
 |---|---|---|---|---|---|---|
 | The plus at the right of an elective | `addCourse` in `static/planner.js` | `api_add` | `add_to_plan`, `first_fitting_section` | `insert_item` | `test_adding_a_course_skips_a_section_that_clashes_with_the_week` | LN R11 |
 | Switch a section | `chooseSection` in `static/planner.js` | `api_switch` | `switch_section` | `update_item` | `test_switching_keeps_the_bid_the_list_and_the_position` | LN R12 |
-| Remove and undo | `removeCourse` in `static/planner.js` | `api_remove`, `api_restore` | `remove_course`, `restore_items` | `delete_item`, `insert_item` | `test_removing_a_course_can_be_undone_with_its_bids_and_its_place` | LN R15 |
+| Remove and undo | `removeCourse` in `static/planner.js` | `api_remove`, `api_restore` | `remove_course`, `restore_items` | `delete_item`, `insert_items` | `test_removing_a_course_can_be_undone_with_its_bids_and_its_place` | LN R15 |
 | A bid in a course's card | `saveLater` in `static/bids.js` | `api_bid` | `set_course_bid`, `checked_bid` | `update_item` | `test_a_refused_course_bid_changes_nothing` | LN R6, R10 |
-| Rate a course | form in `templates/_sheet.html` | `rate` | `validate_rating` | `save_rating` | `test_an_incomplete_rating_is_refused` | LN R9 |
-| Share a rank list | `static/share.js` | `api_share` | `share_rank_lists`, `read_rank_list` | `save_price_data` | `test_rows_with_personal_columns_are_refused_whole` | LN R9 |
+| Pick a mandatory section, the points appear | `chooseSection` in `static/planner.js` | `api_add`, then `answer` | `load_plan`, `estimated_points` | `load_plan` (the typed points stay 0) | `test_picking_mandatory_sections_fills_in_the_points` | LN R17 |
+| *Reset*, then *Undo* | `resetPlan` in `static/planner.js` | `api_start_over`, `api_restore` | `start_over`, `restore_items` | `delete_item`, `insert_items` | `test_start_over_can_be_undone_with_every_bid_and_place` | LN R15 |
+| The left arrow in the top bar, after a plus | `takeStep` in `static/planner.js` | `api_add` inside `logic.undoable`, then `api_undo` | `undoable`, `undo`, `take_step` | `push_step`, `pop_step`, `replace_items` | `test_undo_takes_back_an_added_course_and_redo_brings_it_back` | LN R19 |
+| Open a course: the rating | `showOpenCourse` in `static/planner.js` | `api_sheet` | `course_page`, `course_rating` | `load_course_ratings` | `test_the_course_sheet_names_the_rating_and_where_it_comes_from` | LN07 |
+| Share a rank list | `static/share.js` | `api_share` | `share_rank_lists`, `read_rank_list` | `save_price_data` | `test_rows_with_personal_columns_are_refused_whole` | LN R9, R18 |
 
 What answers a click: every change returns the whole state (`answer` in `app.py`, `state_of` in `logic.py`), and `Lance.update` in `static/common.js` redraws from it. The page never works anything out for itself.
+
+How the arrows remember (LN R19): every change request in `app.py` runs inside `logic.undoable`. It copies the entries of the plan before the change; if they differ afterwards, the copy becomes the newest step in the table `plan_steps` (`db.push_step`), at most 50 per plan and semester. The left arrow (`api_undo`, `logic.undo`) puts the newest copy back, each entry with its own id so that its course keeps its colour, and keeps what was there as a step for the right arrow. Settings never pass through `undoable`, so the arrows leave them alone. The state says `can_undo` and `can_redo`, and `renderArrows` in `static/planner.js` switches the arrows on and off from it.
 
 Who draws what: `/` and `/bids` are one screen (`templates/bids.html` extends `planner.html`). `static/planner.js` draws the courses on the left and the tabs *Week* and *Summary* on the right; `static/bids.js` draws the tab *Bids*, one card per course, and keeps its names inside `Bids` because it shares the page. Both listen to `Lance.onChange`.
 

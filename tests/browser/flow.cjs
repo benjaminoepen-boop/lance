@@ -19,7 +19,10 @@ async function run(browserType, label, options) {
   const page = await context.newPage();
   const errors = [];
   page.on("pageerror", (error) => errors.push(`${error.message} @ ${page.url()}`));
-  page.on("console", (message) => { if (message.type() === "error" && !message.text().includes("status of 400")) errors.push(message.text()); });
+  /* WebKit's own video controls log "Button failed to load, iconName = …-placard" for every <video controls>, also on a
+     bare page without Lance's code or policy (tried 18 Nov 2026): that is the browser, not a script of Lance */
+  const browserOwn = (text) => text.startsWith("Button failed to load, iconName =");
+  page.on("console", (message) => { if (message.type() === "error" && !message.text().includes("status of 400") && !browserOwn(message.text())) errors.push(message.text()); });
   page.on("dialog", (dialog) => dialog.accept());
   const phone = Boolean(options.isMobile);
   const n = (text) => `${label}: ${text}`;
@@ -64,6 +67,29 @@ async function run(browserType, label, options) {
     return { gap: Math.round(box.right - control.right), right: Math.round(control.right), order: name.right <= chevron.left + 1 && chevron.right <= control.left };
   }));
   check(n("the control sits at the right edge of the row"), edges.length === 10 && edges.every((edge) => edge.gap >= 0 && edge.gap <= 12 && edge.order) && new Set(edges.map((edge) => edge.right)).size === 1, JSON.stringify(edges.slice(0, 3)));
+  /* a group heading stands out from its rows and shows that it folds: the name in ink and larger than the facts of a row,
+     the count grey like them, a band of its own and a chevron darker than a row's. A press folds its courses, a second one brings them back */
+  const mandatory = page.locator("#courses .group", { hasText: "Mandatory" });
+  const look = await mandatory.evaluate((group) => {
+    const style = (element) => getComputedStyle(element);
+    const row = document.querySelector("#courses .course");
+    const name = style(group.querySelector(".group-name"));
+    return {
+      size: parseFloat(name.fontSize), weight: Number(name.fontWeight),
+      ink: name.color === style(row.querySelector(".course-name")).color,
+      grey: style(group.querySelector(".count")).color === style(row.querySelector(".course-sub")).color,
+      band: !["rgba(0, 0, 0, 0)", style(group.closest(".chooser")).backgroundColor].includes(style(group).backgroundColor),
+      chevron: style(group.querySelector(".i-chev")).backgroundColor !== style(row.querySelector(".i-chev")).backgroundColor,
+    };
+  });
+  check(n("a group heading stands out from its rows, on a band of its own"), look.size >= 15 && look.weight >= 600 && look.ink && look.grey && look.band && look.chevron, JSON.stringify(look));
+  const listed = () => page.locator("#courses .course").count();
+  const all = await listed();
+  const inGroup = Number(await mandatory.locator(".count").textContent());
+  await mandatory.click();
+  const folded = (await mandatory.getAttribute("aria-expanded")) === "false" && (await listed()) === all - inGroup;
+  await mandatory.click();
+  check(n("a group heading folds its courses and opens them again"), folded && (await mandatory.getAttribute("aria-expanded")) === "true" && (await listed()) === all, `${inGroup} of ${all}`);
 
   /* ---- search looks through all terms ---- */
   await page.fill("#search", "impact investments");
@@ -73,14 +99,69 @@ async function run(browserType, label, options) {
   await page.waitForTimeout(120);
 
   /* ---- plus adds at once ---- */
+  /* the top bar before the first elective: "Finish on Nova" turns blue with it and must keep its shape (a phone has no such button) */
+  const barShape = () => page.locator("#next, .top-right > a[href$='/rules']").evaluateAll((nodes) => nodes.map((node) => { const box = node.getBoundingClientRect(); return [Math.round(box.left), Math.round(box.width)]; }));
+  const barBefore = phone ? null : await barShape();
   await row("Introduction to Programming").locator(".pick").click();
   await page.waitForFunction(() => document.querySelector("#toast") && !document.querySelector("#toast").hidden);
   check(n("the toast names the section"), (await toast().textContent()).includes("Introduction to Programming TXA"), await toast().textContent());
   check(n("the plus became a tick"), (await row("Introduction to Programming").locator(".pick").getAttribute("aria-pressed")) === "true");
+  if (!phone) {
+    check(n("the way to Nova turned blue and kept its shape, the bar beside it its place"), (await page.locator("#next.primary").count()) === 1 && JSON.stringify(await barShape()) === JSON.stringify(barBefore), `${JSON.stringify(barBefore)} became ${JSON.stringify(await barShape())}`);
+    /* under the mouse a control changes its colour, never its size or its place: measured after every glide has ended */
+    const sizes = [];
+    for (const control of [row("Introduction to Programming").locator(".pick"), row("Introduction to Programming").locator(".tile:not(.on)").first(), row("Introduction to Programming").locator(".course-main")]) {
+      await page.mouse.move(2, 2);
+      await page.waitForTimeout(350);
+      const rest = await control.boundingBox();
+      await control.hover();
+      await page.waitForTimeout(350);
+      const under = await control.boundingBox();
+      sizes.push([rest, under].map((box) => [box.x, box.y, box.width, box.height].map((value) => Math.round(value * 10) / 10).join(" ")));
+    }
+    await page.mouse.move(2, 2);
+    check(n("a control keeps its size and its place under the mouse"), sizes.every(([rest, under]) => rest === under), JSON.stringify(sizes));
+  }
+  check(n("a row of the list shows the rating from Uni Feedback"), (await row("Introduction to Programming").locator(".course-sub").textContent()).includes("★ 4.6"), await row("Introduction to Programming").locator(".course-sub").textContent());
   check(n("the row folds open with its sections to pick from"), (await row("Introduction to Programming").locator(".tile").count()) === 3);
   check(n("the section it took is marked"), (await row("Introduction to Programming").locator(".tile.on").textContent()).includes("TXA"));
   await toWeek();
   check(n("the course is in the week"), await page.locator("#week .block", { hasText: "Introduction to Programming" }).first().isVisible());
+
+  /* ---- LN R19: the left arrow in the top bar takes the course out again, the right arrow puts it back.
+     The static preview has no server to keep the steps, so there the arrows stay switched off ---- */
+  if (!PREVIEW) {
+    const blocks = () => page.locator('#week .block:not(.ghost)[data-section="2477-S1-TXA"]').count();   /* the course open in the list waits there as ghosts */
+    const ticked = async () => (await row("Introduction to Programming").locator(".pick").getAttribute("aria-pressed")) === "true";
+    check(n("after a change the left arrow is on and the right one off"), (await page.locator("#undo").isEnabled()) && (await page.locator("#redo").isDisabled()));
+    await page.locator("#undo").click();
+    await page.waitForTimeout(300);
+    check(n("the left arrow takes the course out of the week"), (await blocks()) === 0 && (await toast().textContent()) === "Undone", `${await blocks()} blocks, toast ${await toast().textContent()}`);
+    await toCourses();
+    check(n("and out of the list"), !(await ticked()) && (await row("Introduction to Programming").locator(".tile.on").count()) === 0);
+    check(n("now the right arrow is on and the left one off"), (await page.locator("#redo").isEnabled()) && (await page.locator("#undo").isDisabled()));
+    await page.locator("#redo").click();
+    await page.waitForTimeout(300);
+    const chosen = row("Introduction to Programming").locator(".tile.on");
+    check(n("the right arrow puts it back in the list, in TXA"), (await ticked()) && (await chosen.count()) === 1 && (await chosen.textContent()).includes("TXA"));
+    await toWeek();
+    check(n("and in the week"), (await blocks()) > 0, await blocks());
+    await toCourses();
+    /* the keys, once each. Not while typing in a field: the search keeps its own undo, which may change the list,
+       so the plan is read from its ECTS in the head */
+    const ects = async () => (await page.locator("#ects").textContent()).split(" ")[0];
+    await page.locator("#search").focus();
+    await page.keyboard.press("ControlOrMeta+z");
+    await page.waitForTimeout(300);
+    check(n("Cmd+Z in the search leaves the plan alone"), (await ects()) === "7", await ects());
+    await page.locator("#search").blur();
+    await page.keyboard.press("ControlOrMeta+z");
+    await page.waitForTimeout(300);
+    check(n("Cmd+Z takes the course out"), (await ects()) === "0", await ects());
+    await page.keyboard.press("ControlOrMeta+Shift+z");
+    await page.waitForTimeout(300);
+    check(n("Shift+Cmd+Z puts it back"), (await ects()) === "7", await ects());
+  }
   await toCourses();
   await page.fill("#search", "");
   await page.waitForTimeout(120);
@@ -109,9 +190,16 @@ async function run(browserType, label, options) {
     check(n("the sections wait in the week while the row is open"), (await page.locator("#week .block.ghost").count()) === 10, await page.locator("#week .block.ghost").count());
     check(n("a clashing one is marked there too"), (await page.locator("#week .block.ghost.bad").count()) === 1);
   }
+  const tileTop = async () => Math.round((await strategy.locator(".tile", { hasText: "TXC" }).boundingBox()).y - (await strategy.boundingBox()).y);
+  const topBefore = await tileTop();
   await strategy.locator(".tile", { hasText: "TXC" }).click();
+  /* the glide of folding open belongs to the moment a row opens: drawn again while it is open, the row has none */
+  await page.waitForFunction(() => document.querySelector("#courses .course.open .tile.on"));
+  const foldedAgain = await strategy.locator(".course-more").evaluate((more) => getComputedStyle(more).animationName);
   await page.waitForTimeout(250);
   check(n("the chosen tile is marked"), (await strategy.locator(".tile.on").textContent()).includes("TXC"));
+  check(n("the picked tile stays where it was pressed"), (await tileTop()) === topBefore, `${topBefore} became ${await tileTop()}`);
+  check(n("a pick does not fold the open row open again"), foldedAgain === "none", foldedAgain);
   await toWeek();
   check(n("the chosen section is in the week"), await page.locator("#week .block", { hasText: "Advanced Strategy" }).first().isVisible());
   await toCourses();
@@ -207,16 +295,14 @@ async function run(browserType, label, options) {
   await page.goto(url("/bids"));
   await page.waitForSelector("#bid-lists input");
   await noSideways("the bids");
-  /* without points there is nothing to compare: no budget line and no bar, only the note that asks for them */
-  check(n("a new plan asks for the points"), (await page.inputValue("#set-points")) === "" && (await page.locator("#points-left, #budget-use .meter").count()) === 0
-    && (await page.locator("#sum-note").textContent()).includes("Enter your points"), await page.locator("#summary").textContent());
+  /* LN R17: nobody typed points yet, so they are an estimate from the one mandatory course picked above (7 ECTS), and a line says so */
+  check(n("a new plan estimates the points from the mandatory courses"), (await page.inputValue("#set-points")) === "227"
+    && (await page.locator("#points-estimate").textContent()).includes("Estimated from your 7 mandatory ECTS"), await page.locator("#summary").textContent());
   const bid = page.locator('input[aria-label="Bid on Introduction to Programming"]');
-  await bid.fill("10");
-  await page.waitForTimeout(600);
-  check(n("a bid before the points says what to do"), (await toast().textContent()).includes("Enter your points"), await toast().textContent());
   await page.locator("#set-points").fill("165");
   await page.locator("#set-points").blur();
   await page.waitForTimeout(250);
+  check(n("typed points replace the estimate"), (await page.locator("#points-estimate").count()) === 0 && (await page.locator("#budget-use").textContent()).includes("of 165 in bids"), await page.locator("#summary").textContent());
   const programming = bidCard("Introduction to Programming");
   const status = programming.locator(".bid-status");
   check(n("an empty bid says so in its row"), (await status.textContent()) === "No bid" && (await status.getAttribute("title")).includes("not interested"), await status.textContent());
@@ -226,6 +312,7 @@ async function run(browserType, label, options) {
   await programming.locator(".quick button", { hasText: "+10 %" }).click();
   await page.waitForTimeout(300);
   check(n("the amount is taken"), (await bid.inputValue()) === "132", await bid.inputValue());
+  check(n("a change does not fold the open card open again"), (await programming.locator(".bid-details").evaluate((details) => getComputedStyle(details).animationName)) === "none");
   check(n("the row answers in words"), (await status.textContent()).startsWith("Enough"), await status.textContent());
   await bid.fill("500");
   await page.waitForTimeout(600);
@@ -311,12 +398,7 @@ async function run(browserType, label, options) {
   check(n("a closed round is called practice"), (await page.locator("#round-line").textContent()).includes("practice"), await page.locator("#round-line").textContent());
   check(n("the lists are there"), (await page.locator("#platform-lists").textContent()).includes("TXC 120"), await page.locator("#platform-lists").textContent());
   check(n("with nothing missing there is no warning"), !(await page.locator("#before").isVisible()), await page.locator("#before-list").textContent());
-  await page.locator("#checklist summary").click();
-  await page.locator('[data-check=fees]').check();
-  await page.reload();
-  await page.waitForSelector("#platform-lists .platform-row");
-  await page.locator("#checklist summary").click();
-  check(n("the checklist remembers"), await page.locator('[data-check=fees]').isChecked());
+  check(n("the last step asks students who bid before for their rank lists"), await page.locator("#share-ask-title").isVisible());
 
   /* ---- a new programme changes what is mandatory ---- */
   await page.goto(url("/"));
@@ -338,7 +420,23 @@ async function run(browserType, label, options) {
   const planned = page.locator("#plan-table tbody tr:not(.plan-group)").first();
   const examOf = ((await planned.locator(".plan-sub").textContent()).match(/Exam (.+)$/) || [])[1];   /* a laptop shows it in the column Exam, a phone under the name */
   check(n("the summary lists the plan with its exams"), Boolean(examOf) && (await planned.innerText()).includes(examOf), await planned.innerText());
-  await page.locator("#plan-table").getByRole("button", { name: "Start over" }).click();
+  /* LN R15: a course goes out right in its row of the summary, and everything goes out with Reset; both offer Undo */
+  const rows = () => page.locator("#plan-table tbody tr:not(.plan-group)").count();
+  const filled = await rows();
+  await planned.getByRole("button", { name: /^Remove / }).click();
+  await page.waitForTimeout(250);
+  check(n("a course can be removed in its row of the summary"), (await rows()) === filled - 1 && (await toast().textContent()).includes("Undo"), `${filled} -> ${await rows()}`);
+  await toast().getByRole("button", { name: "Undo" }).click();
+  await page.waitForTimeout(250);
+  check(n("and undo puts it back"), (await rows()) === filled, `${await rows()} of ${filled}`);
+  await page.locator("#reset").click();
+  await page.waitForTimeout(250);
+  check(n("reset empties the plan and offers undo"), (await page.locator("#plan-table").textContent()).includes("Nothing in your plan yet") && (await toast().textContent()).includes("Undo")
+    && (await page.locator("#reset").isHidden()), await page.locator("#plan-table").textContent());
+  await toast().getByRole("button", { name: "Undo" }).click();
+  await page.waitForTimeout(250);
+  check(n("undo brings every course back"), (await rows()) === filled, `${await rows()} of ${filled}`);
+  await page.locator("#reset").click();
   await page.waitForTimeout(250);
   await toCourses();
   await page.fill("#search", "family business");
@@ -353,7 +451,7 @@ async function run(browserType, label, options) {
   await page.goto(url("/"));
   await page.waitForSelector("#courses .course");
   await toSummary();
-  await page.locator("#plan-table").getByRole("button", { name: "Start over" }).click();
+  await page.locator("#reset").click();
   await page.waitForTimeout(250);
   if (!phone) await page.mouse.move(800, 500);   /* the pointer off the list: a course under it would be previewed in the week */
   await page.waitForTimeout(250);
@@ -366,7 +464,10 @@ async function run(browserType, label, options) {
   check(n("the ECTS figure shows 28 recommended for the example plan"), /ECTS · 28 recommended$/.test(await page.locator("#ects").textContent())
     && (await page.locator("#plan-table tfoot").textContent()).includes("ECTS · 28 recommended"), `${await page.locator("#ects").textContent()} / ${await page.locator("#plan-table tfoot").textContent()}`);
   await toWeek();
-  check(n("the real plan has no clash"), (await page.locator("#clashes .clash-line").count()) === 0);
+  check(n("the real plan has no clash"), (await page.locator("#clashes .clash-line:not(.exam-day)").count()) === 0);
+  /* LN R16: two of its exams fall on one day, which is no clash but a hard day, said in one orange line */
+  check(n("the hard exam day of the example is one line"), (await page.locator("#clashes .clash-line.exam-day").count()) === 1
+    && (await page.locator("#clashes .clash-line.exam-day").textContent()).includes("Two exams on"), await page.locator("#clashes").textContent());
   /* a course keeps one colour: its block in the week, the dot before its name in the list and in its bid card */
   const colourIn = (node, property) => node.evaluate((element, name) => getComputedStyle(element)[name], property);
   const inWeek = await colourIn(page.locator("#week .block", { hasText: "Introduction to Programming" }).first(), "borderLeftColor");
@@ -427,13 +528,9 @@ async function run(browserType, label, options) {
     await page.goto(BASE + "/course/2206-S1");
     await page.waitForSelector("#sheet-sections .tile");
     check(n("a link opens the course, with the shared price"), (await page.textContent("#course-view")).includes("from 90"), (await page.textContent("#course-view")).slice(0, 300));
-    await page.locator("#course-view summary", { hasText: "Rate this course" }).click();
-    for (const name of ["Overall", "Fair grading", "Organisation"]) await page.locator(`.rate-form [aria-label="${name}"] label`, { hasText: "4" }).click();
-    await page.locator('.rate-form input[name=workload_hours]').fill("6");
-    await page.locator('.rate-form [aria-label="Would take it again"] label', { hasText: "Yes" }).click();
-    await page.locator('.rate-form button[type=submit]').click();
-    await page.waitForTimeout(400);
-    check(n("a rating is thanked for"), (await toast().textContent()).includes("Thanks"), await toast().textContent());
+    /* LN07: the sheet shows what students say on Uni Feedback and links there; there is no form to rate while bidding */
+    check(n("the course sheet shows the rating from Uni Feedback"), /\d\.\d\s*of 5/.test(await page.textContent("#rating")) && (await page.locator('#rating a[href^="https://uni-feedback.com/en/courses/"]').count()) === 1
+      && (await page.locator("#course-view form").count()) === 0, await page.textContent("#rating"));
     check(n("and the course stays open at a simple address"), page.url().endsWith("/#2206-S1") && (await page.locator("#course-view").isVisible()), page.url());
     const file = await page.request.get(`${BASE}/plan.ics`);
     check(n("the calendar file downloads"), (await file.text()).includes("BEGIN:VCALENDAR"));

@@ -121,10 +121,12 @@ LIST = {"code": "2206", "term": "S1", "section": "TXA", "list": "primary", "seat
         "rows": [{"final": 120.0, "bid": 120, "allocated": True}, {"final": 90.0, "bid": 90, "allocated": False}]}
 
 
-def test_a_rank_list_without_course_term_or_section_is_refused():
-    assert logic.read_rank_list(dict(LIST, code="Programming")) == (None, "Course, term or section is missing.")
-    assert logic.read_rank_list(dict(LIST, term="Q1")) == (None, "Course, term or section is missing.")
-    assert logic.read_rank_list(dict(LIST, section="")) == (None, "Course, term or section is missing.")
+def test_a_rank_list_without_a_known_course_term_or_section_is_refused():
+    """LN R18: a missing field, a name where the course code belongs, or a term Nova does not have names no section
+    of the catalogue, and all of them get the same answer."""
+    unknown = (None, "Lance does not know this course or section.")
+    for field, value in [("code", ""), ("term", ""), ("section", ""), ("code", "Programming"), ("term", "Q1")]:
+        assert logic.read_rank_list(dict(LIST, **{field: value})) == unknown, (field, value)
 
 
 def test_a_rank_list_of_an_unknown_list_or_without_rows_is_refused():
@@ -137,7 +139,8 @@ def test_a_rank_list_with_a_row_that_cannot_be_read_is_refused():
     assert logic.read_rank_list(dict(LIST, rows=[{"final": "high", "bid": 1, "allocated": True}])) == (None, broken)
     assert logic.read_rank_list(dict(LIST, rows=[{"final": 100.0, "allocated": True}])) == (None, broken)
     assert logic.read_rank_list(dict(LIST, rows=[{"final": -5.0, "bid": 1, "allocated": True}])) == (None, broken)
-    assert logic.read_rank_list(dict(LIST, rows=[{"final": 5001.0, "bid": 1, "allocated": True}])) == (None, broken)
+    # LN R18: rank values run from 0 to 5500, so 5001 can be real and 5501 cannot
+    assert logic.read_rank_list(dict(LIST, rows=[{"final": 5501.0, "bid": 1, "allocated": True}])) == (None, broken)
 
 
 def test_one_rank_list_alone_is_stored_like_an_export_with_one_list():

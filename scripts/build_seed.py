@@ -7,6 +7,9 @@
   programme_offerings.csv   which programme takes which offering, and how it counts
   calendar.csv              the dates from Nova's academic calendar
 
+seed/spring_mandatory.csv is kept by hand: the mandatory courses of the spring, which no timetable names yet
+(where each row comes from is in docs/data.md).
+
 Run:  uv run python -I scripts/build_seed.py
 """
 import csv
@@ -131,6 +134,7 @@ def main():
     electives = read("electives")
     master = read("master_meetings")
     programme_rows = read("programme_meetings")
+    spring_mandatory = read("spring_mandatory")
 
     # 1. which term does each weekly meeting belong to? The master timetable prints it in the cell.
     master_terms = defaultdict(set)
@@ -176,6 +180,13 @@ def main():
             offering_lecturers[key].append(row["lecturers"])
         if row["ects"]:
             ects[key] = float(row["ects"])
+    # The spring has no timetable yet, so its mandatory courses come from the list kept by hand.
+    # A course an elective list already names keeps that name and those ECTS.
+    for row in spring_mandatory:
+        key = (row["code"], row["term"])
+        if key not in names:
+            names[key].append(row["name"])
+        ects.setdefault(key, float(row["ects"]))
     scheduled = {tuple(m["section_id"].split("-")[:2]) for m in meetings}
     offerings = []
     for key in sorted(names):
@@ -238,6 +249,9 @@ def main():
         key = (row["programme"], f"{row['code']}-{row['term']}")
         kind = "outside" if row["type"] == "OUT_PROGRAM" else "elective"
         kinds.setdefault(key, kind)
+    # mandatory in spring: this wins over an elective list of the same programme that also names the course
+    for row in spring_mandatory:
+        kinds[(row["programme"], f"{row['code']}-{row['term']}")] = "mandatory"
     programme_offerings = [{"programme": p, "offering_id": o, "kind": k} for (p, o), k in sorted(kinds.items())]
 
     write("offerings", offerings, ["id", "code", "name", "term", "semester", "ects", "lecturers", "has_schedule"])
