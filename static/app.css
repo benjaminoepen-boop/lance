@@ -270,8 +270,8 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
    rounded like a row, a little more room above it. Its chevron stands in the column of the rows' chevrons, left of their controls */
 .group { --hover: var(--chip); display: flex; align-items: center; gap: 8px; width: 100%; min-height: var(--h); margin-top: 12px; padding: 0 calc(var(--control) + 18px) 0 12px; border: 0; border-radius: var(--r-row); background: var(--paper); text-align: left; }
 .group:first-child { margin-top: 0; }
-@media (hover: hover) { .group:hover { background: var(--hover); } }
-@media (hover: hover) { .group:hover .i-chev { color: var(--ink); } }
+@media (hover: hover) { .group:not(.still):hover { background: var(--hover); } }
+@media (hover: hover) { .group:not(.still):hover .i-chev { color: var(--ink); } }
 .group-name { font-size: 15px; font-weight: 600; color: var(--ink); }
 .group .count, h3 .count { font-size: 13px; font-weight: 400; color: var(--ink-3); font-variant-numeric: tabular-nums; }
 .group .i-chev { margin-left: auto; color: var(--ink-2); }

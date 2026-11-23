@@ -54,6 +54,13 @@ async function run(browserType, label, options) {
     check(n("the empty week says what to do"), await page.getByText("Choose your programme, then press + on a course.").isVisible());
     check(n("no filter for a week that is still empty"), !(await page.locator("#fits").isVisible()));
   }
+  /* without a programme every course sits under one heading, and it folds like the others */
+  const allCourses = page.locator("#courses .group", { hasText: "All courses" });
+  const everyCourse = await page.locator("#courses .course").count();
+  await allCourses.click();
+  const shut = (await allCourses.getAttribute("aria-expanded")) === "false" && (await page.locator("#courses .course").count()) === 0;
+  await allCourses.click();
+  check(n("All courses folds and opens again before a programme is chosen"), shut && (await allCourses.getAttribute("aria-expanded")) === "true" && (await page.locator("#courses .course").count()) === everyCourse, everyCourse);
   await page.selectOption("#set-programme", "Management");
   await page.waitForFunction(() => document.querySelector("#courses") && document.querySelector("#courses").textContent.includes("Mandatory"));
   const subs = await page.locator("#courses .course-sub").allTextContents();
@@ -95,6 +102,7 @@ async function run(browserType, label, options) {
   await page.fill("#search", "impact investments");
   await page.waitForTimeout(120);
   check(n("a search finds a T2 course while T1 is showing"), await row("Impact Investments").isVisible());
+  check(n("while a search is on, a heading is a title, not a button"), (await page.locator("#courses button.group").count()) === 0 && (await page.locator("#courses .group.still").count()) > 0 && (await page.locator("#courses .group .i-chev").count()) === 0);
   await page.fill("#search", "programming");
   await page.waitForTimeout(120);
 
