@@ -428,12 +428,17 @@ function renderList(state) {
   Object.keys(titles).forEach((kind) => {
     const courses = shown.filter((course) => (kind === "area" ? inArea(course) : course.kind === kind && !inArea(course)));
     if (!courses.length && !(kind === "area" && !view.query && !view.fits)) return;
-    const folded = !view.query && !noProgramme && view.closed[kind];
-    /* a group heading folds like a row: the whole line is the button, the chevron at the right edge */
-    list.append(el("button", {
-      type: "button", class: `group${kind === "area" ? " area-group" : ""}`, "aria-expanded": folded ? "false" : "true",
-      onclick: () => { view.closed[kind] = !view.closed[kind]; holdPreviews(); renderList(Lance.state); },
-    }, el("span", { class: "group-name", text: titles[kind] }), el("span", { class: "count", text: String(courses.length) }), Lance.icon("chev")));
+    /* a group heading folds like a row: the whole line is the button, the chevron at the right edge.
+       Without a programme every course sits under "All courses", which folds on its own and starts open.
+       A search shows every match, so its headings are plain titles: no chevron, nothing that looks pressable */
+    const key = noProgramme ? "all" : kind;
+    const folded = !view.query && Boolean(view.closed[key]);
+    const heading = [el("span", { class: "group-name", text: titles[kind] }), el("span", { class: "count", text: String(courses.length) })];
+    const group = `group${kind === "area" ? " area-group" : ""}`;
+    list.append(view.query ? el("div", { class: `${group} still` }, ...heading) : el("button", {
+      type: "button", class: group, "aria-expanded": folded ? "false" : "true",
+      onclick: () => { view.closed[key] = !view.closed[key]; holdPreviews(); renderList(Lance.state); },
+    }, ...heading, Lance.icon("chev")));
     if (kind === "area") list.append(areaProgress(area));
     if (!folded) courses.forEach((course) => list.append(courseRow(course, state)));
   });
