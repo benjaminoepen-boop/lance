@@ -15,9 +15,9 @@ One container on a server of our own, behind a proxy that speaks HTTPS. The data
 | Name | Student number | GitHub |
 |---|---|---|
 | Benjamin Oepen | 80566 | benjaminoepen-boop |
-| Niklas NACHNAME | 79150 | NikiNOVA1 |
-| Laurin Engels | NUMMER | Laurinengels0712 |
-| Finn Kindler | NUMMER | finnkindler |
+| Niklas Wenzler | 79150 | NikiNOVA1 |
+| Laurin Engels | 66495 | Laurinengels0712 |
+| Finn Kindler | 80785 | finnkindler |
 
 ## Run it
 
