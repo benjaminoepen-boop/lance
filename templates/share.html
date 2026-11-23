@@ -8,9 +8,15 @@
     <div class="figure" style="margin-bottom:8px"><span>Sections with past prices</span><b class="num strong" id="coverage-text">{{ coverage.covered }} of {{ coverage.total }}</b></div>
     <div class="meter"><i id="coverage-bar" style="width:{{ coverage.percent }}%"></i></div>
   </section>
+  <section class="card howto" aria-label="How to share, in 40 seconds">
+    <video controls playsinline preload="metadata" width="1280" height="800" poster="{{ url_for('static', filename='video/share-howto-poster.jpg') }}">
+      <source src="{{ url_for('static', filename='video/share-howto.mp4') }}" type="video/mp4">
+      <track kind="captions" src="{{ url_for('static', filename='video/share-howto.vtt') }}" srclang="en" label="English">
+    </video>
+  </section>
   <div class="three">
     <section class="card"><h2>Keep the button</h2>
-      <p class="meta">Drag it to your bookmarks bar.</p>
+      <p class="meta">Drag it to your bookmarks bar. No bar? <kbd>⇧</kbd><kbd>⌘</kbd><kbd>B</kbd> shows it.</p>
       <a class="btn bookmarklet" href="{{ bookmarklet }}" draggable="true" data-bookmarklet>Copy my rank lists</a></section>
     <section class="card"><h2>Run it on the platform</h2>
       <p class="meta">Open the tab <i>Rank</i> and click the button. It reads your sections by itself.</p></section>

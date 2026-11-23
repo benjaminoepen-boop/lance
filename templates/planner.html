@@ -2,6 +2,12 @@
 {#- One screen, two halves: finding on the left, your plan on the right. /bids is this same screen with the Bids tab open. -#}
 {% block title %}Lance · Courses{% endblock %}
 {% block action %}<a class="btn" id="next" href="{{ url_for('nova') }}">Finish on Nova <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.5 2.5 10 7l-4.5 4.5"/></svg></a>{% endblock %}
+{#- LN R19: one step back and forward again through the changes to your plan. Switched off when there is nothing to do;
+    planner.js switches them on and off with every answer and wires the keys -#}
+{% block arrows %}
+<button type="button" class="icon-btn" id="undo" title="Undo" aria-label="Undo"{{ ' disabled' if not state.can_undo }}><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 3 3 6.5 6.5 10"/><path d="M3 6.5h7.5a4 4 0 0 1 0 8H7"/></svg></button>
+<button type="button" class="icon-btn" id="redo" title="Redo" aria-label="Redo"{{ ' disabled' if not state.can_redo }}><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11.5 3 15 6.5 11.5 10"/><path d="M15 6.5H7.5a4 4 0 0 0 0 8H11"/></svg></button>
+{% endblock %}
 {% block content %}
 <h1 class="sr">{% block heading %}Choose your courses{% endblock %}</h1>
 <div class="planner" id="planner" data-zone="courses" data-view="{{ tab|default('week') }}" data-open="{{ open_course|default('') }}">

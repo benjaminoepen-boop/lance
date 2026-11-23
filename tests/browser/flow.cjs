@@ -19,7 +19,10 @@ async function run(browserType, label, options) {
   const page = await context.newPage();
   const errors = [];
   page.on("pageerror", (error) => errors.push(`${error.message} @ ${page.url()}`));
-  page.on("console", (message) => { if (message.type() === "error" && !message.text().includes("status of 400")) errors.push(message.text()); });
+  /* WebKit's own video controls log "Button failed to load, iconName = …-placard" for every <video controls>, also on a
+     bare page without Lance's code or policy (tried 18 Nov 2026): that is the browser, not a script of Lance */
+  const browserOwn = (text) => text.startsWith("Button failed to load, iconName =");
+  page.on("console", (message) => { if (message.type() === "error" && !message.text().includes("status of 400") && !browserOwn(message.text())) errors.push(message.text()); });
   page.on("dialog", (dialog) => dialog.accept());
   const phone = Boolean(options.isMobile);
   const n = (text) => `${label}: ${text}`;
@@ -64,6 +67,29 @@ async function run(browserType, label, options) {
     return { gap: Math.round(box.right - control.right), right: Math.round(control.right), order: name.right <= chevron.left + 1 && chevron.right <= control.left };
   }));
   check(n("the control sits at the right edge of the row"), edges.length === 10 && edges.every((edge) => edge.gap >= 0 && edge.gap <= 12 && edge.order) && new Set(edges.map((edge) => edge.right)).size === 1, JSON.stringify(edges.slice(0, 3)));
+  /* a group heading stands out from its rows and shows that it folds: the name in ink and larger than the facts of a row,
+     the count grey like them, a band of its own and a chevron darker than a row's. A press folds its courses, a second one brings them back */
+  const mandatory = page.locator("#courses .group", { hasText: "Mandatory" });
+  const look = await mandatory.evaluate((group) => {
+    const style = (element) => getComputedStyle(element);
+    const row = document.querySelector("#courses .course");
+    const name = style(group.querySelector(".group-name"));
+    return {
+      size: parseFloat(name.fontSize), weight: Number(name.fontWeight),
+      ink: name.color === style(row.querySelector(".course-name")).color,
+      grey: style(group.querySelector(".count")).color === style(row.querySelector(".course-sub")).color,
+      band: !["rgba(0, 0, 0, 0)", style(group.closest(".chooser")).backgroundColor].includes(style(group).backgroundColor),
+      chevron: style(group.querySelector(".i-chev")).backgroundColor !== style(row.querySelector(".i-chev")).backgroundColor,
+    };
+  });
+  check(n("a group heading stands out from its rows, on a band of its own"), look.size >= 15 && look.weight >= 600 && look.ink && look.grey && look.band && look.chevron, JSON.stringify(look));
+  const listed = () => page.locator("#courses .course").count();
+  const all = await listed();
+  const inGroup = Number(await mandatory.locator(".count").textContent());
+  await mandatory.click();
+  const folded = (await mandatory.getAttribute("aria-expanded")) === "false" && (await listed()) === all - inGroup;
+  await mandatory.click();
+  check(n("a group heading folds its courses and opens them again"), folded && (await mandatory.getAttribute("aria-expanded")) === "true" && (await listed()) === all, `${inGroup} of ${all}`);
 
   /* ---- search looks through all terms ---- */
   await page.fill("#search", "impact investments");
@@ -82,6 +108,41 @@ async function run(browserType, label, options) {
   check(n("the section it took is marked"), (await row("Introduction to Programming").locator(".tile.on").textContent()).includes("TXA"));
   await toWeek();
   check(n("the course is in the week"), await page.locator("#week .block", { hasText: "Introduction to Programming" }).first().isVisible());
+
+  /* ---- LN R19: the left arrow in the top bar takes the course out again, the right arrow puts it back.
+     The static preview has no server to keep the steps, so there the arrows stay switched off ---- */
+  if (!PREVIEW) {
+    const blocks = () => page.locator('#week .block:not(.ghost)[data-section="2477-S1-TXA"]').count();   /* the course open in the list waits there as ghosts */
+    const ticked = async () => (await row("Introduction to Programming").locator(".pick").getAttribute("aria-pressed")) === "true";
+    check(n("after a change the left arrow is on and the right one off"), (await page.locator("#undo").isEnabled()) && (await page.locator("#redo").isDisabled()));
+    await page.locator("#undo").click();
+    await page.waitForTimeout(300);
+    check(n("the left arrow takes the course out of the week"), (await blocks()) === 0 && (await toast().textContent()) === "Undone", `${await blocks()} blocks, toast ${await toast().textContent()}`);
+    await toCourses();
+    check(n("and out of the list"), !(await ticked()) && (await row("Introduction to Programming").locator(".tile.on").count()) === 0);
+    check(n("now the right arrow is on and the left one off"), (await page.locator("#redo").isEnabled()) && (await page.locator("#undo").isDisabled()));
+    await page.locator("#redo").click();
+    await page.waitForTimeout(300);
+    const chosen = row("Introduction to Programming").locator(".tile.on");
+    check(n("the right arrow puts it back in the list, in TXA"), (await ticked()) && (await chosen.count()) === 1 && (await chosen.textContent()).includes("TXA"));
+    await toWeek();
+    check(n("and in the week"), (await blocks()) > 0, await blocks());
+    await toCourses();
+    /* the keys, once each. Not while typing in a field: the search keeps its own undo, which may change the list,
+       so the plan is read from its ECTS in the head */
+    const ects = async () => (await page.locator("#ects").textContent()).split(" ")[0];
+    await page.locator("#search").focus();
+    await page.keyboard.press("ControlOrMeta+z");
+    await page.waitForTimeout(300);
+    check(n("Cmd+Z in the search leaves the plan alone"), (await ects()) === "7", await ects());
+    await page.locator("#search").blur();
+    await page.keyboard.press("ControlOrMeta+z");
+    await page.waitForTimeout(300);
+    check(n("Cmd+Z takes the course out"), (await ects()) === "0", await ects());
+    await page.keyboard.press("ControlOrMeta+Shift+z");
+    await page.waitForTimeout(300);
+    check(n("Shift+Cmd+Z puts it back"), (await ects()) === "7", await ects());
+  }
   await toCourses();
   await page.fill("#search", "");
   await page.waitForTimeout(120);

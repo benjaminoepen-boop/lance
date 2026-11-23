@@ -47,11 +47,13 @@ Content and progress are separate: `seed/` is rebuilt into the database whenever
 
 ## Deploy it
 
-Any host that runs a container and keeps one folder across restarts:
+Any host that runs a container, keeps one folder across restarts and puts HTTPS in front of it:
 
 ```
 docker build -t lance .
 docker run -p 8000:8000 -v lance-data:/data lance
 ```
 
-`LANCE_DB` sets where the database file lives.
+`LANCE_DB` sets where the database file lives. The container runs as the user `lance`, who can write only `/data`. A volume made by an earlier image belongs to root; hand it over once with `docker run --rm --user root -v lance-data:/data lance chown -R lance /data`.
+
+Lance trusts the one proxy in front of it to say that the browser came over HTTPS. Then the plan cookie is `Secure` and the browser is told to stay on HTTPS.

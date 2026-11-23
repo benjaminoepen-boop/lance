@@ -32,6 +32,8 @@
   --bar: #dcdce1; --bar-fill: #8e8e93;
   /* the toast is the one dark note in the light scheme */
   --toast: #1d1d1f;
+  /* the seal of the logo: white, a little softer on dark. The envelope keeps its own two blues in both schemes */
+  --seal: #ffffff;
   /* three control heights, two radii (rows take 10, pills are round); a phone makes every control finger-sized */
   --h-sm: 30px; --h: 36px; --h-icon: 32px;
   --control: 48px;   /* the column at the right edge of a course row that holds its plus, tick or Pick */
@@ -72,6 +74,7 @@
   --petrol: #5fb4cb; --petrol-soft: #142a31; --petrol-line: #274a56;
   --bar: #34343a; --bar-fill: #9a9aa0;
   --toast: #38383e;
+  --seal: #f2f2f4;
 }
 :root[data-theme="dark"] select.field { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='%239a9aa0' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5'/%3E%3C/svg%3E"); }
 @media (prefers-color-scheme: dark) {
@@ -92,6 +95,7 @@
     --petrol: #5fb4cb; --petrol-soft: #142a31; --petrol-line: #274a56;
     --bar: #34343a; --bar-fill: #9a9aa0;
     --toast: #38383e;
+    --seal: #f2f2f4;
   }
   :root:not([data-theme="light"]) select.field { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='%239a9aa0' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5'/%3E%3C/svg%3E"); }
 }
@@ -172,9 +176,9 @@ a { color: var(--blue); text-decoration: underline; text-decoration-thickness: 1
 .btn.flush { margin-left: -10px; align-self: flex-start; }   /* a tertiary button whose words line up with the text above */
 /* a filter that stays pressed: the same pale blue as a selected section */
 .toggle[aria-pressed=true], .toggle[aria-pressed=true]:hover:not(:disabled) { background: var(--blue-soft); border-color: var(--blue); color: var(--blue-deep); }
-/* × and ?: the only buttons without words, so they always carry a title */
+/* ×, ?, the two arrows and the theme switch: the only buttons without words, so they always carry a title */
 .icon-btn { display: inline-grid; place-items: center; flex: none; width: var(--h-icon); height: var(--h-icon); padding: 0; border: 0; border-radius: var(--r-ctl); background: none; color: var(--ink-3); text-decoration: none; }
-@media (hover: hover) { .icon-btn:hover { background: var(--hover); color: var(--ink); } }
+@media (hover: hover) { .icon-btn:hover:not(:disabled) { background: var(--hover); color: var(--ink); } }
 
 /* ---- fields: white, a grey border that darkens under the mouse, the height of a button ---- */
 .field { min-height: var(--h); min-width: 0; padding: 0 10px; border: 1px solid var(--line-2); border-radius: var(--r-ctl); background: var(--card); color: var(--ink); font-size: 15px; }
@@ -239,7 +243,9 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 .topbar { position: sticky; top: 0; z-index: 30; height: var(--top); display: flex; align-items: center; gap: 18px; padding: 0 var(--gap); background: var(--card); border-bottom: 1px solid var(--line); }
 .brand { display: flex; align-items: center; gap: 9px; margin-left: -8px; padding: 4px 8px; border-radius: var(--r-ctl); font-weight: 600; font-size: 17px; color: var(--ink); text-decoration: none; }
 @media (hover: hover) { .brand:hover { background: var(--hover); color: var(--ink); } }
-.brand i { width: 24px; height: 24px; border-radius: var(--r-ctl); background: var(--blue); display: grid; place-items: center; color: var(--on-blue); }
+/* the logo draws its own tile in base.html; only its seal follows the colour scheme */
+.brand .logo { flex: none; }
+.brand .seal { fill: var(--seal); }
 .brand small { font-size: 12px; font-weight: 500; color: var(--ink-3); margin-left: 1px; }
 .top-right { margin-left: auto; display: flex; align-items: center; gap: 6px; }
 .main { padding: var(--gap); min-width: 0; }
@@ -260,14 +266,15 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 .course-list { flex: 1; min-height: 0; overflow-y: auto; overflow-anchor: none; display: flex; flex-direction: column; gap: 2px; margin: 0 -8px; padding: 0 8px 12px; }
 /* the figures of your plan above the list: only on a phone, where your plan is not beside the list */
 .figures.list-figures { display: none; }
-/* a group heading folds its courses: its chevron stands in the column of the rows' chevrons, left of their controls */
-.group { display: flex; align-items: center; gap: 8px; width: 100%; min-height: var(--h); margin-top: 6px; padding: 0 calc(var(--control) + 18px) 0 12px; border: 0; border-radius: var(--r-row); background: none; text-align: left; }
+/* a group heading folds its courses. It stands out from the rows: the name in ink on a band one step darker than the card,
+   rounded like a row, a little more room above it. Its chevron stands in the column of the rows' chevrons, left of their controls */
+.group { --hover: var(--chip); display: flex; align-items: center; gap: 8px; width: 100%; min-height: var(--h); margin-top: 12px; padding: 0 calc(var(--control) + 18px) 0 12px; border: 0; border-radius: var(--r-row); background: var(--paper); text-align: left; }
 .group:first-child { margin-top: 0; }
 @media (hover: hover) { .group:hover { background: var(--hover); } }
 @media (hover: hover) { .group:hover .i-chev { color: var(--ink); } }
-.group-name { font-size: 13px; font-weight: 600; color: var(--ink-2); }
+.group-name { font-size: 15px; font-weight: 600; color: var(--ink); }
 .group .count, h3 .count { font-size: 13px; font-weight: 400; color: var(--ink-3); font-variant-numeric: tabular-nums; }
-.group .i-chev { margin-left: auto; }
+.group .i-chev { margin-left: auto; color: var(--ink-2); }
 /* LN R20: the area of expertise. Its progress sits under its heading: a grey bar (bars cannot be clicked), then the words.
    Core courses carry a small grey tag after their name; status colours stay for how things stand */
 .area-progress { display: flex; flex-direction: column; gap: 4px; padding: 2px calc(var(--control) + 18px) 6px 12px; font-size: 13px; color: var(--ink-2); }
@@ -519,6 +526,10 @@ blockquote cite { display: block; font-style: normal; font-size: 12px; font-weig
 .pay b { font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; text-align: right; }
 .date-row { display: flex; justify-content: space-between; gap: 12px; padding: 3px 0; }
 .date-row.past { opacity: .5; }
+/* the share page: the video of the five steps, as wide as the cards under it */
+.howto { padding: 0; overflow: hidden; }
+.howto video { display: block; width: 100%; height: auto; background: #000; }
+kbd { display: inline-block; min-width: 18px; padding: 0 4px; border-radius: 4px; background: var(--chip); color: var(--ink-2); font: inherit; font-size: 12px; text-align: center; }
 .three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gap); }
 .three .card { display: flex; flex-direction: column; gap: 6px; }
 .three .card > h2 { margin-bottom: 0; }
