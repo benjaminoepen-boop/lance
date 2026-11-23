@@ -18,6 +18,7 @@ const view = {
   fresh: null,         /* the section that was just added: it pops in */
   backTo: "",          /* where the Back button of an open course leads: the list, or a tab of your plan on a phone */
   allClashes: false,
+  alternates: false,   /* the alternate list is being filled: a plus puts a course there, and the week shows that list too */
   pausedUntil: 0,      /* a double click must not hit the row that has just moved under the mouse */
 };
 const HALVES = {
@@ -42,9 +43,14 @@ function tooSoon() {
   return false;
 }
 
+/* while the alternate list is filled, a new course goes there instead of the primary list. A mandatory course never does:
+   Nova assigned its section, so it keeps its Pick and its own list. What an alternate may clash with stays the server's rule (LN R13) */
+const listFor = (course) => (view.alternates && course.kind !== "mandatory" ? { list: "alternate" } : {});
+
 async function addCourse(course) {
   bringForward(course);
-  const answer = await Lance.send("/api/add", { offering_id: course.id });
+  const where = listFor(course);
+  const answer = await Lance.send("/api/add", { offering_id: course.id, ...where });
   if (answer.error) return;
   const entry = entriesOf(Lance.state, course.id)[0];
   view.fresh = entry.section_id;
@@ -55,7 +61,7 @@ async function addCourse(course) {
   } else {
     render(Lance.state);
   }
-  Lance.toast(`Added ${course.name}${course.sections.length > 1 ? ` ${entry.section}` : ""}`);
+  Lance.toast(`Added ${course.name}${course.sections.length > 1 ? ` ${entry.section}` : ""}${where.list ? " to your alternate list" : ""}`);
 }
 
 async function removeCourse(offeringId, name) {
@@ -76,7 +82,8 @@ async function chooseSection(course, section) {
   view.hot = null;
   bringForward(course);
   view.fresh = section.id;
-  await Lance.send(entriesOf(Lance.state, course.id).length ? "/api/switch" : "/api/add", { section_id: section.id });
+  if (entriesOf(Lance.state, course.id).length) await Lance.send("/api/switch", { section_id: section.id });
+  else await Lance.send("/api/add", { section_id: section.id, ...listFor(course) });
 }
 
 /* the section under the mouse lights up in the list and in the week at once, without drawing anything again */
@@ -126,8 +133,9 @@ function visibleArea(phone) {
     const list = document.getElementById("courses").getBoundingClientRect();
     return [list.top + 4, list.bottom - 12];
   }
-  const figures = document.getElementById("list-figures");
-  const top = document.querySelector(".topbar").getBoundingClientRect().bottom + (figures.hidden ? 0 : figures.offsetHeight);
+  /* what stays in sight under the top bar: the figures of your plan, or in their place the band of the alternate list */
+  const stuck = document.getElementById(view.alternates ? "alternate-banner" : "list-figures");
+  const top = document.querySelector(".topbar").getBoundingClientRect().bottom + (stuck.hidden ? 0 : stuck.offsetHeight);
   return [top + 8, document.querySelector(".tabbar").getBoundingClientRect().top - 8];
 }
 
@@ -179,6 +187,8 @@ function setTab(key) {
 
 function showTab() {
   const planner = document.getElementById("planner");
+  /* filling the alternate list ends where it began: with the Bids tab on show again, however one got there */
+  if (view.alternates && view.tab === "bids") { view.alternates = false; render(Lance.state); }
   planner.dataset.view = view.tab;
   document.querySelectorAll("#plan-tabs [role=tab]").forEach((tab) => {
     const on = tab.dataset.view === view.tab;
@@ -223,6 +233,51 @@ async function showOpenCourse() {
   box.append(el("div", { style: "display:contents", html: response.ok ? await response.text() : '<p class="muted">This course does not exist.</p>' }));
   box.scrollTop = 0;
   renderSections(Lance.state);
+}
+
+/* ---- filling the alternate list in the week: "Add alternate course" in the Bids tab starts it (bids.js), Done or Esc ends it.
+   The list on the left works as always, but a plus puts the course on the alternate list; the week on the right shows
+   the mandatory courses as always, the primary ones stepped back, and the alternates in full. A phone shows one half
+   at a time: there it starts on the list, and the week is one tap away in the bar at the bottom. ---- */
+
+/* Nova has not published the spring timetable yet: without a week, the Bids tab keeps its search for the alternate list */
+const canFillAlternatesInWeek = () => hasWeek(Lance.state);
+
+/* the list or Bids as the surface on show, where the address says which one it is (see route).
+   Shown at once; the browser's own "the address changed" then finds nothing left to do */
+function showAddress(target) {
+  if (decodeURIComponent(location.hash.slice(1)) !== target) location.hash = target;
+  route();
+}
+
+function startAlternates() {
+  view.alternates = true;
+  view.tab = "week";
+  /* the list on the left: a phone shows one half at a time, so it goes to the list; on a laptop only a course open there gives way.
+     Then the week on the right, like a click on its tab */
+  if (onPhone() || view.open) showAddress("");
+  setTab("week");
+  render(Lance.state);
+  /* the band and the search are at the top of the list: a page that was scrolled (a phone, a low window) goes there.
+     With a keyboard at hand the cursor waits in the search, as it did in the search this replaces;
+     on a phone that would only bring up the keyboard over the list */
+  window.scrollTo(0, 0);
+  if (!onPhone()) document.getElementById("search").focus({ preventScroll: true });
+}
+
+function stopAlternates() {
+  if (!view.alternates) return;
+  view.alternates = false;
+  /* on a laptop a course open on the left may stay open; a phone shows one half, so there the address leads to Bids */
+  if (onPhone()) showAddress("bids"); else setTab("bids");
+  render(Lance.state);
+  /* back in Bids, the list that was just filled is what to look at: a phone scrolls to it,
+     and the cursor is back on the card it started from */
+  const filled = document.querySelector('#bid-lists [aria-label="Alternate list"]');
+  if (!filled) return;
+  if (onPhone()) filled.scrollIntoView({ block: "start" });
+  const card = filled.querySelector(".add-card");
+  if (card) card.focus({ preventScroll: true });
 }
 
 /* ---- the list ---- */
@@ -274,8 +329,9 @@ function pickButton(course, planned) {
       onclick: () => (course.sections.length ? toggleExpanded(course) : go(course.id)),
     }, "Pick");
   }
+  const where = view.alternates ? " to the alternate list" : "";
   return el("button", {
-    type: "button", class: "pick", "aria-pressed": "false", "aria-label": `Add ${course.name}`, title: "Add", html: Lance.icons.plus, "data-key": key,
+    type: "button", class: "pick", "aria-pressed": "false", "aria-label": `Add ${course.name}${where}`, title: `Add${where}`, html: Lance.icons.plus, "data-key": key,
     onclick: () => { if (!tooSoon()) addCourse(course); },
   });
 }
@@ -330,7 +386,10 @@ function metaLine(course, first) {
   /* LN07: what students say on Uni Feedback, as one number; the course sheet has the rest */
   const rating = course.rating === null ? null
     : el("span", { title: `${course.rating.toFixed(1)} of 5 from ${course.reviews} ${course.reviews === 1 ? "review" : "reviews"} on Uni Feedback`, text: ` · ★ ${course.rating.toFixed(1)}` });
-  return el("span", { class: "course-sub" }, `${course.term} · ${course.ects} ECTS`, rating, chosen, time, price);
+  /* a course on the alternate list has the tick like every course of your plan, and says which list it is on.
+     It stands in the line of the facts, so that the row is as high as before and the plus stays where it was pressed */
+  const alternate = first && first.list === "alternate" ? el("span", {}, " · ", el("b", { class: "on-alternate", text: "alternate" })) : null;
+  return el("span", { class: "course-sub" }, `${course.term} · ${course.ects} ECTS`, rating, alternate, chosen, time, price);
 }
 
 /* the one thing to know before adding, as a status line: an exam at the same time is worst, then a class, then the same course in the other half */
@@ -520,16 +579,24 @@ function renderWeek(state) {
   const clashing = clashingItems(state);
   const blocks = [];
   state.items.forEach((item) => {
-    if (!item.in_week || !TERMS_OF[view.half].includes(item.term)) return;
+    /* while the alternate list is filled, the week also shows what is on it: the entries the server marks for that.
+       They are drawn beside the week and are not part of it (LN R13); what they meet is said in their own row */
+    const alternate = view.alternates && item.in_alternate_week;
+    if (!(item.in_week || alternate) || !TERMS_OF[view.half].includes(item.term)) return;
+    /* then a primary course steps back, to a dashed outline: it stays, because an alternate is checked against it */
+    const faded = view.alternates && item.list === "primary";
     /* a block wears the colour of its course, the same as the dot before its name in the list, in Bids and in Summary */
     const colour = `colour-${Lance.colourOf(state, item.offering_id)}`;
+    /* resting on a block says which list it is on, and for an alternate what the server found it to meet */
+    const notes = alternate ? ["On your alternate list", ...item.conflicts.map((note) => note.text.replace(/\.$/, ""))].join(". ") : faded ? "On your primary list" : "";
     item.meetings.forEach((m) => {
       blocks.push({
         day: m.day, start: m.start, end: m.end,
-        name: item.name, section: item.section, room: m.room, sectionId: item.section_id,
+        /* an alternate says so where the others name their section and room: one word, so that it fits a phone's narrow day too */
+        name: item.name, section: alternate ? "alternate" : item.section, room: alternate ? null : m.room, sectionId: item.section_id,
         clashing: clashing.has(item.id),
-        class: [colour, (view.open || view.expanded) === item.offering_id && "open", view.fresh === item.section_id && "fresh", view.hot === item.section_id && "hot"].filter(Boolean).join(" "),
-        title: `${item.name} ${item.section}, ${m.day} ${compact(m.start)}–${compact(m.end)}, ${m.room}`,
+        class: [colour, alternate && "alt", faded && "faded", (view.open || view.expanded) === item.offering_id && "open", view.fresh === item.section_id && "fresh", view.hot === item.section_id && "hot"].filter(Boolean).join(" "),
+        title: `${item.name} ${item.section}, ${m.day} ${compact(m.start)}–${compact(m.end)}, ${m.room}${notes ? `. ${notes}` : ""}`,
         onclick: () => go(item.offering_id),
       });
     });
@@ -801,6 +868,9 @@ function arrowKeys(event) {
 /* ---- wiring ---- */
 
 function render(state) {
+  /* no week, nothing to fill the alternate list in: spring keeps the search in the Bids tab */
+  if (view.alternates && !hasWeek(state)) view.alternates = false;
+  document.getElementById("alternate-banner").hidden = !view.alternates;
   renderArrows(state);
   renderTabs(state);
   renderHead(state);
@@ -859,6 +929,7 @@ document.getElementById("fits").addEventListener("click", (event) => {
   if (Lance.state) renderList(Lance.state);
 });
 document.getElementById("reset").addEventListener("click", resetPlan);
+document.getElementById("alternate-done").addEventListener("click", stopAlternates);
 document.getElementById("undo").addEventListener("click", () => takeStep("undo"));
 document.getElementById("redo").addEventListener("click", () => takeStep("redo"));
 document.addEventListener("keydown", arrowKeys);
@@ -869,6 +940,8 @@ document.addEventListener("keydown", (event) => {
   if (event.key !== "Escape") return;
   if (view.open) goBack();
   else if (view.expanded) { const id = view.expanded; view.expanded = null; renderKeeping(id); const main = document.querySelector(`[data-key="main-${id}"]`); if (main) main.focus({ preventScroll: true }); }
+  /* with nothing left to close, Esc ends filling the alternate list, like Done */
+  else if (view.alternates) stopAlternates();
 });
 window.addEventListener("hashchange", route);
 /* on a phone the bar at the bottom only changes the surface; there is no need to load the page again */

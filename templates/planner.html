@@ -27,6 +27,11 @@
       </select>
       <div class="seg" id="half-tabs" role="group" aria-label="Part of the semester"></div>
     </div>
+    {#- while the alternate list is filled (planner.js, view.alternates): says where a plus puts a course now; "Done" ends it -#}
+    <div class="mode-banner" id="alternate-banner" role="status" hidden>
+      <p><b>Adding to your alternate list.</b> + puts a course there.</p>
+      <button type="button" class="btn small" id="alternate-done">Done</button>
+    </div>
     <div class="list-view" id="list-view">
       <div class="tools">
         <label class="search"><span class="sr">Search courses</span>

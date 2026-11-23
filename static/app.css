@@ -258,6 +258,11 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 #set-programme, #set-semester, #set-area { flex: none; }
 #set-area { max-width: 100%; text-overflow: ellipsis; }   /* "Strategy and International Business" is long: it shortens rather than push the row wider */
 .scope .seg { margin-left: auto; }
+/* while the alternate list is filled (planner.js, view.alternates), a band above the list says where a plus puts a course now.
+   Pale blue with a blue edge, like everything that is switched on; "Done" switches it off */
+.mode-banner { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 7px 8px 7px 12px; border: 1px solid var(--blue); border-radius: var(--r-card); background: var(--blue-soft); color: var(--ink); }
+.mode-banner p { min-width: 0; }
+.mode-banner .btn { flex: none; }
 .list-view { display: flex; flex-direction: column; gap: 10px; min-height: 0; flex: 1; }
 .tools { display: flex; gap: 8px; }
 .search { position: relative; flex: 1; min-width: 0; display: flex; }
@@ -296,6 +301,7 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 .course-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
 .course-name { display: block; min-width: 0; font-weight: 500; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .course-sub { display: block; font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.on-alternate { font-weight: 600; color: var(--ink-2); }   /* the course is on your alternate list: a word among its facts, no extra line */
 .course-note { max-width: 100%; }
 .course-note > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .time { display: none; }
@@ -406,6 +412,16 @@ details.about[open] > summary { display: none; }
 .block.ghost.bad span { color: var(--orange); }
 .block.ghost.hot { background: var(--blue-soft); border-style: solid; border-color: var(--blue); box-shadow: none; }
 @media (hover: hover) { .block.ghost:hover { background: var(--blue-soft); border-style: solid; border-color: var(--blue); box-shadow: none; } }
+/* while the alternate list is filled, the week shows three kinds of block: the mandatory courses as always, the alternates
+   in full with the word "alternate" where the others name their section, and the primary courses stepped back to a dashed
+   outline with grey words. They stay in sight, because an alternate is checked against them (LN R13).
+   The outline is as thick as a ghost's, so the words stand exactly where they stood in the full block */
+.block.faded { background: transparent; border: 1.5px dashed color-mix(in srgb, var(--course) 60%, transparent); padding: 3.5px 6.5px; color: var(--ink-3); box-shadow: none; }
+.block.faded b { font-weight: 500; }
+.block.faded span, .block.faded.clash span { color: var(--ink-3); }
+.block.faded.clash { background: transparent; border-color: var(--orange-line); box-shadow: none; }
+@media (hover: hover) { .block.faded:hover { border-color: var(--course); } }
+.block.alt > span { color: var(--ink); font-weight: 500; }
 .block.fresh { animation: pop .28s ease-out; }
 @keyframes appear { from { opacity: 0; } to { opacity: 1; } }
 @keyframes pop { from { transform: scale(.94); opacity: .4; } to { transform: scale(1); opacity: 1; } }
@@ -596,13 +612,19 @@ ul.plain { margin: 0; padding-left: 18px; display: flex; flex-direction: column;
   .hour-label { right: 3px; font-size: 10px; }
   .block { font-size: 10.5px; padding: 2px 3px 2px 2px; }
   .block.clash { padding: 1.5px 2.5px 1.5px 2px; }
-  .block.ghost { padding: 1.5px 2.5px 1.5px 3.5px; }
+  .block.ghost, .block.faded { padding: 1.5px 2.5px 1.5px 3.5px; }
   .block .room { display: none; }
   .clash-lines { order: -1; }
   .round-note { order: -2; }
   .check { min-height: 44px; }
   /* the figures of your plan stay in sight above the list, so a + shows what it changed */
   .figures.list-figures { display: flex; justify-content: space-between; gap: 2px 8px; position: sticky; top: var(--top); z-index: 5; margin: 0 -10px; padding: 7px 8px; background: var(--card); border-bottom: 1px solid var(--line); }
+  /* the band of the alternate list stays in sight too, as a bar from edge to edge. It takes the place of the figures:
+     an alternate changes none of them (no ECTS, no points, no clash of the week), so they scroll away with the list */
+  .mode-banner { position: sticky; top: var(--top); z-index: 6; margin: 0 -10px; padding: 6px 8px 6px 10px; border-width: 1px 0; border-radius: 0; }
+  .mode-banner .btn { min-height: var(--h); }   /* finger-sized, like every control on a phone */
+  .mode-banner:not([hidden]) ~ .list-view .list-figures { position: static; }
+  .bid-list { scroll-margin-top: calc(var(--top) + 10px); }   /* "Done" scrolls to the alternate list: its heading stays below the top bar */
   /* the forecast in two lines: what you pay, then what comes back */
   .forecast .sep { display: none; }
   .forecast .sep + .part { display: block; }

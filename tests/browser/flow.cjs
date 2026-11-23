@@ -354,13 +354,106 @@ async function run(browserType, label, options) {
   check(n("the order of the alternate list does not count, so no arrows"), (await moved.getByRole("button", { name: "To primary list" }).isVisible()) && (await moved.getByRole("button", { name: "Move up" }).count()) === 0);
   await page.keyboard.press("Escape");
   check(n("Esc folds the card"), !(await moved.getByRole("button", { name: "Remove" }).isVisible()));
-  await page.locator("#bid-lists").getByRole("button", { name: "Add alternate course" }).click();
-  await page.getByLabel("Search a course for the alternate list").fill("family business");
-  await page.waitForTimeout(120);
-  await page.getByRole("button", { name: "Add Family Business to the alternate list" }).click();
-  await page.waitForTimeout(250);
-  check(n("the alternate list has its own way in"), (await page.locator("#bid-lists > section").nth(1).textContent()).includes("Family Business"));
-  check(n("the alternate list says it needs a bid"), (await page.locator("#bid-lists > section").nth(1).textContent()).includes("Needs a bid, holds no points."));
+  /* ---- the alternate list is filled in the week: "Add alternate course" turns the list on the left into the way to it.
+     A band above the list says so, a plus puts a course on the alternate list, Done or Esc leads back to Bids.
+     The week shows the mandatory courses as always, the primary ones stepped back, the alternates in full.
+     In its own block, so that its names stay its own ---- */
+  {
+    const toBids = async () => { if (phone) await page.locator(".tabbar [data-tab=bids]").click(); else await page.locator("#tab-bids").click(); await page.waitForTimeout(150); };
+    const band = page.locator("#alternate-banner");
+    const addCard = page.locator("#bid-lists").getByRole("button", { name: "Add alternate course" });
+    const alternates = () => page.locator("#bid-lists > section").nth(1).textContent();
+    const lookOf = (name) => page.locator("#week .block", { hasText: name }).first().evaluate((block) => {
+      const style = getComputedStyle(block);
+      return { faded: block.classList.contains("faded"), edge: style.borderTopStyle, fill: style.backgroundColor };
+    });
+    check(n("the band of the alternate list is not there before it is asked for"), await band.isHidden());
+    await addCard.click();
+    await page.waitForTimeout(250);
+    check(n("Add alternate course says above the list where a plus goes now"), (await band.isVisible()) && (await band.textContent()).replace(/\s+/g, " ").includes("Adding to your alternate list. + puts a course there.")
+      && (await band.getByRole("button", { name: "Done" }).isVisible()) && (await page.locator("#courses").isVisible()), await band.textContent());
+    check(n("and opens no search in the Bids tab"), (await page.getByLabel("Search a course for the alternate list").count()) === 0);
+    if (phone) check(n("a phone starts on the list, not on the week"), !(await page.locator("#week").isVisible()) && !(await page.locator("#pane-bids").isVisible()));
+    else check(n("the week comes up beside the list"), (await page.locator("#tab-week").getAttribute("aria-selected")) === "true" && (await page.locator("#week").isVisible()));
+    await toWeek();
+    const primaryLook = await lookOf("Introduction to Programming");
+    const mandatoryLook = await lookOf("Advanced Strategy");
+    check(n("in that week a primary course steps back to a dashed outline and does not go"), primaryLook.faded && primaryLook.edge === "dashed" && primaryLook.fill === "rgba(0, 0, 0, 0)", JSON.stringify(primaryLook));
+    check(n("a mandatory course stays as it is"), !mandatoryLook.faded && mandatoryLook.edge === "solid" && mandatoryLook.fill !== "rgba(0, 0, 0, 0)", JSON.stringify(mandatoryLook));
+    await toCourses();
+    await page.fill("#search", "family business");
+    await page.waitForTimeout(150);
+    if (!phone) {
+      await row("Family Business").locator(".course-main").hover();
+      await page.waitForTimeout(400);
+      check(n("resting on a row still previews its section in the week"), (await page.locator("#week .block.ghost", { hasText: "TXA" }).count()) === 2, await page.locator("#week .block.ghost").count());
+    }
+    const plus = row("Family Business").locator(".pick");
+    const place = async () => { const box = await plus.boundingBox(); return [box.x, box.y, box.width, box.height].map((value) => Math.round(value * 10) / 10).join(" "); };
+    const placeBefore = await place();
+    await plus.click();
+    await page.waitForFunction(() => document.querySelector("#toast") && document.querySelector("#toast").textContent.includes("alternate list"));
+    await page.waitForTimeout(300);
+    check(n("the toast says which list the course went to"), (await toast().textContent()) === "Added Family Business to your alternate list", await toast().textContent());
+    check(n("a plus in that list puts the course on the alternate list: a tick, and the row says alternate"), (await plus.getAttribute("aria-pressed")) === "true"
+      && (await row("Family Business").locator(".course-sub").textContent()).includes("· alternate ·"), await row("Family Business").locator(".course-sub").textContent());
+    check(n("the plus stays where it was pressed"), (await place()) === placeBefore, `${placeBefore} became ${await place()}`);
+    check(n("the band stays while the list is filled"), await band.isVisible());
+    await toWeek();
+    const chosen = page.locator("#week .block.alt", { hasText: "Family Business" });
+    check(n("the new alternate stands in the week in full and says alternate"), (await chosen.count()) === 2 && (await chosen.first().textContent()).includes("alternate")
+      && !(await lookOf("Family Business")).faded && (await lookOf("Family Business")).fill !== "rgba(0, 0, 0, 0)", `${await chosen.count()} blocks`);
+    check(n("the primary course is still there beside it"), (await page.locator("#week .block.faded", { hasText: "Introduction to Programming" }).count()) >= 1);
+    await toCourses();
+    await page.fill("#search", "");
+    await page.waitForTimeout(120);
+    await band.getByRole("button", { name: "Done" }).click();
+    await page.waitForTimeout(250);
+    check(n("Done leads back to Bids and the band goes"), (await band.isHidden()) && (await page.locator("#pane-bids").isVisible()) && (phone || (await page.locator("#tab-bids").getAttribute("aria-selected")) === "true"));
+    check(n("the alternate list has its own way in"), (await alternates()).includes("Family Business"));
+    check(n("the alternate list says it needs a bid"), (await alternates()).includes("Needs a bid, holds no points."));
+    await toWeek();
+    check(n("afterwards the week is the week again: no alternates, nothing stepped back"), (await page.locator("#week .block.alt").count()) === 0 && (await page.locator("#week .block.faded").count()) === 0
+      && (await page.locator("#week .block", { hasText: "Introduction to Programming" }).count()) >= 1);
+    await toCourses();
+    await page.fill("#search", "asian brands");
+    await page.waitForTimeout(150);
+    check(n("and a plus is a plus for the primary list again"), (await row("Asian Brands").locator(".pick").getAttribute("aria-label")) === "Add Asian Brands");
+    await page.fill("#search", "");
+    await page.waitForTimeout(120);
+    await toBids();
+    await addCard.click();
+    await page.waitForTimeout(250);
+    const wasOn = await band.isVisible();
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(250);
+    check(n("Esc ends it too and leads back to Bids"), wasOn && (await band.isHidden()) && (await page.locator("#pane-bids").isVisible()));
+
+    /* spring has no timetable yet and so no week to choose in: there the card still opens its search */
+    await toCourses();
+    await page.selectOption("#set-semester", "Spring");
+    await page.waitForFunction(() => document.querySelector("#no-timetable") && document.querySelector("#set-semester").value === "Spring" && /^(S2|T3)/.test((document.querySelector("#courses .course-sub") || {}).textContent || ""));
+    await page.fill("#search", "ai impact on business");
+    await page.waitForTimeout(150);
+    await row("AI Impact on Business").locator(".pick").click();   /* an elective, so that Bids has its lists */
+    await page.waitForTimeout(300);
+    await page.fill("#search", "");
+    await page.waitForTimeout(120);
+    await toBids();
+    await addCard.click();
+    await page.getByLabel("Search a course for the alternate list").fill("ai for economics");
+    await page.waitForTimeout(120);
+    check(n("in spring, without a week, Add alternate course opens its search"), (await band.isHidden()) && (await page.locator("#pane-bids").isVisible())
+      && (await page.getByRole("button", { name: "Add AI for Economics and Business to the alternate list" }).count()) === 1);
+    await page.getByRole("button", { name: "Add AI for Economics and Business to the alternate list" }).click();
+    await page.waitForTimeout(250);
+    check(n("and the search puts the course on the alternate list"), (await alternates()).includes("AI for Economics and Business"), await alternates());
+    await toCourses();
+    await page.selectOption("#set-semester", "Fall");
+    await page.waitForFunction(() => document.querySelector("#set-semester").value === "Fall" && /^(S1|T1|T2)/.test((document.querySelector("#courses .course-sub") || {}).textContent || ""));
+    await toBids();
+    check(n("back in fall the alternate list is the one that was filled in the week"), (await alternates()).includes("Family Business") && !(await alternates()).includes("AI for Economics"), await alternates());
+  }
   if (!phone) {
     /* a course opened in the list leaves the right half where it is: Bids stays open */
     await page.fill("#search", "programming");
