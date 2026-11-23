@@ -202,6 +202,19 @@ def week_items(items):
     return list(first.values())
 
 
+def alternates_in_week(items):
+    """What the week draws of the alternate list while a student fills it: the first section of each course there,
+    as the week itself is the first section of each course on the other two lists (LN R13).
+
+    It is only drawn. An alternate stays out of the week: it counts for no clash, no ECTS and no "fits my week".
+    """
+    first = {}
+    for item in sorted(items, key=lambda entry: entry["position"]):
+        if item["list"] == "alternate" and item["offering_id"] not in first:
+            first[item["offering_id"]] = item
+    return list(first.values())
+
+
 def conflicts_with_week(item, items, week):
     """LN R13: what a backup or an alternate runs into. It is said in its own row and is not a clash of the week.
 
@@ -1090,6 +1103,7 @@ def state_of(plan):
     items = plan_items(plan)
     week = week_items(items)
     week_ids = {item["id"] for item in week}
+    alternate_ids = {item["id"] for item in alternates_in_week(items)}
     enriched = []
     for item in items:
         offering = all_offerings()[item["offering_id"]]
@@ -1102,6 +1116,7 @@ def state_of(plan):
         row["meetings"] = all_meetings().get(item["section_id"], []) if item["section_id"] else []
         row["analysis"] = bid_analysis(item, plan) if item["list"] != "mandatory" else None
         row["in_week"] = item["id"] in week_ids
+        row["in_alternate_week"] = item["id"] in alternate_ids   # drawn beside the week while the alternate list is filled
         row["conflicts"] = [] if row["in_week"] else conflicts_with_week(item, items, week)
         enriched.append(row)
     clashes = sorted(class_clashes(week) + exam_clashes(week), key=lambda clash: ["exam", "class", "midterm"].index(clash["kind"]))

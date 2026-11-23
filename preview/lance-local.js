@@ -65,6 +65,13 @@
     });
     return [...first.values()];
   }
+  function alternatesInWeek(items) {
+    const first = new Map();
+    items.slice().sort((a, b) => a.position - b.position).forEach((item) => {
+      if (item.list === "alternate" && !first.has(item.offering_id)) first.set(item.offering_id, item);
+    });
+    return [...first.values()];
+  }
   function conflictsWithWeek(item, items, week) {
     const inWeek = new Set(week.map((e) => e.id));
     let others = items.filter((e) => e.offering_id !== item.offering_id && (e.list === "mandatory" || e.list === "primary"));
@@ -366,10 +373,12 @@
     const plan = store.plan;
     const week = weekItems(items);
     const weekIds = new Set(week.map((i) => i.id));
+    const alternateIds = new Set(alternatesInWeek(items).map((i) => i.id));
     const enriched = items.map((item) => {
       const o = offerings[item.offering_id];
       return Object.assign({}, item, {
         in_week: weekIds.has(item.id),
+        in_alternate_week: alternateIds.has(item.id),
         conflicts: weekIds.has(item.id) ? [] : conflictsWithWeek(item, items, week),
         plan_id: plan.id, name: o.name, code: o.code, term: o.term, ects: o.ects,
         section: item.section_id ? sections[item.section_id].section : null,

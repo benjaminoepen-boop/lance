@@ -335,12 +335,16 @@ const Bids = (() => {
       open ? actions(first, listName, index, total) : null);
   }
 
-  /* ---- the alternate list ends in an empty card: it adds a course there, through a search ---- */
+  /* ---- the alternate list ends in an empty card: it adds a course there. With a timetable the course is chosen in the week:
+     planner.js turns the list on the left into the way to the alternate list and shows the week beside it.
+     Without one (spring, not published yet) there is no week to choose in, so the card opens a search right here ---- */
 
   function alternatePicker(state) {
     if (!view.picking) {
-      return el("button", { type: "button", class: "add-card", onclick: () => { view.picking = true; render(Lance.state); } },
-        el("span", { html: Lance.icons.plus }), "Add alternate course");
+      return el("button", {
+        type: "button", class: "add-card",
+        onclick: () => { if (canFillAlternatesInWeek()) startAlternates(); else { view.picking = true; render(Lance.state); } },
+      }, el("span", { html: Lance.icons.plus }), "Add alternate course");
     }
     const results = el("div", {});
     const draw = () => {
