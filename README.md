@@ -10,6 +10,15 @@ Plan your Nova SBE course bidding: see every clash before you bid, what a seat c
 
 One container on a server of our own, behind a proxy that speaks HTTPS. The database file lives in a volume, so plans and shared prices survive a restart and a new version. What runs there is the code on `main` (see *Deploy it* below).
 
+## Team
+
+| Name | Student number | GitHub |
+|---|---|---|
+| Benjamin Oepen | 80566 | benjaminoepen-boop |
+| Niklas NACHNAME | 79150 | NikiNOVA1 |
+| Laurin Engels | NUMMER | Laurinengels0712 |
+| Finn Kindler | NUMMER | finnkindler |
+
 ## Run it
 
 ```
@@ -46,6 +55,18 @@ The tests run on a throwaway database built from the real data. `tests/test_real
 | `docs/usability.md` | Who used it without help, and what changed because of it |
 
 Content and progress are separate: `seed/` is rebuilt into the database whenever it changes; plans and shared prices are never touched by that.
+
+## Why it is built this way, and its limits
+
+- **Flask with HTML pages, not Streamlit.** A week grid, two lists to move courses between, and a layout that works on a phone need control over the page. The rules stay in Python (`logic.py`); the JavaScript in `static/` only draws what the server answers.
+- **One SQLite file on one server.** A class of students writes one change at a time, which SQLite handles. The file lives in a Docker volume, so plans survive a restart and a new version. *Limit:* everything is on that one server; if it is lost, so are the plans and the shared prices.
+- **No accounts.** A plan belongs to a random id in a cookie, and a private link (`/p/<id>`) opens it on another device. Nobody types a password, and Lance holds nothing about a person. *Limit:* whoever has the link has the plan, and a plan without cookie or link cannot be found again.
+- **No outside service while it runs.** Timetables come from Nova's PDFs and ratings from Uni Feedback, read once by the scripts in `scripts/` into `seed/` (`docs/data.md`). If Nova or Uni Feedback is down, Lance keeps working with the data of the last rebuild. *Limit:* it is only as new as that rebuild.
+- **Prices only from real rank lists.** Nova publishes no prices. Lance knows what a seat cost from our own accounts and from rank lists that students share (LN R18 checks every one). *Limit:* a section nobody shared has no price yet.
+- **The spring has no timetable yet.** Nova has not published it; mandatory spring courses are added without a section (A11).
+- **Deployed by hand.** A merge to `main` does not reach the server by itself; whoever merges deploys (*Deploy it*).
+
+How it could change: a hosted database (Postgres) when one server is not enough; a login with the Nova account if plans should follow a student; an automatic deploy after every merge; the spring timetable as soon as Nova publishes it.
 
 ## Show it without a server
 

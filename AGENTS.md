@@ -23,4 +23,4 @@ Screens in `app.py`, rules in `logic.py`, storage in `db.py`. Rules never go int
 
 ## Privacy, no exceptions
 
-Student numbers and other students' ECTS are never read, sent, stored or printed. `data/raw/` is never committed. Room distribution lists are never downloaded.
+Other students' numbers and ECTS are never read, sent, stored or printed; only the team's own student numbers stand in `README.md`, because the course asks for them. Lance needs no keys: never create or commit `.env` files or other files with secrets. `data/raw/` is never committed. Room distribution lists are never downloaded.
