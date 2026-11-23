@@ -1,0 +1,28 @@
+# Every pull request and every push to main: all pytest tests, and the dependencies checked for known vulnerabilities.
+# The click-through in real browsers (tests/browser/flow.cjs) is run by hand before a merge; see AGENTS.md.
+name: tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --locked
+      - run: uv run pytest -q
+
+  dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv export --locked --no-dev --no-hashes --format requirements-txt > requirements.txt
+      - run: uvx pip-audit --requirement requirements.txt
