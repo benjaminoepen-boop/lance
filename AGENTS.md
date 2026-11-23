@@ -16,8 +16,10 @@ Screens in `app.py`, rules in `logic.py`, storage in `db.py`. Rules never go int
 
 ## Rules for changes
 
-- Work on a branch, merge when the tests pass.
-- Write the test first and state the expected result from the brief. Never weaken a test to get green output.
+- Work on a branch, never straight on `main`. Open a pull request and send it to a teammate.
+- The teammate reads *Files changed* and approves or comments. Nobody merges their own pull request without a review.
+- Write the test first and state the expected result from the brief. Never edit, delete or skip a test to get green output; if a test looks wrong, say so and stop.
+- After every change run `uv run pytest` and paste the output. The output is the proof, not a sentence.
 - Check changes to pages in a browser, on a phone-sized window too.
 - Keep the code readable for someone who did not write it: every team member is asked about it in the walkthrough.
 
