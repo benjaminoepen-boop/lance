@@ -2,7 +2,9 @@
 
 Expected: the look changes how things look and never what they mean. Blue still says "click", orange and red still say
 how things stand, so the skin may not redefine those colours; it loads after app.css on every page, from its own address
-only (the page allows nothing else), and it keeps still for anyone who asked for less motion."""
+only (the page allows nothing else), and it keeps still for anyone who asked for less motion. Under the mouse a control
+may change its colour and its light, never its size or its place: a click draws the control again, and a control that
+had grown or moved would jump back and glide out again under the pointer."""
 import re
 from pathlib import Path
 
@@ -33,3 +35,10 @@ def test_the_skin_loads_nothing_from_outside():
 def test_the_skin_keeps_still_when_less_motion_is_asked_for():
     assert "prefers-reduced-motion: reduce" in SKIN
     assert "transform: none" in SKIN.split("prefers-reduced-motion: reduce")[1]
+
+
+def test_no_control_grows_or_moves_under_the_mouse():
+    hover_rules = re.findall(r"([^{}]*:hover[^{}]*)\{([^{}]*)\}", SKIN)
+    assert hover_rules, "the skin still lights what the mouse is on"
+    moving = [selector.strip() for selector, body in hover_rules if re.search(r"transform\s*:\s*(?!none)", body)]
+    assert moving == [], moving

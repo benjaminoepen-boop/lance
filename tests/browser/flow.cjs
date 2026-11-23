@@ -99,10 +99,29 @@ async function run(browserType, label, options) {
   await page.waitForTimeout(120);
 
   /* ---- plus adds at once ---- */
+  /* the top bar before the first elective: "Finish on Nova" turns blue with it and must keep its shape (a phone has no such button) */
+  const barShape = () => page.locator("#next, .top-right > a[href$='/rules']").evaluateAll((nodes) => nodes.map((node) => { const box = node.getBoundingClientRect(); return [Math.round(box.left), Math.round(box.width)]; }));
+  const barBefore = phone ? null : await barShape();
   await row("Introduction to Programming").locator(".pick").click();
   await page.waitForFunction(() => document.querySelector("#toast") && !document.querySelector("#toast").hidden);
   check(n("the toast names the section"), (await toast().textContent()).includes("Introduction to Programming TXA"), await toast().textContent());
   check(n("the plus became a tick"), (await row("Introduction to Programming").locator(".pick").getAttribute("aria-pressed")) === "true");
+  if (!phone) {
+    check(n("the way to Nova turned blue and kept its shape, the bar beside it its place"), (await page.locator("#next.primary").count()) === 1 && JSON.stringify(await barShape()) === JSON.stringify(barBefore), `${JSON.stringify(barBefore)} became ${JSON.stringify(await barShape())}`);
+    /* under the mouse a control changes its colour, never its size or its place: measured after every glide has ended */
+    const sizes = [];
+    for (const control of [row("Introduction to Programming").locator(".pick"), row("Introduction to Programming").locator(".tile:not(.on)").first(), row("Introduction to Programming").locator(".course-main")]) {
+      await page.mouse.move(2, 2);
+      await page.waitForTimeout(350);
+      const rest = await control.boundingBox();
+      await control.hover();
+      await page.waitForTimeout(350);
+      const under = await control.boundingBox();
+      sizes.push([rest, under].map((box) => [box.x, box.y, box.width, box.height].map((value) => Math.round(value * 10) / 10).join(" ")));
+    }
+    await page.mouse.move(2, 2);
+    check(n("a control keeps its size and its place under the mouse"), sizes.every(([rest, under]) => rest === under), JSON.stringify(sizes));
+  }
   check(n("a row of the list shows the rating from Uni Feedback"), (await row("Introduction to Programming").locator(".course-sub").textContent()).includes("★ 4.6"), await row("Introduction to Programming").locator(".course-sub").textContent());
   check(n("the row folds open with its sections to pick from"), (await row("Introduction to Programming").locator(".tile").count()) === 3);
   check(n("the section it took is marked"), (await row("Introduction to Programming").locator(".tile.on").textContent()).includes("TXA"));
@@ -171,9 +190,16 @@ async function run(browserType, label, options) {
     check(n("the sections wait in the week while the row is open"), (await page.locator("#week .block.ghost").count()) === 10, await page.locator("#week .block.ghost").count());
     check(n("a clashing one is marked there too"), (await page.locator("#week .block.ghost.bad").count()) === 1);
   }
+  const tileTop = async () => Math.round((await strategy.locator(".tile", { hasText: "TXC" }).boundingBox()).y - (await strategy.boundingBox()).y);
+  const topBefore = await tileTop();
   await strategy.locator(".tile", { hasText: "TXC" }).click();
+  /* the glide of folding open belongs to the moment a row opens: drawn again while it is open, the row has none */
+  await page.waitForFunction(() => document.querySelector("#courses .course.open .tile.on"));
+  const foldedAgain = await strategy.locator(".course-more").evaluate((more) => getComputedStyle(more).animationName);
   await page.waitForTimeout(250);
   check(n("the chosen tile is marked"), (await strategy.locator(".tile.on").textContent()).includes("TXC"));
+  check(n("the picked tile stays where it was pressed"), (await tileTop()) === topBefore, `${topBefore} became ${await tileTop()}`);
+  check(n("a pick does not fold the open row open again"), foldedAgain === "none", foldedAgain);
   await toWeek();
   check(n("the chosen section is in the week"), await page.locator("#week .block", { hasText: "Advanced Strategy" }).first().isVisible());
   await toCourses();
@@ -286,6 +312,7 @@ async function run(browserType, label, options) {
   await programming.locator(".quick button", { hasText: "+10 %" }).click();
   await page.waitForTimeout(300);
   check(n("the amount is taken"), (await bid.inputValue()) === "132", await bid.inputValue());
+  check(n("a change does not fold the open card open again"), (await programming.locator(".bid-details").evaluate((details) => getComputedStyle(details).animationName)) === "none");
   check(n("the row answers in words"), (await status.textContent()).startsWith("Enough"), await status.textContent());
   await bid.fill("500");
   await page.waitForTimeout(600);
