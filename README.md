@@ -4,6 +4,12 @@ Plan your Nova SBE course bidding: see every clash before you bid, what a seat c
 
 *Lance* is Portuguese for a bid. Team project for Introduction to Programming, Nova SBE 2026/27. It grew out of the solo project Festival Architect (see the history of this repository): a stage became a student's week, an artist a course section, a fee a bid, the festival budget the points balance. Not an official Nova SBE system; bids are placed on Nova's platform only.
 
+## Where it runs
+
+**https://lance.152-53-146-182.sslip.io**
+
+One container on a server of our own, behind a proxy that speaks HTTPS. The database file lives in a volume, so plans and shared prices survive a restart and a new version. What runs there is the code on `main` (see *Deploy it* below).
+
 ## Run it
 
 ```
