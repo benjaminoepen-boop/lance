@@ -1,6 +1,6 @@
 # Follow the click
 
-Each member is asked about code they did not write. Six clicks, from the button to the database. Pick any two and explain them without notes, then say what a refused bid does.
+Each member is asked about code they did not write. Nine clicks, from the button to the database. Pick any two and explain them without notes, then say what a refused bid does.
 
 | Click | In the browser | Address in `app.py` | Rule in `logic.py` | Storage in `db.py` | Test | Rule |
 |---|---|---|---|---|---|---|

@@ -32,7 +32,7 @@ For the live demonstration at the deployed address. Press the buttons in this or
 | 2:30 | Tab *Bids* on the right | "One card per course: my bid in its field, and last round's answer at the same place in every card. 165 of 165 points held while bidding. If last round repeats I pay about 132 and 33 come back: that is what the platform really charged this account. (164 + 100) / 2." |
 | 3:00 | Click the card *Introduction to Programming* | "The sections in the order Nova tries them, each with last round's bids, darker where they won. The rank lists come from students, without names." |
 | 3:30 | *Finish on Nova*, top right | "Nothing has been sent. Only Nova's platform counts. Copy list, calendar file with every class on its real date and a reminder the day before bidding opens." |
-| 4:00 | *the fall lists are out*: paste a real export, the counter rises. Paste one with a student column | "Refused whole. Only totals are kept." |
+| 4:00 | *Share my rank lists* on the last step: paste a real export, the counter rises. Paste one with a student column | "Refused whole. Only totals are kept." |
 | 4:40 | *Open on another device*, then the link on a phone | "The same plan on the phone, without an account." |
 
 Keep a browser window with this plan open as a spare. Do not show the static preview: it is not the deployed app.
