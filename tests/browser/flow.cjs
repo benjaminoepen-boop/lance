@@ -398,12 +398,7 @@ async function run(browserType, label, options) {
   check(n("a closed round is called practice"), (await page.locator("#round-line").textContent()).includes("practice"), await page.locator("#round-line").textContent());
   check(n("the lists are there"), (await page.locator("#platform-lists").textContent()).includes("TXC 120"), await page.locator("#platform-lists").textContent());
   check(n("with nothing missing there is no warning"), !(await page.locator("#before").isVisible()), await page.locator("#before-list").textContent());
-  await page.locator("#checklist summary").click();
-  await page.locator('[data-check=fees]').check();
-  await page.reload();
-  await page.waitForSelector("#platform-lists .platform-row");
-  await page.locator("#checklist summary").click();
-  check(n("the checklist remembers"), await page.locator('[data-check=fees]').isChecked());
+  check(n("the last step asks students who bid before for their rank lists"), await page.locator("#share-ask-title").isVisible());
 
   /* ---- a new programme changes what is mandatory ---- */
   await page.goto(url("/"));

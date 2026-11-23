@@ -18,15 +18,19 @@
       <button type="button" class="btn" id="copy-link" data-link="{{ url_for('open_plan', plan_id=plan.id, _external=True) }}">Open on another device</button>
     </div>
   </section>
-  <details class="more" id="checklist">
-    <summary>Before you start on the platform</summary>
-    <div class="tight">
-      {% for key, text in [('fees','Fees are paid: open payments lock you out.'),('browser','One browser, one tab, cookies cleared.'),('saved','Afterwards: saved on the platform, confirmation mail arrived.')] %}
-      <label class="check small"><input type="checkbox" data-check="{{ key }}"><span>{{ text }}</span></label>
-      {% endfor %}
+  {#- Only a student who has bid before has rank lists, so the card says whom it asks, and why now:
+      they are about to open Nova's platform anyway, where last round's lists still are -#}
+  <section class="card share-ask" aria-labelledby="share-ask-title">
+    <h2 id="share-ask-title">Have you bid in a round before?</h2>
+    <p>If this is not your first semester at Nova SBE, you already took part in a bidding round. Nova's platform still shows you every bid that was placed in your sections back then, in the tab <i>Rank</i>. Those rank lists are the only record of how many bidding points a place in a course has needed in past rounds, and that history is what Lance's analysis of your bids is built on.</p>
+    <p>First semester at Nova SBE? Then there are no rank lists of yours yet. Come back after this round and share them, so that the next students know how many points a place needed.</p>
+    <p>The link below takes you to a short video that shows how to share your rank lists, step by step.</p>
+    <div class="share-ask-go">
+      <a class="btn" href="{{ url_for('share') }}">Share my rank lists</a>
+      <span class="meta">{{ coverage.covered }} of {{ coverage.total }} sections have bidding history so far</span>
     </div>
-  </details>
-  <p class="meta">Share your rank lists: <a href="{{ url_for('share') }}">the fall lists are out</a>. Student project, not an official Nova SBE system.</p>
+  </section>
+  <p class="meta">Student project, not an official Nova SBE system.</p>
 </div>
 {% endblock %}
 {% block scripts %}<script src="{{ url_for('static', filename='nova.js') }}"></script>{% endblock %}

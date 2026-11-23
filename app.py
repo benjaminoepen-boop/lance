@@ -106,7 +106,7 @@ def course(offering_id):
 @app.route("/nova")
 def nova():
     plan, is_new = current_plan()
-    return page("nova.html", plan, is_new, active="nova", platform_list=logic.platform_list(plan))
+    return page("nova.html", plan, is_new, active="nova", platform_list=logic.platform_list(plan), coverage=logic.coverage())
 
 
 @app.route("/rules")
