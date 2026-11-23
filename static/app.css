@@ -255,7 +255,8 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 .planner { display: grid; grid-template-columns: minmax(360px, 2fr) minmax(0, 3fr); gap: var(--gap); height: calc(100vh - var(--top) - var(--gap) * 2); min-height: 560px; }
 .chooser { min-height: 0; display: flex; flex-direction: column; gap: 10px; min-width: 0; background: var(--card); border: 1px solid var(--line); border-radius: var(--r-card); padding: 12px 14px 0; }
 .scope { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; min-width: 0; }
-#set-programme, #set-semester { flex: none; }
+#set-programme, #set-semester, #set-area { flex: none; }
+#set-area { max-width: 100%; text-overflow: ellipsis; }   /* "Strategy and International Business" is long: it shortens rather than push the row wider */
 .scope .seg { margin-left: auto; }
 .list-view { display: flex; flex-direction: column; gap: 10px; min-height: 0; flex: 1; }
 .tools { display: flex; gap: 8px; }
@@ -274,6 +275,15 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 .group-name { font-size: 15px; font-weight: 600; color: var(--ink); }
 .group .count, h3 .count { font-size: 13px; font-weight: 400; color: var(--ink-3); font-variant-numeric: tabular-nums; }
 .group .i-chev { margin-left: auto; color: var(--ink-2); }
+/* LN R20: the area of expertise. Its progress sits under its heading: a grey bar (bars cannot be clicked), then the words.
+   Core courses carry a small grey tag after their name; status colours stay for how things stand */
+.area-progress { display: flex; flex-direction: column; gap: 4px; padding: 2px calc(var(--control) + 18px) 6px 12px; font-size: 13px; color: var(--ink-2); }
+.area-bar { display: block; height: 4px; border-radius: 2px; background: var(--bar); overflow: hidden; }
+.area-bar > span { display: block; height: 100%; background: var(--bar-fill); border-radius: 2px; }
+.area-progress .status.ok { color: var(--green); }
+.area-words { line-height: 1.4; }
+.area-rule { line-height: 1.4; color: var(--ink); }   /* the rule of the area, above its bar: what counts, before how far you are */
+.area-tag { display: inline-block; margin-left: 6px; padding: 0 6px; border-radius: 9px; background: var(--chip); color: var(--ink-2); font-size: 11px; font-weight: 500; line-height: 17px; vertical-align: 1px; }
 /* a course row: the place of the dot, name and facts, the chevron, then the control in a fixed column at the right edge.
    Everything but the control opens the row. White at rest, paper under the mouse; open, a paper surface holding white section tiles. */
 .course { border-radius: var(--r-row); transition: background-color .15s; }
@@ -556,6 +566,8 @@ ul.plain { margin: 0; padding-left: 18px; display: flex; flex-direction: column;
   .course-main { min-height: 56px; padding: 6px 6px 6px 8px; }
   .course-more { padding-left: 24px; }
   .group { padding-left: 8px; padding-right: calc(var(--control) + 14px); }
+  .area-progress { padding-left: 8px; padding-right: 8px; }
+  #set-area { order: 5; flex-basis: 100%; }   /* a phone: the area gets a line of its own under programme and semester */
   .tile { min-height: 62px; }
   .time { display: inline; }
   .plan-head { padding: 10px 12px 10px; }

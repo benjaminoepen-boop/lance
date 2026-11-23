@@ -30,7 +30,7 @@ def data_file():
     exams = {f"{code}-{term}": rows for (code, term), rows in logic.all_exams().items()}
     return {
         "offerings": offerings, "sections": db.load_sections(), "meetings": meetings, "sessions": sessions, "exams": exams,
-        "kinds": kinds, "cutoffs": db.load_cutoffs(), "histograms": db.load_histograms(), "calendar": db.load_calendar(),
+        "kinds": kinds, "areas": {programme: db.load_areas(programme) for programme in db.load_programmes()}, "cutoffs": db.load_cutoffs(), "histograms": db.load_histograms(), "calendar": db.load_calendar(),
         "example": [list(row) for row in logic.EXAMPLE_PLAN], "coverage_total": logic.coverage("Fall")["total"],
     }
 

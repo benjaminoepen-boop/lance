@@ -89,6 +89,15 @@ CREATE TABLE course_ratings (         -- what students say on Uni Feedback, an i
     workload  TEXT NOT NULL,         -- Very light, Light, Moderate, Heavy, Very heavy
     source_id TEXT NOT NULL          -- the course's number on uni-feedback.com, for the link to its reviews
 );
+CREATE TABLE areas (                  -- LN R20: the areas of expertise of each programme and their courses
+    programme TEXT NOT NULL,
+    area      TEXT NOT NULL,
+    code      TEXT NOT NULL,         -- empty for a course taught outside Nova SBE ('elsewhere')
+    term      TEXT NOT NULL,
+    name      TEXT NOT NULL,
+    ects      REAL NOT NULL,
+    role      TEXT NOT NULL          -- core, core_optional, elective, elsewhere
+);
 CREATE INDEX sessions_by_section ON sessions (section_id);
 CREATE INDEX meetings_by_section ON meetings (section_id);
 CREATE INDEX sections_by_offering ON sections (offering_id);
@@ -101,7 +110,8 @@ CREATE TABLE IF NOT EXISTS plans (
     semester   TEXT NOT NULL,
     points     INTEGER NOT NULL,     -- the Balance the student typed; 0 while they have not (then LN R17 estimates)
     has_bonus  INTEGER NOT NULL,     -- 1 when the student expects the 10 % rank bonus
-    created_at TEXT NOT NULL
+    created_at TEXT NOT NULL,
+    area       TEXT NOT NULL DEFAULT ''   -- LN R20: the chosen area of expertise, empty for none
 );
 CREATE TABLE IF NOT EXISTS plan_items (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -155,7 +165,7 @@ CREATE TABLE IF NOT EXISTS bid_histogram (
 """
 
 CONTENT_TABLES = ["offerings", "sections", "meetings", "sessions", "exams", "programme_offerings", "calendar", "syllabi",
-                  "course_ratings"]
+                  "course_ratings", "areas"]
 
 
 def connect():
@@ -204,6 +214,10 @@ def init_db():
     os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
     with closing(connect()) as connection:
         connection.executescript(PROGRESS_SCHEMA)
+        # A database from before areas of expertise keeps its plans and gets the new column, empty.
+        columns = [row["name"] for row in connection.execute("PRAGMA table_info(plans)")]
+        if "area" not in columns:
+            connection.execute("ALTER TABLE plans ADD COLUMN area TEXT NOT NULL DEFAULT ''")
         connection.execute("CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT NOT NULL)")
         fingerprint = seed_fingerprint()
         row = connection.execute("SELECT value FROM meta WHERE key = 'seed'").fetchone()
@@ -309,6 +323,12 @@ def load_programme_kinds(programme):
     return {row["offering_id"]: row["kind"] for row in rows}
 
 
+def load_areas(programme):
+    """The rows of seed/areas.csv for one programme: every area with its courses."""
+    with closing(connect()) as connection:
+        return rows_as_dicts(connection.execute("SELECT * FROM areas WHERE programme = ? ORDER BY area, term, name", (programme,)))
+
+
 def load_programmes():
     with closing(connect()) as connection:
         rows = connection.execute("SELECT DISTINCT programme FROM programme_offerings ORDER BY programme").fetchall()
@@ -404,6 +424,12 @@ def update_plan(plan_id, programme, semester, points, has_bonus):
     with closing(connect()) as connection:
         connection.execute("UPDATE plans SET programme = ?, semester = ?, points = ?, has_bonus = ? WHERE id = ?",
                            (programme, semester, points, 1 if has_bonus else 0, plan_id))
+        connection.commit()
+
+
+def update_area(plan_id, area):
+    with closing(connect()) as connection:
+        connection.execute("UPDATE plans SET area = ? WHERE id = ?", (area, plan_id))
         connection.commit()
 
 

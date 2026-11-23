@@ -102,7 +102,7 @@ def test_spring_works_without_a_timetable(client):
 def test_the_calendar_file_has_every_class_on_its_real_date(client):
     client.post("/api/add", json={"section_id": "2477-S1-TXB"})
     body = client.get("/plan.ics").data.decode()
-    assert body.count("BEGIN:VEVENT") == 13     # 12 classes and the exam
+    assert body.count("DTSTART;TZID=Europe/Lisbon:") == 13     # 12 classes and the exam; the bidding windows are all-day
     assert "DTSTART;TZID=Europe/Lisbon:20261204T123000" in body
     assert "Make-up for 1 Dec" in body
     assert "DTSTART;TZID=Europe/Lisbon:20261219T173000" in body

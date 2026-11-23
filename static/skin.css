@@ -1,0 +1,119 @@
+/* Aurora: a look on top of app.css. It changes how things look, never what they mean:
+   blue still says "click", orange and red still say how things stand (tests/test_skin.py checks that the skin leaves those colours alone).
+   Delete the <link> in base.html to get the plain Lance back. */
+
+:root {
+  --g1: #4f46ff; --g2: #00a3ff;                 /* the gradient of the main button and the brand mark */
+  --aur1: rgba(120, 100, 255, .30); --aur2: rgba(0, 190, 255, .24); --aur3: rgba(255, 120, 200, .20);
+  --glass: color-mix(in srgb, var(--card) 70%, transparent);
+  --glass-edge: rgba(255, 255, 255, .75);
+  --lift: 0 18px 50px -22px rgba(70, 60, 200, .45), 0 2px 6px rgba(20, 20, 60, .05);
+  --glow: 0 8px 24px -8px rgba(79, 70, 255, .65);
+}
+:root[data-theme="dark"] {
+  --g1: #8b9bff; --g2: #5eead4;
+  --aur1: rgba(110, 90, 255, .55); --aur2: rgba(0, 200, 255, .34); --aur3: rgba(255, 80, 180, .28);
+  --glass-edge: rgba(255, 255, 255, .09);
+  --lift: 0 24px 60px -24px rgba(0, 0, 0, .8), 0 0 0 1px rgba(255, 255, 255, .02);
+  --glow: 0 8px 28px -8px rgba(139, 155, 255, .7);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --g1: #8b9bff; --g2: #5eead4;
+    --aur1: rgba(110, 90, 255, .55); --aur2: rgba(0, 200, 255, .34); --aur3: rgba(255, 80, 180, .28);
+    --glass-edge: rgba(255, 255, 255, .09);
+    --lift: 0 24px 60px -24px rgba(0, 0, 0, .8), 0 0 0 1px rgba(255, 255, 255, .02);
+    --glow: 0 8px 28px -8px rgba(139, 155, 255, .7);
+  }
+}
+
+/* the page: three soft lights behind everything */
+body {
+  background:
+    radial-gradient(900px 520px at 6% -8%, var(--aur1), transparent 62%),
+    radial-gradient(780px 500px at 96% 0%, var(--aur2), transparent 58%),
+    radial-gradient(720px 620px at 72% 112%, var(--aur3), transparent 62%),
+    var(--paper);
+  background-attachment: fixed;
+  letter-spacing: -.003em;
+}
+::selection { background: color-mix(in srgb, var(--g1) 35%, transparent); }
+* { scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--ink-3) 40%, transparent) transparent; }
+
+/* glass: the top bar, both halves, the bid cards */
+.topbar, .tabbar {
+  background: color-mix(in srgb, var(--card) 62%, transparent);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6); backdrop-filter: blur(20px) saturate(1.6);
+  border-color: var(--glass-edge);
+}
+.chooser, .card, .bid-row, details.rule, .picker {
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(18px) saturate(1.5); backdrop-filter: blur(18px) saturate(1.5);
+  border: 1px solid var(--glass-edge);
+  border-radius: 20px;
+  box-shadow: var(--lift);
+}
+.plan-head { border-bottom-color: var(--glass-edge); }
+.bid-row, details.rule { border-radius: 16px; box-shadow: none; }
+.bid-row:hover, details.rule:hover { box-shadow: var(--lift); }
+
+/* the brand mark glows */
+.brand i { background: linear-gradient(135deg, var(--g1), var(--g2)); border-radius: 9px; box-shadow: var(--glow); }
+.brand { font-weight: 700; letter-spacing: -.02em; }
+h1, h2 { letter-spacing: -.02em; }
+.plan-title h2 { font-size: 20px; font-weight: 700; }
+
+/* the one primary button: a gradient with a glow, a pill */
+.btn.primary {
+  background: linear-gradient(135deg, var(--g1), var(--g2)); border-color: transparent; color: var(--on-blue);
+  border-radius: 999px; padding: 0 18px; box-shadow: var(--glow); transition: transform .15s, box-shadow .2s, filter .2s;
+}
+@media (hover: hover) {
+  .btn.primary:hover:not(:disabled) { background: linear-gradient(135deg, var(--g1), var(--g2)); border-color: transparent; color: var(--on-blue); filter: brightness(1.08) saturate(1.15); transform: translateY(-1px); box-shadow: 0 12px 30px -8px color-mix(in srgb, var(--g1) 80%, transparent); }
+}
+.btn { border-radius: 12px; transition: border-color .15s, background-color .15s, transform .15s, box-shadow .2s; }
+.btn.tertiary { border-radius: 12px; }
+.field { border-radius: 12px; background: color-mix(in srgb, var(--card) 80%, transparent); transition: border-color .15s, box-shadow .2s; }
+.field:focus-visible, .search input:focus-visible { outline: none; border-color: var(--blue); box-shadow: 0 0 0 4px color-mix(in srgb, var(--blue) 22%, transparent); }
+:focus-visible { outline-width: 2px; outline-color: var(--blue); }
+
+/* the half and the tabs */
+.seg { background: color-mix(in srgb, var(--chip) 75%, transparent); border-radius: 12px; padding: 3px; }
+.seg > * { border-radius: 9px; }
+.seg > .on { background: var(--card); box-shadow: 0 2px 8px -2px rgba(40, 30, 120, .25); }
+.tab[aria-selected=true]::after { height: 3px; border-radius: 3px; background: linear-gradient(90deg, var(--g1), var(--g2)); box-shadow: 0 0 14px color-mix(in srgb, var(--g1) 70%, transparent); }
+.tab { transition: color .15s; }
+
+/* the course list: rows that lift */
+.course { border-radius: 14px; transition: background-color .2s, transform .2s, box-shadow .25s; }
+.course.open { background: color-mix(in srgb, var(--chip) 55%, transparent); box-shadow: inset 0 0 0 1px var(--glass-edge); }
+@media (hover: hover) {
+  .course:not(.open):hover { background: color-mix(in srgb, var(--blue) 7%, transparent); transform: translateX(2px); box-shadow: inset 3px 0 0 var(--blue); }
+}
+.pick { border-radius: 12px; transition: transform .15s, background-color .15s, border-color .15s, box-shadow .2s; }
+@media (hover: hover) { .pick:hover { transform: scale(1.08); } }
+.pick[aria-pressed=true] { background: linear-gradient(135deg, var(--g1), var(--g2)); border-color: transparent; color: var(--on-blue); box-shadow: var(--glow); }
+.tile { border-radius: 12px; transition: border-color .15s, transform .15s, box-shadow .2s; }
+@media (hover: hover) { .tile:hover { transform: translateY(-2px); box-shadow: 0 10px 22px -12px color-mix(in srgb, var(--blue) 60%, transparent); } }
+.tile.on, .tile.on:hover { box-shadow: 0 0 0 1px var(--blue), 0 10px 24px -12px color-mix(in srgb, var(--blue) 70%, transparent); transform: none; }
+
+/* the week: blocks that glow in the colour of their course */
+.week { border-radius: 14px; }
+.block { border-radius: 12px; box-shadow: 0 8px 20px -12px var(--course), 0 1px 0 rgba(255, 255, 255, .25) inset; transition: transform .15s, box-shadow .2s; }
+@media (hover: hover) { .block:not(.ghost):hover { transform: translateY(-1px) scale(1.01); box-shadow: 0 14px 28px -12px var(--course); z-index: 3; } }
+.block.clash { box-shadow: 0 0 0 1px var(--orange-line), 0 10px 24px -10px var(--orange-line); }
+.block.hot, .block.open { box-shadow: 0 0 0 2px var(--blue), 0 12px 28px -10px color-mix(in srgb, var(--blue) 70%, transparent); }
+
+/* figures, badges, status */
+.badge { border-radius: 999px; padding: 0 9px; font-weight: 600; }
+.figures b, .figure b { letter-spacing: -.01em; }
+.clash-line { border-radius: 12px; }
+.plan-table tbody tr { transition: background-color .15s; }
+@media (hover: hover) { .plan-table tbody tr.go-row:hover { background: color-mix(in srgb, var(--blue) 8%, transparent); } }
+.toast { border-radius: 999px; -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); box-shadow: var(--lift); }
+
+/* a phone: the bar at the bottom glows too, the active step gets the gradient */
+.tabbar a.on { color: var(--blue); }
+.tabbar a.on svg { filter: drop-shadow(0 0 8px color-mix(in srgb, var(--blue) 65%, transparent)); }
+
+@media (prefers-reduced-motion: reduce) { .course, .pick, .tile, .block, .btn { transform: none !important; } }
