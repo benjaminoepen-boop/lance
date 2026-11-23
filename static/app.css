@@ -509,6 +509,11 @@ details.about[open] > summary { display: none; }
 .before-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .before-row .go { flex: none; font-size: 13px; }
 .row-gap { display: flex; flex-wrap: wrap; gap: 8px; }
+/* the Finish page asks students who bid before for their rank lists: a card of its own, the button with how far the prices reach */
+.share-ask { display: flex; flex-direction: column; gap: 8px; }
+.share-ask > h2 { margin-bottom: 2px; }
+.share-ask p { line-height: 1.5; }
+.share-ask-go { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-top: 4px; }
 /* the answer a (?) leads to: below the bar on top, ringed like a focused control, because that is where you are */
 .answer { scroll-margin-top: calc(var(--top) + var(--gap)); }
 .answer:target { outline: 2px solid var(--blue); outline-offset: 2px; }

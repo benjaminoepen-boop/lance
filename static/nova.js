@@ -77,13 +77,5 @@ const linkButton = document.getElementById("copy-link");
 if (linkButton.dataset.link) {
   linkButton.addEventListener("click", () => Lance.copy(linkButton.dataset.link, "Link copied. It opens this same plan on another device, so keep it to yourself."));
 }
-/* the checklist remembers its ticks on this device; if the browser refuses, it simply starts empty */
-document.querySelectorAll("[data-check]").forEach((box) => {
-  const key = `lance-check-${box.dataset.check}`;
-  try { box.checked = localStorage.getItem(key) === "1"; } catch (error) { /* private window */ }
-  box.addEventListener("change", () => {
-    try { localStorage.setItem(key, box.checked ? "1" : "0"); } catch (error) { /* private window */ }
-  });
-});
 Lance.onChange(render);
 Lance.load();
