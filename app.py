@@ -277,7 +277,7 @@ def api_settings():
     plan, _ = current_plan()
     data = payload()
     error = logic.update_settings(plan, data.get("programme", plan["programme"]), data.get("semester", plan["semester"]),
-                                  data.get("points"), bool(data.get("has_bonus", plan["has_bonus"])), area=data.get("area"))
+                                  data.get("points"), logic.checked_bonus(data.get("has_bonus"), plan["has_bonus"]), area=data.get("area"))
     return answer(plan, error)
 
 

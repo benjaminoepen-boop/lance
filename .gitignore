@@ -10,3 +10,8 @@ data/
 data/raw/
 .gstack/
 preview/out/
+
+# secrets never enter the repository (AGENTS.md): ignored before any exists; an example with placeholders may be committed
+.env
+.env.*
+!.env.example
