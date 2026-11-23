@@ -4,6 +4,12 @@ Plan your Nova SBE course bidding: see every clash before you bid, what a seat c
 
 *Lance* is Portuguese for a bid. Team project for Introduction to Programming, Nova SBE 2026/27. It grew out of the solo project Festival Architect (see the history of this repository): a stage became a student's week, an artist a course section, a fee a bid, the festival budget the points balance. Not an official Nova SBE system; bids are placed on Nova's platform only.
 
+## What it is for
+
+- **Every course in one place.** A course's timetable, exam dates, course sheet and reviews are spread over SharePoint, Moodle and Uni Feedback. Lance shows them in one list, for your programme and your area of expertise, and counts the ECTS your area needs.
+- **Clashes before you bid.** A class or an exam at the same time is said in the row before the plus, date by date, and shown in the week.
+- **Bids with open eyes.** The points you have left while you plan and, where students shared last round's rank lists, what a seat cost.
+
 ## Where it runs
 
 **https://lance.152-53-146-182.sslip.io**
@@ -21,7 +27,11 @@ One container on a server of our own, behind a proxy that speaks HTTPS. The data
 
 ## Run it
 
+You need [uv](https://docs.astral.sh/uv/getting-started/installation/). It installs Python 3.12 and the dependencies by itself.
+
 ```
+git clone https://github.com/benjaminoepen-boop/lance.git
+cd lance
 uv sync
 uv run flask --app app run --port 8770
 ```
@@ -50,8 +60,8 @@ The tests run on a throwaway database built from the real data. `tests/test_real
 | `scripts/` | How the content is made from Nova's PDFs and from Uni Feedback (`docs/data.md`) |
 | `tests/` | One test file per group of rules |
 | `docs/product-brief.md` | Requirements, rules and acceptance scenarios |
-| `docs/walkthrough.md` | Six clicks from the button to the database |
-| `docs/demo.md` | The five minutes of the live demonstration |
+| `docs/walkthrough.md` | Nine clicks from the button to the database |
+| `docs/demo.md` | The live demonstration, click by click |
 | `docs/usability.md` | Who used it without help, and what changed because of it |
 | `docs/tests.md` | What the tests check, what they do not, and how much of the code runs in a test |
 
@@ -65,7 +75,7 @@ Content and progress are separate: `seed/` is rebuilt into the database whenever
 - **No outside service while it runs.** Timetables come from Nova's PDFs and ratings from Uni Feedback, read once by the scripts in `scripts/` into `seed/` (`docs/data.md`). If Nova or Uni Feedback is down, Lance keeps working with the data of the last rebuild. *Limit:* it is only as new as that rebuild.
 - **Prices only from rank lists.** Nova publishes no prices. Lance knows what a seat cost from our own accounts and from rank lists that students share; LN R18 refuses every list that could not be real, but it cannot prove that one is. *Limit:* a section nobody shared has no price yet, and a made-up list that looks real could still move a shared price; the prices from our own accounts are never replaced.
 - **The spring has no timetable yet.** Nova has not published it; mandatory spring courses are added without a section (A11).
-- **Deployed by hand.** A merge to `main` does not reach the server by itself; whoever merges deploys (*Deploy it*).
+- **Deployed by hand.** A merge to `main` does not reach the server by itself; one of us deploys after a merge (*Deploy it*).
 
 How it could change: a hosted database (Postgres) when one server is not enough; a login with the Nova account if plans should follow a student; an automatic deploy after every merge; the spring timetable as soon as Nova publishes it.
 
